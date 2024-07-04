@@ -21,7 +21,7 @@ class UsersController extends Controller
         // $permission = Permission::create(['name' => 'edit users']);
         // $role->givePermissionTo($permission);
         // $permission->assignRole($role);
-        dd(Auth::user()->getRoleNames());
+        // dd(Auth::user()->getRoleNames());
         return $dataTable->render('users.index');
     }
 

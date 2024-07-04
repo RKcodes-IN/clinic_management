@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\DoctorDetailController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InfoUserController;
 use App\Http\Controllers\PermissionController;
@@ -80,6 +82,19 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('roles', [RoleController::class, 'store'])->name('roles.store');
 
     Route::get('users/create', [UsersController::class, 'create'])->name('users.create');
+    Route::post('users', [UsersController::class, 'store'])->name('users.store');
+
+
+
+    Route::get('doctor/index', [DoctorDetailController::class, 'index'])->name('doctorDetail.index');
+    Route::get('doctor/create', [DoctorDetailController::class, 'create'])->name('doctorDetail.create');
+    Route::post('doctor/store', [DoctorDetailController::class, 'store'])->name('doctorDetail.store');
+
+
+    Route::get('appointment/create', [AppointmentController::class, 'create'])->name('appointments.create');
+    Route::post('appointment/store', [AppointmentController::class, 'store'])->name('appointments.store');
+
+
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
 });
 
