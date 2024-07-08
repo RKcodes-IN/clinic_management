@@ -92,7 +92,10 @@ Route::group(['middleware' => 'auth'], function () {
 
 
     Route::get('appointment/create', [AppointmentController::class, 'create'])->name('appointments.create');
+    Route::get('appointment', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::post('appointment/store', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::get('appointment/edit/{appointment}', [AppointmentController::class, 'edit'])->name('appointments.edit');
+    Route::put('appointment/{id}/update', [AppointmentController::class, 'update'])->name('appointments.update');
 
 
     Route::post('users', [UsersController::class, 'store'])->name('users.store');

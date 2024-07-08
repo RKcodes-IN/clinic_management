@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\AppointmentDataTable;
+use App\DataTables\DoctorDetailDataTable;
 use App\Models\appointment;
 use App\Models\DoctorDetail;
 use App\Models\PatientDetail;
@@ -16,9 +18,9 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(AppointmentDataTable $dataTable)
     {
-        //
+        return $dataTable->render('appointment.index');
     }
 
     /**
@@ -136,17 +138,54 @@ class AppointmentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(appointment $appointment)
+    public function edit($id)
     {
-        //
-    }
+        $appointment = Appointment::findOrFail($id);
+        $patients = PatientDetail::all();
+        $doctors = DoctorDetail::all();
 
+        return view('appointment.edit', compact('appointment', 'patients', 'doctors'));
+    }
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, appointment $appointment)
+    public function update(Request $request, Appointment $appointment)
     {
-        //
+        $request->validate([
+            'is_new_patient' => 'required|in:yes,no',
+            'patient_name' => 'required_if:is_new_patient,yes|string|max:255',
+            'patient_id' => 'required_if:is_new_patient,no|exists:patients,id',
+            'doctor_id' => 'required|exists:doctors,id',
+            'email' => 'required|email',
+            'phone_number' => 'required|string|max:15',
+            'address' => 'required|string',
+            'is_previous_report_available' => 'nullable|boolean',
+            'main_complaint' => 'required|string',
+            'available_date' => 'required|date',
+            'time_from' => 'required|date_format:H:i',
+            'time_to' => 'required|date_format:H:i|after:time_from',
+            'message' => 'nullable|string',
+            'status' => 'required|in:' . implode(',', array_keys(Appointment::getStatusLabels())),
+        ]);
+
+        $appointment->update([
+            'is_new_patient' => $request->is_new_patient,
+            'patient_name' => $request->is_new_patient === 'yes' ? $request->patient_name : null,
+            'patient_id' => $request->is_new_patient === 'no' ? $request->patient_id : null,
+            'doctor_id' => $request->doctor_id,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'address' => $request->address,
+            'is_previous_report_available' => $request->has('is_previous_report_available') ? 1 : 0,
+            'main_complaint' => $request->main_complaint,
+            'available_date' => $request->available_date,
+            'time_from' => $request->time_from,
+            'time_to' => $request->time_to,
+            'message' => $request->message,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('appointments.index')->with('success', 'Appointment updated successfully.');
     }
 
     /**

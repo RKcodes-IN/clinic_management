@@ -54,8 +54,8 @@
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Appointment's Management</h6>
             </li>
             <li class="nav-item">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link {{ Request::is('settings/*') ? 'active' : '' }}"
+                    href="{{ Route('appointments.create') }}">
                     <div
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="fas fa-unlock-alt"></i>
@@ -74,9 +74,20 @@
                     <span class="nav-link-text ms-1">Appointments</span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Pending Appointments</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Approved Appointments</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Cancelled Appointments</a></li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">All Appointments</a></li>
+                    <li><a class="dropdown-item"
+                            href="{{ route('appointments.index', ['status' => \App\Models\Appointment::STATUS_NOT_CONFIRMED]) }}">Pending
+                            Appointments</a></li>
+                    <li><a class="dropdown-item"
+                            href="{{ route('appointments.index', ['status' => \App\Models\Appointment::STATUS_CONFIRMED]) }}">Approved
+                            Appointments</a></li>
+                    <li><a class="dropdown-item"
+                            href="{{ route('appointments.index', ['status' => \App\Models\Appointment::STATUS_COMPLETED]) }}">Completed
+                            Appointments</a></li>
+                    <li><a class="dropdown-item"
+                            href="{{ route('appointments.index', ['status' => \App\Models\Appointment::STATUS_CANCELLED]) }}">Cancelled
+                            Appointments</a></li>
+
                     <!-- Add more submenu items as needed -->
                 </ul>
             </li>

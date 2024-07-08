@@ -16,7 +16,8 @@ class DoctorDetailController extends Controller
      */
     public function index(DoctorDetailDataTable $dataTable)
     {
-        return $dataTable->render('doctor-details.index');
+        $status = request()->get('status');
+        return $dataTable->with('status', $status)->render('appointment.index');
     }
 
     /**

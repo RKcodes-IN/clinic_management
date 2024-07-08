@@ -24,4 +24,31 @@ class Appointment extends Model
             self::STATUS_CANCELLED => 'Cancelled',
         ];
     }
+
+    public function patient()
+    {
+        return $this->belongsTo(PatientDetail::class);
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(DoctorDetail::class);
+    }
+
+
+    public static function getStatusLabel($status)
+    {
+        switch ($status) {
+            case self::STATUS_NOT_CONFIRMED:
+                return '<span class="badge bg-warning">Not Confirmed</span>';
+            case self::STATUS_CONFIRMED:
+                return '<span class="badge bg-success">Confirmed</span>';
+            case self::STATUS_COMPLETED:
+                return '<span class="badge bg-success">Completed</span>';
+            case self::STATUS_CANCELLED:
+                return '<span class="badge bg-danger">Cancelled</span>';
+            default:
+                return 'Unknown';
+        }
+    }
 }
