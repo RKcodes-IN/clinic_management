@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\DataTables\AppointmentDataTable;
 use App\DataTables\DoctorDetailDataTable;
-use App\Models\appointment;
+use App\Models\Appointment;
 use App\Models\DoctorDetail;
+use App\Models\HealthEvaluation;
 use App\Models\PatientDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -26,10 +27,36 @@ class AppointmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+
+    public function search(Request $request)
+    {
+        // Validate that the query is provided
+
+
+        $query = $request->input('query');
+        // var_dump($query);
+        // exit;
+        // Search patients based on the query and eager load 'user' relationship
+        $patients = PatientDetail::where('name', 'LIKE', "%{$query}%")
+            ->with('user') // Include related user data
+            ->get();
+
+        // Return the mapped patients with user info, handling null user
+        return response()->json($patients->map(function ($patient) {
+            return [
+                'id' => $patient->id,
+                'name' => $patient->name,
+                'email' => optional($patient->user)->email, // Handle null user
+                'phone_number' => $patient->phone_number,
+            ];
+        }));
+    }
+
     public function create()
     {
         $patients = PatientDetail::all();
-        $doctors = DoctorDetail::all(); // Fetch all doctors for dropdown
+        $doctors = DoctorDetail::all();
+        // Fetch all doctors for dropdown
         return view('appointment.create', compact('patients', 'doctors'));
     }
     /**
@@ -37,60 +64,72 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate the input data
+        $request->validate([
+            'patient_id' => 'nullable',
+            'new_patient_name' => 'nullable|string|max:255',
+            'doctor_id' => 'required',
+            'email' => 'required|email',
+            'phone_number' => 'required|string',
+            'address' => 'required|string',
+            'main_complaint' => 'required|string',
+            'available_date' => 'required|date',
+            'time_from' => 'required',
+            'time_to' => 'required',
+        ]);
+
+        DB::beginTransaction();
+
         try {
-            $request->validate([
-                'is_new_patient' => 'required',
-                'patient_id' => 'required_if:is_new_patient,no',
-                'patient_name' => 'required_if:is_new_patient,yes|string',
-                'doctor_id' => 'nullable|exists:doctor_details,id',
-                'email' => 'required|email',
-                'phone_number' => 'required|string',
-                'address' => 'required|string',
-                'main_complaint' => 'nullable|string',
-                'available_date' => 'nullable|date_format:Y-m-d',
-                'time_from' => 'nullable|date_format:H:i',
-                'time_to' => 'nullable|date_format:H:i|after:time_from',
-                'message' => 'nullable|string',
-                'status' => 'nullable',
-            ]);
-            // Begin transaction
-            DB::beginTransaction();
-
-            // Initialize variables
             $patientId = null;
-            $patientName = null;
 
-            if ($request->input('is_new_patient') == 'yes') {
-
-                // Create new patient if new patient
+            // Check if new patient name is provided
+            if ($request->filled('new_patient_name')) {
+                // Create new patient
                 $role = Role::where('name', 'patient')->firstOrFail();
+                $existingUser = User::where('email', $request->input('email'))->first();
 
+                if ($existingUser) {
+                    DB::rollBack();
+                    return redirect()->route('appointments.create')
+                        ->with('error', 'Email already taken.')
+                        ->with('toast', 'error');  // Added toast message
+                }
+
+                // Create new user
                 $user = new User();
-                $user->name = $request->input('patient_name');
+                $user->name = $request->input('new_patient_name');
                 $user->email = $request->input('email');
-                $user->user_role = $role->id;
                 $user->phone = $request->input('phone_number');
+                $user->user_role = $role->id;
                 $user->save();
 
                 $user->assignRole($role->name);
                 $user->syncPermissions($role->permissions->pluck('name'));
 
-                $patientDetails = new PatientDetail();
-                $patientDetails->user_id = $user->id;
-                $patientDetails->name = $user->name;
-                $patientDetails->phone_number = $request->input('phone_number');
-                $patientDetails->address = $request->input('address');
-                $patientDetails->status = PatientDetail::ACTIVE;
-                $patientDetails->save();
+                // Create new patient details
+                $patient = new PatientDetail();
+                $patient->name = $request->input('new_patient_name');
+                $patient->user_id = $user->id;
+                $patient->phone_number = $request->input('phone_number');
+                $patient->address = $request->input('address');
+                $patient->gender = $request->input('gender');
+                $patient->date_of_birth = $request->input('gender');
+                $patient->status = PatientDetail::ACTIVE;
+                $patient->save();
 
-                $patientId = $patientDetails->id;
-                $patientName = $patientDetails->name;
-            } elseif ($request->input('is_new_patient') == 'no') {
-                // Existing patient selected
+                $patientId = $patient->id;
+            } elseif ($request->filled('patient_id')) {
+                // Use existing patient
                 $patientId = $request->input('patient_id');
-                $patientName = $request->input('patient_name');
             }
-            // Save appointment
+
+            // Ensure patient ID is not null
+            if (is_null(value: $patientId)) {
+                throw new \Exception("Patient ID is missing.");
+            }
+
+            // Create appointment
             $appointment = new Appointment();
             $appointment->patient_id = $patientId;
             $appointment->doctor_id = $request->input('doctor_id');
@@ -103,75 +142,81 @@ class AppointmentController extends Controller
             $appointment->time_from = $request->input('time_from');
             $appointment->time_to = $request->input('time_to');
             $appointment->message = $request->input('message');
-            $appointment->status = $request->input('status');
+            $appointment->status = $request->input('status', 'pending'); // Default status
+            $appointment->save();
 
-            if ($appointment->save()) {
-                DB::commit();
-
-                return redirect()->route('appointments.create')->with('success', 'Appointment created successfully.');
-            } else {
-                return redirect()->route('appointments.create')->with('error', 'Something went wrong');
+            // Ensure patient object exists for evaluation
+            if (isset($patient)) {
+                $evaluation = new HealthEvaluation();
+                $evaluation->patient_id = $patient->id;
+                $evaluation->appointment_id = $appointment->id;
+                $evaluation->age = $request->input('age');
+                $evaluation->weight = $request->input('weight');
+                $evaluation->height = $request->input('height');
+                $evaluation->occupation = $request->input('occupation');
+                $evaluation->gender = $request->input('gender');
+                $evaluation->working_hours = $request->input('working_hours');
+                $evaluation->night_shift = $request->input('night_shift', false);
+                $evaluation->climatic_condition = $request->input('climatic_condition');
+                $evaluation->allergic_to_drugs = $request->input('allergic_to_any_drugs', false);
+                $evaluation->allergic_drug_names = $request->input('allergic_drug_names');
+                $evaluation->food_allergies = $request->input('food_allergies');
+                $evaluation->lactose_tolerance = $request->input('tolerance_to_lactose');
+                $evaluation->lmp = $request->input('lmp');
+                $evaluation->save();
             }
 
-            // Commit transaction
+            DB::commit();
+            // flash()->success('Appointment created successfully.');
+
+            return redirect()->route('appointments.index')
+                ->with('success', 'Appointment created successfully.')
+                ->with('toast', 'success');  // Added success toast
 
         } catch (\Exception $e) {
-            // Rollback transaction if an exception occurs
             DB::rollBack();
+            // flash()->error('Something went wrong');
 
-            // You can log the error here if needed
-            // Log::error($e);
-
-            // Redirect back with error message
-            return redirect()->back()->withInput()->withErrors(['error' => 'Failed to create appointment. Please try again later.']);
+            return redirect()->route('appointments.create')
+                ->with('error', 'Something went wrong: ' . $e->getMessage())
+                ->with('toast', 'error');  // Added error toast
         }
     }
+
 
     /**
      * Display the specified resource.
      */
-    public function show(appointment $appointment)
+    public function show($id)
     {
-        //
+
+        $appointment = Appointment::with(['patient', 'doctor'])->findOrFail($id);
+        // $healthEvalutions = HealthEvaluation::where('appontment_id', $id)->get();
+        return view('appointment.show', compact('appointment',));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
+
+        $id = $request->get('id');;
         $appointment = Appointment::findOrFail($id);
         $patients = PatientDetail::all();
         $doctors = DoctorDetail::all();
 
-        return view('appointment.edit', compact('appointment', 'patients', 'doctors'));
+        return view('appointment.update', compact('appointment', 'patients', 'doctors'));
     }
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Appointment $appointment)
     {
-        $request->validate([
-            'is_new_patient' => 'required|in:yes,no',
-            'patient_name' => 'required_if:is_new_patient,yes|string|max:255',
-            'patient_id' => 'required_if:is_new_patient,no|exists:patients,id',
-            'doctor_id' => 'required|exists:doctors,id',
-            'email' => 'required|email',
-            'phone_number' => 'required|string|max:15',
-            'address' => 'required|string',
-            'is_previous_report_available' => 'nullable|boolean',
-            'main_complaint' => 'required|string',
-            'available_date' => 'required|date',
-            'time_from' => 'required|date_format:H:i',
-            'time_to' => 'required|date_format:H:i|after:time_from',
-            'message' => 'nullable|string',
-            'status' => 'required|in:' . implode(',', array_keys(Appointment::getStatusLabels())),
-        ]);
+
+        $appointment = Appointment::findOrFail($request->id);
 
         $appointment->update([
-            'is_new_patient' => $request->is_new_patient,
-            'patient_name' => $request->is_new_patient === 'yes' ? $request->patient_name : null,
-            'patient_id' => $request->is_new_patient === 'no' ? $request->patient_id : null,
             'doctor_id' => $request->doctor_id,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
@@ -188,11 +233,17 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')->with('success', 'Appointment updated successfully.');
     }
 
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(appointment $appointment)
     {
         //
+    }
+
+    public function calender()
+    {
+        return view('appointment.calander');
     }
 }

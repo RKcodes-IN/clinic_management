@@ -11,4 +11,9 @@ class PatientDetail extends Model
     const ACTIVE = 1;
     const INACTIVE = 2;
     const DELETE = 3;
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

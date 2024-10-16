@@ -16,7 +16,8 @@
         "spatie/laravel-html": "^3.10",
         "spatie/laravel-permission": "^6.9",
         "yajra/laravel-datatables-buttons": "11.0",
-        "yajra/laravel-datatables-oracle": "11.0"
+        "yajra/laravel-datatables-oracle": "11.0",
+        "yoeunes/toastr": "^3.0"
     },
     "require-dev": {
         "spatie/laravel-ignition": "^2.0",

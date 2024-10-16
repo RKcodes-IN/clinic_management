@@ -95,8 +95,7 @@ class AppointmentDataTable extends DataTable
             Column::make('time_from'),
             Column::make('time_to'),
             Column::make('status'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+
         ];
     }
 

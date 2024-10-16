@@ -50,19 +50,6 @@
                 </a>
             </li>
 
-            <li class="nav-item mt-2">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Appointment's Management</h6>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ Request::is('settings/*') ? 'active' : '' }}"
-                    href="{{ Route('appointments.create') }}">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-unlock-alt"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Create New Appointment</span>
-                </a>
-            </li>
 
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
@@ -74,24 +61,50 @@
                     <span class="nav-link-text ms-1">Appointments</span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">All Appointments</a></li>
-                    <li><a class="dropdown-item"
-                            href="{{ route('appointments.index', ['status' => \App\Models\Appointment::STATUS_NOT_CONFIRMED]) }}">Pending
-                            Appointments</a></li>
-                    <li><a class="dropdown-item"
-                            href="{{ route('appointments.index', ['status' => \App\Models\Appointment::STATUS_CONFIRMED]) }}">Approved
-                            Appointments</a></li>
-                    <li><a class="dropdown-item"
-                            href="{{ route('appointments.index', ['status' => \App\Models\Appointment::STATUS_COMPLETED]) }}">Completed
-                            Appointments</a></li>
-                    <li><a class="dropdown-item"
-                            href="{{ route('appointments.index', ['status' => \App\Models\Appointment::STATUS_CANCELLED]) }}">Cancelled
-                            Appointments</a></li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.create') }}">New Appointment Form</a></li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.create') }}">New Appointment Reports</a>
+                    </li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">New Appointment List</a></li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Calandar</a></li>
+
 
                     <!-- Add more submenu items as needed -->
                 </ul>
             </li>
 
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div
+                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-unlock-alt"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Paitent's</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ route('paitent.index') }}">Paitent List</a></li>
+                    <li><a class="dropdown-item" href="{{ route('healthevalution.create') }}">Health Evalution
+                            Sheet</a>
+                    </li>
+                    <li><a class="dropdown-item" href="{{ route('healthevalution.index') }}">Patient Health Evalutions
+                        </a>
+                    </li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Upload Investigation
+                            Report</a></li>
+
+                    {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add New Paitent</a></li> --}}
+                    {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add Case Notes</a></li> --}}
+                    {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add Investigations</a></li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Investigations List</a></li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Parameters To Review</a></li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add Prescriptions</a></li>
+                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Prescription List</a></li> --}}
+                    {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Past Medication</a></li> --}}
+
+
+                    <!-- Add more submenu items as needed -->
+                </ul>
+            </li>
             <li class="nav-item mt-2">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Doctor's Management</h6>
             </li>
@@ -105,7 +118,8 @@
                     <span class="nav-link-text ms-1">Doctor</span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.create') }}">Doctor Create</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li>
                     <!-- Add more submenu items as needed -->
                 </ul>
             </li>
@@ -124,6 +138,7 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="{{ Route('users.index') }}">Users</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('users.create') }}">Users Create</a></li>
                     <li><a class="dropdown-item" href="{{ Route('roles.create') }}">Roles</a></li>
                     <!-- Add more submenu items as needed -->
                 </ul>

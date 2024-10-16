@@ -77,8 +77,7 @@ class DoctorDetailDataTable extends DataTable
             Column::make('specialty'),
             Column::make('phone'),
             Column::make('profile_image'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+
         ];
     }
 

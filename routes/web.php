@@ -3,14 +3,17 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\DoctorDetailController;
+use App\Http\Controllers\HealthEvaluationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InfoUserController;
+use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\UsersController;
+use App\Models\HealthEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
@@ -90,12 +93,26 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('doctor/create', [DoctorDetailController::class, 'create'])->name('doctorDetail.create');
     Route::post('doctor/store', [DoctorDetailController::class, 'store'])->name('doctorDetail.store');
 
+    Route::get('patient/index', [PatientDetailController::class, 'index'])->name('paitent.index');
+    Route::put('patient/update/{id}', [PatientDetailController::class, 'update'])->name('paitent.edit');
+    Route::get('patient/view/{id}', [PatientDetailController::class, 'show'])->name('paitent.show');
+
+
 
     Route::get('appointment/create', [AppointmentController::class, 'create'])->name('appointments.create');
     Route::get('appointment', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::post('appointment/store', [AppointmentController::class, 'store'])->name('appointments.store');
-    Route::get('appointment/edit/{appointment}', [AppointmentController::class, 'edit'])->name('appointments.edit');
-    Route::put('appointment/{id}/update', [AppointmentController::class, 'update'])->name('appointments.update');
+    Route::get('appointment/edit', [AppointmentController::class, 'edit'])->name('appointments.edit');
+    Route::put('appointment/update/{id}', [AppointmentController::class, 'update'])->name('appointments.update');
+    Route::get('appointment/view/{id}', [AppointmentController::class, 'show'])->name('appointments.show');
+    Route::get('appointment/calander', [AppointmentController::class, 'calender'])->name('appointments.calander');
+
+
+    Route::get('health-evalution/create', [HealthEvaluationController::class, 'create'])->name('healthevalution.create');
+    Route::get('health-evalution', [HealthEvaluationController::class, 'index'])->name('healthevalution.index');
+    Route::post('health-evalution/store', [HealthEvaluationController::class, 'store'])->name('healthevalution.store');
+    Route::get('health-evalution/view/{id}', [HealthEvaluationController::class, 'show'])->name('healthevalution.show');
+
 
 
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
@@ -117,3 +134,4 @@ Route::group(['middleware' => 'guest'], function () {
 Route::get('/login', function () {
     return view('session/login-session');
 })->name('login');
+Route::get('/patients/search', [AppointmentController::class, 'search'])->name('patients.search');

@@ -8,7 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Appointment extends Model
 {
     use HasFactory;
-
+    protected $fillable = [
+        'patient_id',
+        'doctor_id',
+        'email',
+        'phone_number',
+        'address',
+        'is_previous_report_available',
+        'main_complaint',
+        'available_date',
+        'time_from',
+        'time_to',
+        'message',
+        'status',
+        'patient_name', // Add 'patient_name' to the fillable attributes
+    ];
     const STATUS_NOT_CONFIRMED = 1;
     const STATUS_CONFIRMED = 2;
     const STATUS_COMPLETED = 3;
