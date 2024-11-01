@@ -124,6 +124,26 @@
                 </ul>
             </li>
 
+
+            <li class="nav-item mt-2">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Inventroy</h6>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div
+                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-unlock-alt"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Pharmacy</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ Route('stock.create') }}">Add Stock</a></li>
+                    {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li> --}}
+                    <!-- Add more submenu items as needed -->
+                </ul>
+            </li>
+
             <li class="nav-item mt-2">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin Settings</h6>
             </li>
@@ -140,6 +160,23 @@
                     <li><a class="dropdown-item" href="{{ Route('users.index') }}">Users</a></li>
                     <li><a class="dropdown-item" href="{{ Route('users.create') }}">Users Create</a></li>
                     <li><a class="dropdown-item" href="{{ Route('roles.create') }}">Roles</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div
+                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-unlock-alt"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Variables Settings</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ Route('source-company.index') }}">Source Company</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('category.index') }}">Category</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('brand.index') }}">Brand</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('uomtype.index') }}">UOM Type</a></li>
+
                     <!-- Add more submenu items as needed -->
                 </ul>
             </li>

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\DoctorDetailController;
 use App\Http\Controllers\HealthEvaluationController;
@@ -12,6 +14,9 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\SourceCompanyController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\UomTypeController;
 use App\Http\Controllers\UsersController;
 use App\Models\HealthEvaluation;
 use Illuminate\Http\Request;
@@ -108,12 +113,50 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('appointment/calander', [AppointmentController::class, 'calender'])->name('appointments.calander');
 
 
+
     Route::get('health-evalution/create', [HealthEvaluationController::class, 'create'])->name('healthevalution.create');
     Route::get('health-evalution', [HealthEvaluationController::class, 'index'])->name('healthevalution.index');
     Route::post('health-evalution/store', [HealthEvaluationController::class, 'store'])->name('healthevalution.store');
     Route::get('health-evalution/view/{id}', [HealthEvaluationController::class, 'show'])->name('healthevalution.show');
 
+    // Category
+    Route::get('category/create', [CategoryController::class, 'create'])->name('category.create');
+    Route::get('category', [CategoryController::class, 'index'])->name('category.index');
+    Route::post('category/store', [CategoryController::class, 'store'])->name('category.store');
+    Route::get('category/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
+    Route::put('category/{category}', [CategoryController::class, 'update'])->name('category.update');
+    Route::delete('category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
+
+    // Source Company
+
+    Route::get('source-company/create', [SourceCompanyController::class, 'create'])->name(name: 'source-company.create');
+    Route::get('source-company', [SourceCompanyController::class, 'index'])->name('source-company.index');
+    Route::post('source-company/store', [SourceCompanyController::class, 'store'])->name('source-company.store');
+    Route::get('source-company/edit/{id}', [SourceCompanyController::class, 'edit'])->name('source-company.edit');
+    Route::put('source-company/{id}', [SourceCompanyController::class, 'update'])->name('source-company.update');
+    Route::delete('source-company/{id}', [SourceCompanyController::class, 'destroy'])->name('source-company.destroy');
+    // Brand
+    Route::get('brand/create', [BrandController::class, 'create'])->name('brand.create');
+    Route::get('brand', [BrandController::class, 'index'])->name('brand.index');
+    Route::post('brand/store', [BrandController::class, 'store'])->name('brand.store');
+    Route::get('brand/{brand}/edit', [BrandController::class, 'edit'])->name('brand.edit');
+    Route::put('brand/{brand}', [BrandController::class, 'update'])->name('brand.update');
+    Route::delete('brand/{brand}', [BrandController::class, 'destroy'])->name('brand.destroy');
+    // UOM
+    Route::get('uomtype/create', [UomTypeController::class, 'create'])->name('uomtype.create');
+    Route::get('uomtype', [UomTypeController::class, 'index'])->name('uomtype.index');
+    Route::post('uomtype/store', [UomTypeController::class, 'store'])->name('uomtype.store');
+    Route::get('uomtype/{uomType}/edit', [UomTypeController::class, 'edit'])->name('uomtype.edit');
+    Route::put('uomtype/{uomType}', [UomTypeController::class, 'update'])->name('uomtype.update');
+    Route::delete('uomtype/{uomType}', [UomTypeController::class, 'destroy'])->name('uomtype.destroy');
+    // Srock
+    Route::get('stock/create', [StockController::class, 'create'])->name('stock.create');
+    // Route::get('uomtype', [UomTypeController::class, 'index'])->name('uomtype.index');
+    Route::post('uomtype/store', [StockController::class, 'store'])->name('stock.store');
+    // Route::get('uomtype/{uomType}/edit', [UomTypeController::class, 'edit'])->name('uomtype.edit');
+    // Route::put('uomtype/{uomType}', [UomTypeController::class, 'update'])->name('uomtype.update');
+    // Route::delete('uomtype/{uomType}', [UomTypeController::class, 'destroy'])->name('uomtype.destroy');
 
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
 });
