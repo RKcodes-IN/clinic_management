@@ -66,9 +66,11 @@
                     </li>
                     <li><a class="dropdown-item" href="{{ route('appointments.index') }}">New Appointment List</a></li>
                     <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Calandar</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('investigationreport.create') }}">Upload
+                            Investigation Report</a>
 
 
-                    <!-- Add more submenu items as needed -->
+                        <!-- Add more submenu items as needed -->
                 </ul>
             </li>
 
@@ -135,10 +137,11 @@
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="fas fa-unlock-alt"></i>
                     </div>
-                    <span class="nav-link-text ms-1">Pharmacy</span>
+                    <span class="nav-link-text ms-1">Inventory</span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{ Route('stock.create') }}">Add Stock</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('items.index') }}">Items List</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
                     {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li> --}}
                     <!-- Add more submenu items as needed -->
                 </ul>
@@ -176,6 +179,9 @@
                     <li><a class="dropdown-item" href="{{ Route('category.index') }}">Category</a></li>
                     <li><a class="dropdown-item" href="{{ Route('brand.index') }}">Brand</a></li>
                     <li><a class="dropdown-item" href="{{ Route('uomtype.index') }}">UOM Type</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('investigationreporttype.index') }}">Investigation
+                            Report Type</a>
+                    </li>
 
                     <!-- Add more submenu items as needed -->
                 </ul>

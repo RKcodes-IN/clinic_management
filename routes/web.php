@@ -8,6 +8,9 @@ use App\Http\Controllers\DoctorDetailController;
 use App\Http\Controllers\HealthEvaluationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InfoUserController;
+use App\Http\Controllers\InvestigationReportController;
+use App\Http\Controllers\InvestigationReportTypeController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RegisterController;
@@ -19,6 +22,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\UomTypeController;
 use App\Http\Controllers\UsersController;
 use App\Models\HealthEvaluation;
+use App\Models\InvestigationReportType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
@@ -150,14 +154,26 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('uomtype/{uomType}/edit', [UomTypeController::class, 'edit'])->name('uomtype.edit');
     Route::put('uomtype/{uomType}', [UomTypeController::class, 'update'])->name('uomtype.update');
     Route::delete('uomtype/{uomType}', [UomTypeController::class, 'destroy'])->name('uomtype.destroy');
-    // Srock
-    Route::get('stock/create', [StockController::class, 'create'])->name('stock.create');
-    // Route::get('uomtype', [UomTypeController::class, 'index'])->name('uomtype.index');
-    Route::post('uomtype/store', [StockController::class, 'store'])->name('stock.store');
+
     // Route::get('uomtype/{uomType}/edit', [UomTypeController::class, 'edit'])->name('uomtype.edit');
     // Route::put('uomtype/{uomType}', [UomTypeController::class, 'update'])->name('uomtype.update');
     // Route::delete('uomtype/{uomType}', [UomTypeController::class, 'destroy'])->name('uomtype.destroy');
+    // Investigation Report
+    Route::get('investigationreporttype/create', [InvestigationReportTypeController::class, 'create'])->name('investigationreporttype.create');
+    Route::get('investigationreporttype', [InvestigationReportTypeController::class, 'index'])->name('investigationreporttype.index');
+    Route::post('investigationreporttype/store', [InvestigationReportTypeController::class, 'store'])->name('investigationreporttype.store');
+    Route::get('investigationreporttype/{investigationReportType}/edit', [InvestigationReportTypeController::class, 'edit'])->name('investigationreporttype.edit');
+    Route::put('investigationreporttype/{investigationReportType}', [InvestigationReportTypeController::class, 'update'])->name('investigationreporttype.update');
+    Route::delete('investigationreporttype/{investigationReportType}', [InvestigationReportTypeController::class, 'destroy'])->name('investigationreporttype.destroy');
 
+
+    // Investigation Report
+    Route::get('investigationreport/create', [InvestigationReportController::class, 'create'])->name('investigationreport.create');
+    Route::post('investigationreport/store', [InvestigationReportController::class, 'store'])->name('investigationreport.store');
+    Route::delete('investigationreporttype/{investigationReportType}', [InvestigationReportTypeController::class, 'destroy'])->name('investigationreporttype.destroy');
+
+
+    Route::resource('items', ItemController::class);
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
 });
 
