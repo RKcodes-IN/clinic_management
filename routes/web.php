@@ -13,6 +13,7 @@ use App\Http\Controllers\InvestigationReportTypeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PurchaseorderController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\RoleController;
@@ -96,6 +97,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('users/create', [UsersController::class, 'create'])->name('users.create');
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
 
+    Route::post('users', [UsersController::class, 'store'])->name('users.store');
 
 
     Route::get('doctor/index', [DoctorDetailController::class, 'index'])->name('doctorDetail.index');
@@ -104,7 +106,11 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('patient/index', [PatientDetailController::class, 'index'])->name('paitent.index');
     Route::put('patient/update/{id}', [PatientDetailController::class, 'update'])->name('paitent.edit');
-    Route::get('patient/view/{id}', [PatientDetailController::class, 'show'])->name('paitent.show');
+    Route::get('patient/view/{id}', [PatientDetailController::class, 'show'])->name('patient.show');
+    Route::get('patient/create', [PatientDetailController::class, 'create'])->name('patient.create');
+    Route::post('patient/store', [PatientDetailController::class, 'store'])->name('patient.store');
+    Route::get('patient/edit/{id}', [PatientDetailController::class, 'edit'])->name('patient.edit');
+    Route::put('patient/update/{id}', [PatientDetailController::class, 'update'])->name('patient.update');
 
 
 
@@ -174,7 +180,12 @@ Route::group(['middleware' => 'auth'], function () {
 
 
     Route::resource('items', ItemController::class);
-    Route::post('users', [UsersController::class, 'store'])->name('users.store');
+
+
+    // Puchase orders
+
+    Route::get('purchaseorders/create', [PurchaseorderController::class, 'create'])->name('purchaseorders.create');
+    Route::post('purchaseorders/store', [PurchaseorderController::class, 'store'])->name('purchaseorders.store');
 });
 
 

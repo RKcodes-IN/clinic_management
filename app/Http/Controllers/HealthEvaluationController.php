@@ -153,7 +153,8 @@ class HealthEvaluationController extends Controller
             }
 
             DB::commit();
-            dd("success");
+            return redirect()->route('healthevalution.index')->with('success', 'Health Evalution Created Successfully');
+
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('appointments.create')

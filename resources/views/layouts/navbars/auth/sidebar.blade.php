@@ -33,8 +33,8 @@
         <i class="fa-solid fa-gauge p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
             aria-hidden="true" id="iconSidenav"></i>
         <a class="align-items-center d-flex m-0 navbar-brand text-wrap" href="{{ route('dashboard') }}">
-            <img src="../assets/img/logo-ct.png" class="navbar-brand-img h-100" alt="...">
-            <span class="ms-3 font-weight-bold">Doctor Management</span>
+            <img src="../assets/img/logo-ct.png" class="navbar-brand-img h-auto" alt="...">
+            <span class="ms-3 font-weight-bold">SIVAS HEALTH & RESEARCH INSTITUTE</span>
         </a>
     </div>
     <hr class="horizontal dark mt-0">
@@ -91,7 +91,7 @@
                     <li><a class="dropdown-item" href="{{ route('healthevalution.index') }}">Patient Health Evalutions
                         </a>
                     </li>
-                    <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Upload Investigation
+                    <li><a class="dropdown-item" href="{{ route('investigationreport.create') }}">Upload Investigation
                             Report</a></li>
 
                     {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add New Paitent</a></li> --}}
