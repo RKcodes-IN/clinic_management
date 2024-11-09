@@ -112,6 +112,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('patient/edit/{id}', [PatientDetailController::class, 'edit'])->name('patient.edit');
     Route::put('patient/update/{id}', [PatientDetailController::class, 'update'])->name('patient.update');
 
+    Route::get('patient/import-form', [PatientDetailController::class, 'importForm'])->name('patient.importForm');
+    Route::post('patient/import', [PatientDetailController::class, 'import'])->name('patient.import');
 
 
     Route::get('appointment/create', [AppointmentController::class, 'create'])->name('appointments.create');

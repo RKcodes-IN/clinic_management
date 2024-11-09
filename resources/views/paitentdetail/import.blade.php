@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Import Users</title>
-</head>
-<body>
-    <h1>Import Users</h1>
+@extends('layouts.user_type.auth')
+
+@section('content')
     
     @if(session('success'))
         <p>{{ session('success') }}</p>
     @endif
 
-    <form action="{{ route('users.import') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('patient.import') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="file" name="file" required>
-        <button type="submit">Import Users</button>
+        <button type="submit" class="btn btn-primary">Import Paitents</button>
     </form>
 </body>
 </html>
+@endsection

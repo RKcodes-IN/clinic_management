@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\PaitentDetailDataTable;
+use App\Imports\PatientsImport;
 use App\Models\Appointment;
 use App\Models\HealthEvaluation;
 use App\Models\patient_detail;
@@ -11,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 
 class PatientDetailController extends Controller
@@ -162,8 +164,20 @@ public function store(Request $request)
     // /**
     //  * Remove the specified resource from storage.
     //  */
-    // public function destroy(patient_detail $patient_detail)
-    // {
-    //     //
-    // }
+    public function importForm()
+    {
+        return view('paitentdetail.import');
+        
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new PatientsImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Patients imported successfully!');
+    }
 }
