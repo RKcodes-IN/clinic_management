@@ -156,5 +156,47 @@
 
             </table>
         </div>
+
+
+        <div class="healthevalution-section">
+            <h4 class="mb-4">Previous Reports</h4>
+            <table class="table table-hover table-bordered">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Date</th>
+                        <th>Report Type</th>
+                        <th>File</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($investigationReport as $report)
+                        @if ($report)
+                            <tr>
+                                <!-- Report Date -->
+                                <td>{{ \Carbon\Carbon::parse($report->report_date)->format('F j, Y') }}</td>
+
+                                <!-- Report Type -->
+                                <td>{{ $report->reportType->name }}</td>
+
+                                <!-- View File Button -->
+                                <td>
+                                    <a href="{{ asset('storage/' . $report->report_url) }}" target="_blank"
+                                        class="btn btn-primary btn-sm">
+                                        View File
+                                    </a>
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td colspan="5">Previous reports not found</td>
+                            </tr>
+                        @endif
+                    @endforeach
+                </tbody>
+
+            </table>
+        </div>
+
     </div>
 @endsection

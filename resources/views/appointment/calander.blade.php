@@ -1,54 +1,53 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-    <div class="container">
-        <h2 class="my-4 text-center">Doctor Appointment Calendar</h2>
-        <div id="calendar" style="height: 800px;"></div>
-    </div>
-    <link rel="stylesheet" href="https://uicdn.toast.com/tui.calendar/latest/tui-calendar.min.css">
-    <script src="https://uicdn.toast.com/tui.calendar/latest/tui-calendar.min.js"></script>
+@push('style')
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/main.min.css' rel='stylesheet' />
+<style>
+    #calendar {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+        height: 600px;
+    }
+</style>
+@endpush
+<div id="calendar"></div>
+@endsection
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Ensure the Calendar object is properly instantiated
-            if (typeof tui !== 'undefined' && typeof tui.Calendar === 'function') {
-                var calendar = new tui.Calendar('#calendar', {
-                    defaultView: 'week', // Set default view
-                    taskView: false,
-                    scheduleView: true,
-                    useCreationPopup: false,
-                    useDetailPopup: true,
-                    isReadOnly: true,
-                    template: {
-                        time: function(schedule) {
-                            return '<strong>' + schedule.title + '</strong><br>' + schedule.location;
-                        }
-                    }
-                });
+@push('scripts')
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-                // Sample doctor appointments data
-                calendar.createSchedules([{
-                        id: '1',
-                        calendarId: 'doctor',
-                        title: 'John Doe - Consultation',
-                        category: 'time',
-                        start: '2024-10-15T09:00:00',
-                        end: '2024-10-15T09:30:00',
-                        location: 'General Check-up'
-                    },
-                    {
-                        id: '2',
-                        calendarId: 'doctor',
-                        title: 'Jane Smith - Orthopedics',
-                        category: 'time',
-                        start: '2024-10-15T10:00:00',
-                        end: '2024-10-15T11:00:00',
-                        location: 'Knee pain check-up'
-                    }
-                ]);
-            } else {
-                console.error('TUI Calendar library not loaded properly.');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: function(fetchInfo, successCallback, failureCallback) {
+                // Fetch data from your server using axios
+                axios.get('/api/doctor/appointments')
+                    .then(function (response) {
+                        successCallback(response.data);
+                    })
+                    .catch(function (error) {
+                        console.error('Error fetching appointments:', error);
+                        failureCallback(error);
+                    });
+            },
+            eventClick: function(info) {
+                // Display more info when an event is clicked
+                alert(
+                    'Appointment with: ' + info.event.title + '\n' +
+                    'Email: ' + info.event.extendedProps.email + '\n' +
+                    'Phone Number: ' + info.event.extendedProps.phone_number + '\n' +
+                    'Message: ' + info.event.extendedProps.message
+                );
             }
         });
-    </script>
-@endsection
+
+        calendar.render();
+    });
+</script>
+@endpush

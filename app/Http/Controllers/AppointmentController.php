@@ -10,6 +10,7 @@ use App\Models\HealthEvaluation;
 use App\Models\PatientDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
@@ -246,4 +247,43 @@ class AppointmentController extends Controller
     {
         return view('appointment.calander');
     }
+
+  // Add the following methods to your controller
+
+  public function calendar()
+{
+    // Get the authenticated doctor
+    $doctor = Auth::user();
+    $doctorDetail = DoctorDetail::where('user_id', $doctor->id)->firstOrFail();
+
+    // Get appointments for the authenticated doctor
+    $appointments = Appointment::where('doctor_id', $doctorDetail->id)
+        ->with('patient')  // Ensure patient details are loaded
+        ->get()
+        ->map(function ($appointment) {
+            return [
+                'title' => 'Appointment with ' . ($appointment->patient->name ?? 'Unknown Patient'),
+                'start' => $appointment->available_date . 'T' . $appointment->time_from,
+                'end' => $appointment->available_date . 'T' . $appointment->time_to,
+                'extendedProps' => [
+                    'email' => $appointment->patient->email ?? 'N/A',
+                    'phone_number' => $appointment->patient->phone_number ?? 'N/A',
+                    'message' => $appointment->message ?? 'No message',
+                ],
+            ];
+        });
+
+    return response()->json($appointments);
+}
+  
+
+public function calendarView()
+{
+    // Get the authenticated doctor
+    $doctor = Auth::user();
+
+    // Return the view with doctor data (optional for personalization)
+    return view('appointment.calander', ['doctor' => $doctor]);
+}
+
 }

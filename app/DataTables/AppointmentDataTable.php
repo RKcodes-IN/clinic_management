@@ -22,16 +22,17 @@ class AppointmentDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('patient_name', function ($row) {
-                return $row->patient->name;
+                return $row->patient->name ?? "";
             })
             ->addColumn('doctor_name', function ($row) {
-                return $row->doctor->name;
+                return $row->doctor->name ?? "";
             })
             ->addColumn('status', function ($row) {
                 return Appointment::getStatusLabel($row->status);
             })
             ->addColumn('action', 'appointment.action')
-            ->rawColumns(['status', 'action'])
+            ->addColumn('approve', 'appointment.approve')
+            ->rawColumns(['status', 'action', 'approve'])
             ->setRowId('id');
     }
 
@@ -85,16 +86,30 @@ class AppointmentDataTable extends DataTable
                 ->printable(false)
                 ->width(60)
                 ->addClass('text-center'),
-
+            Column::computed('approve')
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('id'),
-            Column::make('patient_name')->title('Patient Name'),
-            Column::make('doctor_name')->title('Doctor Name'),
-            Column::make('email'),
-            Column::make('phone_number'),
-            Column::make('main_complaint'),
-            Column::make('time_from'),
-            Column::make('time_to'),
-            Column::make('status'),
+            Column::make('status')
+                ->defaultContent('Unknown'),
+            Column::make('patient_name')
+                ->title('Patient Name')
+                ->defaultContent('N/A'),
+            Column::make('doctor_name')
+                ->title('Doctor Name')
+                ->defaultContent('N/A'),
+            Column::make('email')
+                ->defaultContent('No Email'),
+            Column::make('phone_number')
+                ->defaultContent('No Phone Number'),
+            Column::make('main_complaint')
+                ->defaultContent('No Complaint'),
+            Column::make('time_from')
+                ->defaultContent('Not Set'),
+            Column::make('time_to')
+                ->defaultContent('Not Set'),
 
         ];
     }

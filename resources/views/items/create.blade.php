@@ -1,7 +1,7 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-    <div class="container mt-5">
+    <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
@@ -71,6 +71,34 @@
                                     @endforeach
                                 </select>
                                 @error('source_company')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="item_code">Alert Quantity</label>
+                                <input type="text" name="alert_quantity" id="alert_quantity" class="form-control"
+                                    required>
+                                @error('item_code')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="item_code">Ideal Quantity</label>
+                                <input type="text" name="ideal_quantity" id="ideal_quantity" class="form-control"
+                                    required>
+                                @error('item_code')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="item_code">Reorder Quantity</label>
+                                <input type="text" name="reorder_quantity" id="reorder_quantity" class="form-control"
+                                    required>
+                                @error('item_code')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>

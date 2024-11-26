@@ -29,8 +29,9 @@
         <x-demo-metas></x-demo-metas>
     @endif
 
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
-    <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/logo-ct.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/logo-ct.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>
     SIVAS HEALTH & RESEARCH INSTITUTE
     </title>

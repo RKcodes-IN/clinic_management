@@ -48,6 +48,7 @@ class InvestigationReportController extends Controller
         $investigationReport->patient_id = $request->input('patient_id');
         $investigationReport->report_type_id = $request->input('report_type_id');
         $investigationReport->report_url = $filePath;
+        $investigationReport->report_date = $request->report_date;
         $investigationReport->save();
 
         // Redirect back to the form with a success message

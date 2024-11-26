@@ -15,4 +15,11 @@ class InvestigationReport extends Model
         // 'patiend_id' is the foreign key in this model
         // 'id' is the primary key in the related Patient model
     }
+
+    public function reportType()
+    {
+        return $this->belongsTo(InvestigationReportType::class, 'report_type_id', 'id');
+        // 'patiend_id' is the foreign key in this model
+        // 'id' is the primary key in the related Patient model
+    }
 }

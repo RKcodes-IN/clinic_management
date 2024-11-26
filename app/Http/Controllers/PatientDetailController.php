@@ -6,6 +6,7 @@ use App\DataTables\PaitentDetailDataTable;
 use App\Imports\PatientsImport;
 use App\Models\Appointment;
 use App\Models\HealthEvaluation;
+use App\Models\InvestigationReport;
 use App\Models\patient_detail;
 use App\Models\PatientDetail;
 use App\Models\User;
@@ -40,52 +41,52 @@ class PatientDetailController extends Controller
     // Controller method to show the create form
 
 
-// Controller method to store the patient details
-public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'phone_number' => 'required|string|max:20|unique:users,phone',
-        'date_of_birth' => 'required|date',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'address' => 'required|string|max:1000',
-        'status' => 'required|in:active,inactive',
-    ]);
+    // Controller method to store the patient details
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:20|unique:users,phone',
+            'date_of_birth' => 'required|date',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'address' => 'required|string|max:1000',
+            'status' => 'required|in:active,inactive',
+        ]);
 
-    // Set role to "patient"
-    $role = Role::where('name', 'patient')->firstOrFail();
+        // Set role to "patient"
+        $role = Role::where('name', 'patient')->firstOrFail();
 
-    // Create User
-    $user = new User();
-    $user->name = $request->input('name');
-    $user->email = $request->input('phone_number') . '@example.com'; // Placeholder email using phone number
-    $user->password = Hash::make($request->input('phone_number')); // Password set as phone number
-    $user->phone = $request->input('phone_number');
-    $user->user_role = $role->id;
-    $user->save();
+        // Create User
+        $user = new User();
+        $user->name = $request->input('name');
+        $user->email = $request->input('phone_number') . '@example.com'; // Placeholder email using phone number
+        $user->password = Hash::make($request->input('phone_number')); // Password set as phone number
+        $user->phone = $request->input('phone_number');
+        $user->user_role = $role->id;
+        $user->save();
 
-    $user->assignRole($role->name);
-    $user->syncPermissions($role->permissions->pluck('name'));
+        $user->assignRole($role->name);
+        $user->syncPermissions($role->permissions->pluck('name'));
 
-    // Create PatientDetail
-    $patientDetail = new PatientDetail();
-    $patientDetail->user_id = $user->id;
-    $patientDetail->name = $request->input('name');
-    $patientDetail->phone_number = $request->input('phone_number');
-    $patientDetail->date_of_birth = $request->input('date_of_birth');
-    $patientDetail->address = $request->input('address');
-    $patientDetail->status = $request->input('status');
+        // Create PatientDetail
+        $patientDetail = new PatientDetail();
+        $patientDetail->user_id = $user->id;
+        $patientDetail->name = $request->input('name');
+        $patientDetail->phone_number = $request->input('phone_number');
+        $patientDetail->date_of_birth = $request->input('date_of_birth');
+        $patientDetail->address = $request->input('address');
+        $patientDetail->status = $request->input('status');
 
-    // Handle image upload
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('patient_images', 'public');
-        $patientDetail->image = $imagePath;
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('patient_images', 'public');
+            $patientDetail->image = $imagePath;
+        }
+
+        $patientDetail->save();
+
+        return redirect()->route('paitent.index')->with('success', 'Patient and Patient Detail created successfully.');
     }
-
-    $patientDetail->save();
-
-    return redirect()->route('paitent.index')->with('success', 'Patient and Patient Detail created successfully.');
-}
 
 
     /**
@@ -98,8 +99,9 @@ public function store(Request $request)
         $healthEvalutions = HealthEvaluation::where('patient_id', $paitent->id)->get();
 
         $appontments = Appointment::with(['doctor'])->where('patient_id', $id)->get();
+        $investigationReport = InvestigationReport::with(['reportType'])->where('patient_id', $id)->get();
 
-        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments'));
+        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport'));
     }
 
 
@@ -113,46 +115,46 @@ public function store(Request $request)
     }
 
     public function update(Request $request, $id)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        // 'phone_number' => 'required|string|max:20|unique:users,phone,' . $id,
-        'date_of_birth' => 'required|date',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'address' => 'required|string|max:1000',
-        'status' => 'required|in:active,inactive',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            // 'phone_number' => 'required|string|max:20|unique:users,phone,' . $id,
+            'date_of_birth' => 'required|date',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'address' => 'required|string|max:1000',
+            'status' => 'required|in:active,inactive',
+        ]);
 
-    // Find the PatientDetail record
-    $patientDetail = PatientDetail::findOrFail($id);
+        // Find the PatientDetail record
+        $patientDetail = PatientDetail::findOrFail($id);
 
-    // Update User record
-    $user = $patientDetail->user;
-    $user->name = $request->input('name');
-    $user->phone = $request->input('phone_number');
-    $user->save();
+        // Update User record
+        $user = $patientDetail->user;
+        $user->name = $request->input('name');
+        $user->phone = $request->input('phone_number');
+        $user->save();
 
-    // Update PatientDetail record
-    $patientDetail->name = $request->input('name');
-    $patientDetail->phone_number = $request->input('phone_number');
-    $patientDetail->date_of_birth = $request->input('date_of_birth');
-    $patientDetail->address = $request->input('address');
-    $patientDetail->status = $request->input('status');
+        // Update PatientDetail record
+        $patientDetail->name = $request->input('name');
+        $patientDetail->phone_number = $request->input('phone_number');
+        $patientDetail->date_of_birth = $request->input('date_of_birth');
+        $patientDetail->address = $request->input('address');
+        $patientDetail->status = $request->input('status');
 
-    // Handle image upload and replace if a new image is uploaded
-    if ($request->hasFile('image')) {
-        // Delete old image if exists
-        if ($patientDetail->image) {
-            Storage::disk('public')->delete($patientDetail->image);
+        // Handle image upload and replace if a new image is uploaded
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($patientDetail->image) {
+                Storage::disk('public')->delete($patientDetail->image);
+            }
+            $imagePath = $request->file('image')->store('patient_images', 'public');
+            $patientDetail->image = $imagePath;
         }
-        $imagePath = $request->file('image')->store('patient_images', 'public');
-        $patientDetail->image = $imagePath;
+
+        $patientDetail->save();
+
+        return redirect()->route('paitent.index')->with('success', 'Patient details updated successfully.');
     }
-
-    $patientDetail->save();
-
-    return redirect()->route('paitent.index')->with('success', 'Patient details updated successfully.');
-}
     /**
      * Update the specified resource in storage.
      */
@@ -167,7 +169,6 @@ public function store(Request $request)
     public function importForm()
     {
         return view('paitentdetail.import');
-        
     }
 
     public function import(Request $request)

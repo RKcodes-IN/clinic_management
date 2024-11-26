@@ -1,7 +1,7 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-    <div class="container mt-5">
+    <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
@@ -39,6 +39,14 @@
                                         </div>
                                         <!-- Hidden field to capture new patient name -->
                                         <input type="hidden" id="new_patient_name" name="new_patient_name">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="date">Visit's Date</label>
+                                            <input type="date" name="date" id="date" class="form-control">
+                                        </div>
+
                                     </div>
                                 </div>
                             </fieldset>
@@ -134,8 +142,8 @@
                                         <div class="form-group">
                                             <label for="night_shift">Night Shift</label>
                                             <div>
-                                                <input type="radio" name="night_shift" id="night_shift_yes" value="yes"
-                                                    {{ old('night_shift') == 'yes' ? 'checked' : '' }}>
+                                                <input type="radio" name="night_shift" id="night_shift_yes"
+                                                    value="yes" {{ old('night_shift') == 'yes' ? 'checked' : '' }}>
                                                 <label for="night_shift_yes">Yes</label>
                                                 <input type="radio" name="night_shift" id="night_shift_no"
                                                     value="no" {{ old('night_shift') == 'no' ? 'checked' : '' }}>

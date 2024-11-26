@@ -60,20 +60,22 @@ class PaitentDetailDataTable extends DataTable
      * Get the dataTable columns definition.
      */
     public function getColumns(): array
-    {
-        return [
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(60)
-                ->addClass('text-center'),
-            Column::make('id'),
-            Column::make('name'),
-            Column::make('phone_number'),
-            Column::make('address'),
+{
+    return [
+        Column::computed('action')
+            ->exportable(false)
+            ->printable(false)
+            ->width(60)
+            ->addClass('text-center'),
+        Column::make('id'),
+        Column::make('name')->data('name')->defaultContent('N/A'),
+        Column::make('phone_number')->data('phone_number')->defaultContent('N/A'),
+        Column::make('gender')->data('gender')->defaultContent('Unknown'),
+        Column::make('age')->data('age')->defaultContent('0'),
+        Column::make('address')->data('address')->defaultContent('Not Provided'),
+    ];
+}
 
-        ];
-    }
 
     /**
      * Get the filename for export.

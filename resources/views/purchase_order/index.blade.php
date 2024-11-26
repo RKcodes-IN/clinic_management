@@ -8,8 +8,8 @@
     <div class="container">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Items</span>
-                <a href="{{ route('uomtype.create') }}" class="btn btn-primary">Create Items</a>
+                <span>Purchase Orders</span>
+                <a href="{{ route('purchase_order.create') }}" class="btn btn-primary">Create Purchase Order</a>
             </div>
             <div class="table-responsive">
                 <div class="card-body">

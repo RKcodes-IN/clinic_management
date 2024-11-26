@@ -11,6 +11,8 @@ class Item extends Model
 
     const TYPE_PHARMACY = 1;
     const TYPE_LAB = 2;
+
+    const MISCELLANEOUS = 3;
     protected $fillable = [
         'item_code',
         'name',
@@ -31,6 +33,7 @@ class Item extends Model
         return [
             self::TYPE_PHARMACY => "Pharmacy",
             self::TYPE_LAB => "Laboratory",
+            self::MISCELLANEOUS => "Miscellaneous"
         ];
     }
 }

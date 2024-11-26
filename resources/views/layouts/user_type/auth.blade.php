@@ -6,6 +6,17 @@
 <link rel="https://cdn.datatables.net/rowgroup/1.1.1/css/rowGroup.bootstrap4.min.css" />
 <!-- DataTables Buttons CSS -->
 <link href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap4.css" rel="stylesheet">
+@stack('style') {{-- This will yield the scripts section --}}
+<style>
+        .navbar-vertical.navbar-expand-xs{
+            background: #fff !important;
+            margin: 0 !important;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .16) !important  ;
+        }
+
+
+</style>
+
 @section('auth')
 
 
@@ -22,7 +33,7 @@
             @include('layouts.navbars.auth.sidebar-rtl')
             <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg overflow-hidden">
                 @include('layouts.navbars.auth.nav-rtl')
-                <div class="container-fluid py-4">
+                <div class="container-fluid">
                     @yield('content')
                     @include('layouts.footers.auth.footer')
                 </div>
@@ -48,7 +59,7 @@
             <main
                 class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg {{ Request::is('rtl') ? 'overflow-hidden' : '' }}">
                 @include('layouts.navbars.auth.nav')
-                <div class="container-fluid py-4">
+                <div class="container-fluid">
                     @yield('content')
                     @include('layouts.footers.auth.footer')
                 </div>

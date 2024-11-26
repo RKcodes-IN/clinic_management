@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\UomTypeDataTable;
 use App\Models\UomType;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UomTypeController extends Controller
 {
@@ -88,5 +89,17 @@ class UomTypeController extends Controller
 
         // Redirect to the category index page with a success message
         return redirect()->route('uomtype.index')->with('success', 'Uom Deleted Successfully');
+    }
+
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new UomType, $request->file('file'));
+
+        return redirect()->back()->with('success', 'UOM Type imported successfully!');
     }
 }

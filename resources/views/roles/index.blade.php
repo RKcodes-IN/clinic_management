@@ -8,10 +8,8 @@
     <div class="container">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Paitents</span>
-                @can('create paitent')
-                <a href="{{ route('patient.create') }}" class="btn btn-primary">Create New Paitent</a>
-                @endcan
+                <span>Roles</span>
+                <a href="{{ route('roles.create') }}" class="btn btn-primary">Create new role</a>
             </div>
             <div class="table-responsive">
                 <div class="card-body">

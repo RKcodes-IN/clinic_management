@@ -92,8 +92,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('permissions', [PermissionController::class, 'store'])->name('permissions.store');
 
     Route::get('roles/create', [RoleController::class, 'create'])->name('roles.create');
-    Route::post('roles', [RoleController::class, 'store'])->name('roles.store');
-
+    Route::post('roles/store', [RoleController::class, 'store   '])->name('roles.store');
+    Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+    
     Route::get('users/create', [UsersController::class, 'create'])->name('users.create');
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
 
@@ -123,6 +126,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('appointment/update/{id}', [AppointmentController::class, 'update'])->name('appointments.update');
     Route::get('appointment/view/{id}', [AppointmentController::class, 'show'])->name('appointments.show');
     Route::get('appointment/calander', [AppointmentController::class, 'calender'])->name('appointments.calander');
+    Route::get('/api/doctor/appointments', [AppointmentController::class, 'calendar']);
+    Route::get('/appointments/calendar-view', [AppointmentController::class, 'calendarView'])->name('appointent.calander');
 
 
 
@@ -162,6 +167,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('uomtype/{uomType}/edit', [UomTypeController::class, 'edit'])->name('uomtype.edit');
     Route::put('uomtype/{uomType}', [UomTypeController::class, 'update'])->name('uomtype.update');
     Route::delete('uomtype/{uomType}', [UomTypeController::class, 'destroy'])->name('uomtype.destroy');
+    Route::delete('uomtype/import', [UomTypeController::class, 'import'])->name('uomtype.import');
 
     // Route::get('uomtype/{uomType}/edit', [UomTypeController::class, 'edit'])->name('uomtype.edit');
     // Route::put('uomtype/{uomType}', [UomTypeController::class, 'update'])->name('uomtype.update');
@@ -186,8 +192,13 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Puchase orders
 
-    Route::get('purchaseorders/create', [PurchaseorderController::class, 'create'])->name('purchaseorders.create');
-    Route::post('purchaseorders/store', [PurchaseorderController::class, 'store'])->name('purchaseorders.store');
+Route::get('/purchase-order/create', [PurchaseOrderController::class, 'createPurchaseOrderForm'])->name('purchase_order.create');
+Route::post('/purchase-order/fetch-items', [PurchaseOrderController::class, 'fetchItems'])->name('purchase_order.fetch_items');
+Route::post('/purchase-order/create/purchase-order', [PurchaseOrderController::class, 'createOrder'])->name('purchase_order.createPurchaseOrder');
+Route::get('/purchase-order/{purchase_order_id}/edit-items', [PurchaseOrderController::class, 'editPurchaseOrderItems'])->name('editPurchaseOrderItems');
+Route::post('/purchase-order/{purchase_order_id}/update-items', [PurchaseOrderController::class, 'updatePurchaseOrderItems'])->name('updatePurchaseOrderItems');
+Route::get('/purchase-order', [PurchaseOrderController::class, 'index'])->name('purchaseorder.index');
+
 });
 
 

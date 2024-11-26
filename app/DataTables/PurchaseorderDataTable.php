@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\Purchaseorder;
+use App\Models\purchaseOrder;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -12,7 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class PurchaseorderDataTable extends DataTable
+class purchaseOrderDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -22,14 +22,21 @@ class PurchaseorderDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'purchaseorder.action')
+            ->addColumn('source_company', function ($row) {
+                return $row->sourceCompany ? $row->sourceCompany->name : 'N/A';
+            })
+
+            ->addColumn('status', function ($row) {
+                return (new purchaseOrder())->getStatusLabel($row->status);
+            })
+            ->addColumn('action', 'purchase_order.action')
             ->setRowId('id');
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(Purchaseorder $model): QueryBuilder
+    public function query(purchaseOrder $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -40,20 +47,20 @@ class PurchaseorderDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('purchaseorder-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('purchaseorder-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            //->dom('Bfrtip')
+            ->orderBy(1)
+            ->selectStyleSingle()
+            ->buttons([
+                Button::make('excel'),
+                Button::make('csv'),
+                Button::make('pdf'),
+                Button::make('print'),
+                Button::make('reset'),
+                Button::make('reload')
+            ]);
     }
 
     /**
@@ -63,14 +70,20 @@ class PurchaseorderDataTable extends DataTable
     {
         return [
             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('id'),
-            Column::make('add your columns'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+            Column::make('source_company')
+                ->title('Source Company'),
+            Column::make('creation_date'),
+
+            Column::make('status')
+                ->title('Status'),
+
+
+
         ];
     }
 
@@ -79,6 +92,6 @@ class PurchaseorderDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Purchaseorder_' . date('YmdHis');
+        return 'purchaseOrder_' . date('YmdHis');
     }
 }
