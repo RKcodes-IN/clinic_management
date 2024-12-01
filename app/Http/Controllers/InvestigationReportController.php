@@ -49,6 +49,10 @@ class InvestigationReportController extends Controller
         $investigationReport->report_type_id = $request->input('report_type_id');
         $investigationReport->report_url = $filePath;
         $investigationReport->report_date = $request->report_date;
+        $investigationReport->tsh = $request->tsh;
+        $investigationReport->traferrin_sat = $request->traferrin_sat;
+        $investigationReport->vitamin_b = $request->vitamin_b;
+        $investigationReport->sodium = $request->sodium;
         $investigationReport->save();
 
         // Redirect back to the form with a success message

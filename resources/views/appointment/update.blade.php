@@ -30,12 +30,13 @@
 
                                 <!-- Patient Name / Existing Patient -->
                                 <div class="col-md-6">
-                                    <div id="new_patient_fields"
-                                        style="{{ old('is_new_patient', $appointment->is_new_patient) === 'no' ? 'display:none;' : '' }}">
+                                    <div id="new_patient_fields" style="">
                                         <div class="form-group">
                                             <label for="patient_name">Patient Name</label>
-                                            <input type="text" name="patient_name" id="patient_name" class="form-control"
-                                                value="{{ old('patient_name', $appointment->patient_name) }}">
+                                            <input type="hidden" name="patient_name" id="patient_name"
+                                                class="form-control d-none" value="{{ $appointment->patient->id }}">
+                                            <input type="text" name="pasitent" id="" class="form-control"
+                                                value="{{ $appointment->patient->name }}">
                                             @error('patient_name')
                                                 <small class="text-danger">{{ $message }}</small>
                                             @enderror
@@ -153,8 +154,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="available_date">Available Date</label>
-                                        <input type="date" name="available_date" id="available_date"
-                                            class="form-control"
+                                        <input type="date" name="available_date" id="available_date" class="form-control"
                                             value="{{ old('available_date', $appointment->available_date) }}">
                                         @error('available_date')
                                             <small class="text-danger">{{ $message }}</small>

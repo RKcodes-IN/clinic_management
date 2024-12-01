@@ -96,7 +96,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
     Route::put('roles/{role}', [RoleController::class, 'update'])->name('roles.update');
-    
+
     Route::get('users/create', [UsersController::class, 'create'])->name('users.create');
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
 
@@ -128,8 +128,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('appointment/calander', [AppointmentController::class, 'calender'])->name('appointments.calander');
     Route::get('/api/doctor/appointments', [AppointmentController::class, 'calendar']);
     Route::get('/appointments/calendar-view', [AppointmentController::class, 'calendarView'])->name('appointent.calander');
-
-
+    Route::post('/appointments/{id}/approve', [AppointmentController::class, 'approve'])->name('appointments.approve');
+    Route::post('/appointments/{id}/reject', [AppointmentController::class, 'reject'])->name('appointments.reject');
 
     Route::get('health-evalution/create', [HealthEvaluationController::class, 'create'])->name('healthevalution.create');
     Route::get('health-evalution', [HealthEvaluationController::class, 'index'])->name('healthevalution.index');
@@ -192,13 +192,14 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Puchase orders
 
-Route::get('/purchase-order/create', [PurchaseOrderController::class, 'createPurchaseOrderForm'])->name('purchase_order.create');
-Route::post('/purchase-order/fetch-items', [PurchaseOrderController::class, 'fetchItems'])->name('purchase_order.fetch_items');
-Route::post('/purchase-order/create/purchase-order', [PurchaseOrderController::class, 'createOrder'])->name('purchase_order.createPurchaseOrder');
-Route::get('/purchase-order/{purchase_order_id}/edit-items', [PurchaseOrderController::class, 'editPurchaseOrderItems'])->name('editPurchaseOrderItems');
-Route::post('/purchase-order/{purchase_order_id}/update-items', [PurchaseOrderController::class, 'updatePurchaseOrderItems'])->name('updatePurchaseOrderItems');
-Route::get('/purchase-order', [PurchaseOrderController::class, 'index'])->name('purchaseorder.index');
-
+    Route::get('/purchase-order/create', [PurchaseOrderController::class, 'createPurchaseOrderForm'])->name('purchase_order.create');
+    Route::post('/purchase-order/fetch-items', [PurchaseOrderController::class, 'fetchItems'])->name('purchase_order.fetch_items');
+    Route::post('/purchase-order/create/purchase-order', [PurchaseOrderController::class, 'createOrder'])->name('purchase_order.createPurchaseOrder');
+    Route::get('/purchase-order/{purchase_order_id}/edit-items', [PurchaseOrderController::class, 'editPurchaseOrderItems'])->name('editPurchaseOrderItems');
+    Route::post('/purchase-order/{purchase_order_id}/update-items', [PurchaseOrderController::class, 'updatePurchaseOrderItems'])->name('updatePurchaseOrderItems');
+    Route::get('/purchase-order', [PurchaseOrderController::class, 'index'])->name('purchaseorder.index');
+    Route::get('/purchase-orders/{id}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
+    Route::post('/purchase-orders/items/{itemId}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.recieve');
 });
 
 

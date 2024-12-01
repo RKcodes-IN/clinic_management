@@ -9,7 +9,7 @@ use App\Models\PurchaseOrderItem;
 use App\Models\SourceCompany;
 use Illuminate\Http\Request;
 
-class PurchaseorderController extends Controller
+class PurchaseOrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -53,6 +53,7 @@ class PurchaseorderController extends Controller
         $purchaseorder->total_item = count($request->items);
         $purchaseorder->total_quantity = 0;
         $purchaseorder->price = 0;
+        $purchaseorder->status =  PurchaseOrderItem::STATUS_PENDING;
         $purchaseorder->creation_date = date('Y-m-d');
 
         if ($purchaseorder->save()) {
@@ -99,10 +100,68 @@ class PurchaseorderController extends Controller
             }
         }
 
-        return redirect()->route('editPurchaseOrderItems', ['purchase_order_id' => $purchase_order_id])
+        $purchaseOrder->status = PurchaseOrderItem::STATUS_CREATED;
+        $purchaseOrder->save();
+        return redirect()->route('purchaseorder.index')
             ->with('success', 'Items updated successfully.');
     }
 
+    public function receive(Request $request)
+    {
+        if (!empty($request->all())) {
+            $requestData = $request->all();
+
+            // Loop through the received items
+            foreach ($requestData as $data) {
+                // Validate the data for each item
+                $validator = Validator::make($data, [
+                    'item_id' => 'required|integer|exists:purchaseorder_items,id',
+                    'received_quantity' => 'required|numeric|min:1',
+                    'unit_price' => 'required|numeric|min:0',
+                    'total_price' => 'required|numeric|min:0',
+                    'expiry_date' => 'required|date',
+                    'received_date' => 'required|date'
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Validation error',
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+
+                // Fetch the item from the database
+                $purchaseOrderItem = PurchaseOrderItem::find($data['item_id']);
+
+                if ($purchaseOrderItem) {
+                    // Update the item's details
+                    $purchaseOrderItem->update([
+                        'received_quantity' => $data['received_quantity'],
+                        'unit_price' => $data['unit_price'],
+                        'total_price' => $data['total_price'],
+                        'expiry_date' => $data['expiry_date'],
+                        'received_date' => $data['received_date']
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Purchase order item with ID {$data['item_id']} not found."
+                    ], 404);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Items successfully updated as received.'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data received.'
+            ], 400);
+        }
+    }
 
 
     /**
@@ -116,9 +175,12 @@ class PurchaseorderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PurchaseOrder $purchaseOrder)
+    public function show($id)
     {
-        //
+        // Fetch the purchase order along with its related items
+        $purchaseOrder = PurchaseOrder::with('purchaseOrderItems')->findOrFail($id);
+
+        return view('purchase_order.show', compact('purchaseOrder'));
     }
 
     /**

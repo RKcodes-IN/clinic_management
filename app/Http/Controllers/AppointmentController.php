@@ -248,42 +248,70 @@ class AppointmentController extends Controller
         return view('appointment.calander');
     }
 
-  // Add the following methods to your controller
+    // Add the following methods to your controller
 
-  public function calendar()
-{
-    // Get the authenticated doctor
-    $doctor = Auth::user();
-    $doctorDetail = DoctorDetail::where('user_id', $doctor->id)->firstOrFail();
+    public function calendar()
+    {
+        // Get the authenticated doctor
+        $doctor = Auth::user();
+        $doctorDetail = DoctorDetail::where('user_id', $doctor->id)->firstOrFail();
 
-    // Get appointments for the authenticated doctor
-    $appointments = Appointment::where('doctor_id', $doctorDetail->id)
-        ->with('patient')  // Ensure patient details are loaded
-        ->get()
-        ->map(function ($appointment) {
-            return [
-                'title' => 'Appointment with ' . ($appointment->patient->name ?? 'Unknown Patient'),
-                'start' => $appointment->available_date . 'T' . $appointment->time_from,
-                'end' => $appointment->available_date . 'T' . $appointment->time_to,
-                'extendedProps' => [
-                    'email' => $appointment->patient->email ?? 'N/A',
-                    'phone_number' => $appointment->patient->phone_number ?? 'N/A',
-                    'message' => $appointment->message ?? 'No message',
-                ],
-            ];
-        });
+        // Get appointments for the authenticated doctor
+        $appointments = Appointment::where('doctor_id', $doctorDetail->id)
+            ->with('patient')  // Ensure patient details are loaded
+            ->get()
+            ->map(function ($appointment) {
+                return [
+                    'title' => 'Appointment with ' . ($appointment->patient->name ?? 'Unknown Patient'),
+                    'start' => $appointment->available_date . 'T' . $appointment->time_from,
+                    'end' => $appointment->available_date . 'T' . $appointment->time_to,
+                    'extendedProps' => [
+                        'email' => $appointment->patient->email ?? 'N/A',
+                        'phone_number' => $appointment->patient->phone_number ?? 'N/A',
+                        'message' => $appointment->message ?? 'No message',
+                    ],
+                ];
+            });
 
-    return response()->json($appointments);
-}
-  
+        return response()->json($appointments);
+    }
 
-public function calendarView()
-{
-    // Get the authenticated doctor
-    $doctor = Auth::user();
 
-    // Return the view with doctor data (optional for personalization)
-    return view('appointment.calander', ['doctor' => $doctor]);
-}
+    public function calendarView()
+    {
+        // Get the authenticated doctor
+        $doctor = Auth::user();
 
+        // Return the view with doctor data (optional for personalization)
+        return view('appointment.calander', ['doctor' => $doctor]);
+    }
+
+
+
+    public function approve(Request $request, $id)
+    {
+        $request->validate([
+            'approve_date' => 'required|date',
+            'slot_time' => 'required|date_format:H:i',
+        ]);
+
+        // Approve logic here
+        $appointment = Appointment::findOrFail($id);
+        $appointment->confirmation_date = $request->approve_date;
+        $appointment->confirmation_time = $request->slot_time;
+        $appointment->status = Appointment::STATUS_CONFIRMED;
+        $appointment->save();
+
+        return response()->json(['success' => true, 'message' => 'Appointment approved successfully']);
+    }
+
+    public function reject($id)
+    {
+        // Reject logic here
+        $appointment = Appointment::findOrFail($id);
+        $appointment->status = Appointment::STATUS_CANCELLED;
+        $appointment->save();
+
+        return response()->json(['success' => true, 'message' => 'Appointment rejected successfully']);
+    }
 }

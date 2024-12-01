@@ -11,25 +11,25 @@ class PurchaseOrder extends Model
 
 
 
-    const STATUS_PENDING =1;
+    const STATUS_PENDING = 1;
 
-    const STATUS_CREATED =2;
-    const STATUS_RECIEVED =3;
-    const STATUS_REJECTED =4;
+    const STATUS_CREATED = 2;
+    const STATUS_RECIEVED = 3;
+    const STATUS_REJECTED = 4;
 
     public function getStatusLabel($status): string
     {
         switch ($status) {
             case PurchaseOrder::STATUS_PENDING:
-                return 'Pending';
+                return '<span class="badge bg-warning">Pending</span>';
             case PurchaseOrder::STATUS_CREATED:
-                return 'Created';
+                return '<span class="badge bg-primary">Created</span>';
             case PurchaseOrder::STATUS_RECIEVED:
-                return 'Received';
+                return '<span class="badge bg-success">Received All</span>';
             case PurchaseOrder::STATUS_REJECTED:
-                return 'Rejected';
+                return '<span class="badge bg-danger">Rejected</span>';
             default:
-                return 'Unknown';
+                return '<span class="badge bg-secondary">Unknown</span>';
         }
     }
     public function purchaseOrderItems()

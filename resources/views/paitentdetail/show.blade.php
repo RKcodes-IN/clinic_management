@@ -48,6 +48,10 @@
         .table .action-icon:hover {
             color: #007bff;
         }
+
+        iframe{
+border: none;
+        }
     </style>
 
     <div class="container card p-4 shadow-lg">
@@ -68,7 +72,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Date of Birth:</strong> {{ $paitent->date_of_birth ?? 'Not available' }}</p>
-                    <p><strong>Age:</strong> {{ $healthEvalution->age ?? 'N/A' }}</p>
+                    <p><strong>Age:</strong> {{ $paitent->age ?? 'N/A' }}</p>
                     <p><strong>Gender:</strong> {{ $paitent->gender ?? 'Not specified' }}</p>
                 </div>
                 <div class="col-md-6">
@@ -160,31 +164,25 @@
 
         <div class="healthevalution-section">
             <h4 class="mb-4">Previous Reports</h4>
+            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#viewAllModal">View All</button>
+
             <table class="table table-hover table-bordered">
                 <thead class="table-primary">
                     <tr>
                         <th>Date</th>
                         <th>Report Type</th>
                         <th>File</th>
-
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($investigationReport as $report)
                         @if ($report)
                             <tr>
-                                <!-- Report Date -->
                                 <td>{{ \Carbon\Carbon::parse($report->report_date)->format('F j, Y') }}</td>
-
-                                <!-- Report Type -->
                                 <td>{{ $report->reportType->name }}</td>
-
-                                <!-- View File Button -->
                                 <td>
-                                    <a href="{{ asset('storage/' . $report->report_url) }}" target="_blank"
-                                        class="btn btn-primary btn-sm">
-                                        View File
-                                    </a>
+                                    <a href="{{ asset('storage/app/public/' . $report->report_url) }}" target="_blank"
+                                        class="btn btn-primary btn-sm">View File</a>
                                 </td>
                             </tr>
                         @else
@@ -194,9 +192,68 @@
                         @endif
                     @endforeach
                 </tbody>
-
             </table>
         </div>
 
     </div>
+
+
+    <div class="modal fade" id="viewAllModal" tabindex="-1" aria-labelledby="viewAllModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewAllModalLabel">View Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- PDF Viewer -->
+                    <iframe id="pdfViewer" src="" width="100%" height="500px"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button id="previousReport" class="btn btn-secondary">Previous</button>
+                    <button id="nextReport" class="btn btn-secondary">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    // Pass reports data from Laravel to JavaScript
+    const reports = @json($investigationReport);
+    const pdfViewer = document.getElementById('pdfViewer');
+    let currentIndex = 0;
+
+    // Function to load a report into the iframe
+    function loadReport(index) {
+        if (index >= 0 && index < reports.length) {
+            const reportUrl = reports[index].report_url; // Get the report URL
+            pdfViewer.src = `/storage/${reportUrl}`; // Set the iframe source
+            currentIndex = index;
+        }
+    }
+
+    // Event Listener: Load the first report when modal is shown
+    document.getElementById('viewAllModal').addEventListener('shown.bs.modal', function () {
+        loadReport(currentIndex);
+    });
+
+    // Event Listener: Navigate to the previous report
+    document.getElementById('previousReport').addEventListener('click', function () {
+        if (currentIndex > 0) {
+            loadReport(currentIndex - 1);
+        }
+    });
+
+    // Event Listener: Navigate to the next report
+    document.getElementById('nextReport').addEventListener('click', function () {
+        if (currentIndex < reports.length - 1) {
+            loadReport(currentIndex + 1);
+        }
+    });
+});
+
+    </script>
 @endsection

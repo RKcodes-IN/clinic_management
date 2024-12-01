@@ -111,6 +111,13 @@ class AppointmentDataTable extends DataTable
             Column::make('time_to')
                 ->defaultContent('Not Set'),
 
+                Column::make('confirmation_date')
+                ->defaultContent('Not Set'),
+
+
+                Column::make('confirmation_time')
+                ->defaultContent('Not Set'),
+
         ];
     }
 

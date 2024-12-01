@@ -44,7 +44,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="date">Visit's Date</label>
-                                            <input type="date" name="date" id="date" class="form-control">
+                                            <input type="date" value="{{ date('Y-m-d') }}" name="date" id="date" class="form-control">
                                         </div>
 
                                     </div>
@@ -112,20 +112,29 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="gender">Gender</label>
-                                            <select name="gender" id="gender" value="{{ old('gender') }}"
-                                                class="form-control">
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                            @error('gender')
+                                    <div class="row">
+                                        <!-- Gender -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="gender">Gender</label>
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <input type="radio" name="gender" id="male" value="male"
+                                                            {{ old('gender') == 'male' ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="male">Male</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input type="radio" name="gender" id="female" value="female"
+                                                            {{ old('gender') == 'female' ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="female">Female</label>
+                                                    </div>
+
+                                                </div>
+                                                @error('gender')
                                                 <small class="text-danger">{{ $message }}</small>
-                                            @enderror
+                                                @enderror
+                                            </div>
                                         </div>
-                                    </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">

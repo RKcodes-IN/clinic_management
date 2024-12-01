@@ -30,6 +30,7 @@ class purchaseOrderDataTable extends DataTable
                 return (new purchaseOrder())->getStatusLabel($row->status);
             })
             ->addColumn('action', 'purchase_order.action')
+            ->rawColumns(['status', 'action'])
             ->setRowId('id');
     }
 

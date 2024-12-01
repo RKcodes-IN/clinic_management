@@ -110,8 +110,12 @@ $thisMonthAppointmentsReview = Appointment::whereMonth('created_at', Carbon::now
 
     @endphp
 
-<h4>Today's Date: @php echo date('d-M-Y') @endphp</h4>
-    <div class="row mt-3">
+<h4 class="d-flex">Select Date:
+    <div class="col-3 ml-3">
+      <input type="date" name="" value="{{ date('Y-m-d') }}" class="form-control" id="">
+    </div>
+  </h4>
+      <div class="row mt-3">
 
         <div class="col-xl-12 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
