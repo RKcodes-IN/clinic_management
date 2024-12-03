@@ -39,23 +39,6 @@
                                         @enderror
                                     </div>
 
-                                    <!-- Report Type -->
-                                    <div class="form-group">
-                                        <label for="report_type_id">Select Report Type</label>
-                                        <select name="report_type_id" id="report_type_id" class="form-control select2" required>
-                                            <option value="" disabled selected>Select Investigation Report Type</option>
-                                            @foreach ($investigationReportType as $type)
-                                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('report_type_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Right Column -->
-                                <div class="col-md-6">
                                     <!-- Report Date -->
                                     <div class="form-group">
                                         <label for="report_date">Report Date</label>
@@ -64,7 +47,10 @@
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
+                                </div>
 
+                                <!-- Right Column -->
+                                <div class="col-md-6">
                                     <!-- File Upload -->
                                     <div class="form-group">
                                         <label for="file">Upload File</label>
@@ -79,48 +65,40 @@
                                 </div>
                             </div>
 
-                            <!-- Investigation Parameters -->
-                            <div class="row">
+                            <!-- Dynamic Investigation Parameters -->
+                            <div class="row mt-4">
                                 <div class="col-md-12">
-                                    <table class="table table-bordered">
+                                    <label>Investigation Parameters</label>
+                                    <table class="table table-bordered" id="parameters-table">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
+                                                <th>Report Type</th>
                                                 <th>Value</th>
                                                 <th>Out of Range</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Transferrin Saturation</td>
-                                                <td>17.6</td>
-                                                <td class="text-center">
-                                                    <input type="checkbox" name="transferrin_sat" value="1">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>TSH</td>
-                                                <td>2.25</td>
-                                                <td class="text-center">
-                                                    <input type="checkbox" name="tsh" value="1">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Vitamin B12</td>
-                                                <td>291</td>
-                                                <td class="text-center">
-                                                    <input type="checkbox" name="vitamin_b" value="1">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Sodium</td>
-                                                <td>143</td>
-                                                <td class="text-center">
-                                                    <input type="checkbox" name="sodium" value="1">
-                                                </td>
-                                            </tr>
+                                            @for ($i = 0; $i < 3; $i++)
+                                                <tr>
+                                                    <td>
+                                                        <select name="report_types[]" class="form-control select2" required>
+                                                            <option value="" disabled selected>Select Report Type</option>
+                                                            @foreach ($investigationReportType as $type)
+                                                                <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="text" name="values[]" class="form-control" placeholder="Enter value"></td>
+                                                    <td class="text-center"><input type="checkbox" name="out_of_range[]"></td>
+                                                    <td class="text-center">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    </td>
+                                                </tr>
+                                            @endfor
                                         </tbody>
                                     </table>
+                                    <button type="button" class="btn btn-success btn-sm mt-2" id="add-row">Add More</button>
                                 </div>
                             </div>
 
@@ -146,8 +124,39 @@
             // Initialize Select2 for searchable dropdowns
             $('.select2').select2({
                 placeholder: "Search...",
-                allowClear: true, // Adds a clear button
-                width: '100%' // Ensures the dropdown matches the input width
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Add new row for parameters
+            $('#add-row').on('click', function () {
+                let newRow = `
+                    <tr>
+                        <td>
+                            <select name="report_types[]" class="form-control select2" required>
+                                <option value="" disabled selected>Select Report Type</option>
+                                @foreach ($investigationReportType as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td><input type="text" name="values[]" class="form-control" placeholder="Enter value"></td>
+                        <td class="text-center"><input type="checkbox" name="out_of_range[]"></td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
+                        </td>
+                    </tr>`;
+                $('#parameters-table tbody').append(newRow);
+                $('.select2').select2({
+                    placeholder: "Search...",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+
+            // Remove row
+            $(document).on('click', '.remove-row', function () {
+                $(this).closest('tr').remove();
             });
         });
     </script>

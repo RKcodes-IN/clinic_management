@@ -9,6 +9,12 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Appointments</span>
+                <div class="d-flex align-items-center">
+                    <input type="date" id="fromDate" class="form-control me-2" placeholder="From Date">
+                    <input type="date" id="toDate" class="form-control me-2" placeholder="To Date">
+                    <button id="applyFilters" class="btn btn-primary">Apply</button>
+                    <button id="resetFilters" class="btn btn-secondary ms-2">Reset</button>
+                </div>
             </div>
             <div class="table-responsive">
                 <div class="card-body">
@@ -27,7 +33,26 @@
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.js"></script>
+    <script>
+        document.getElementById('applyFilters').addEventListener('click', function() {
+            let fromDate = document.getElementById('fromDate').value;
+            let toDate = document.getElementById('toDate').value;
 
+            // Reload DataTable with date filters
+            let table = $('#appointmentdetail-table').DataTable();
+            table.ajax.url(`{{ route('appointments.index') }}?from_date=${fromDate}&to_date=${toDate}`).load();
+        });
+
+        document.getElementById('resetFilters').addEventListener('click', function() {
+            // Clear date fields
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+
+            // Reload DataTable without filters
+            let table = $('#appointmentdetail-table').DataTable();
+            table.ajax.url(`{{ route('appointments.index') }}`).load();
+        });
+    </script>
     <script>
         function showApproveForm(appointmentId) {
             Swal.fire({

@@ -19,6 +19,7 @@ class Item extends Model
         'item_type',
         'uom_type',
         'brand',
+        'category',
         'source_company',
         'alert_quantity',
         'status',
@@ -35,5 +36,20 @@ class Item extends Model
             self::TYPE_LAB => "Laboratory",
             self::MISCELLANEOUS => "Miscellaneous"
         ];
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category', 'id');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand', 'id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(SourceCompany::class, 'source_company', 'id');
     }
 }

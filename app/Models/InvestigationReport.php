@@ -22,4 +22,10 @@ class InvestigationReport extends Model
         // 'patiend_id' is the foreign key in this model
         // 'id' is the primary key in the related Patient model
     }
+
+    public function reportTypeValues()
+{
+    return $this->hasMany(InvestigationReportValues::class, 'investigation_report_id');
+}
+
 }

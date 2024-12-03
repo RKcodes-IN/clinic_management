@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\ItemDataTable;
+use App\Imports\ItemsImport;
 use App\Models\Brand;
 use App\Models\Item;
 use App\Models\SourceCompany;
 use App\Models\UomType;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemController extends Controller
 {
@@ -50,7 +52,27 @@ class ItemController extends Controller
         return redirect()->route('items.create')->with('success', 'Item created successfully.');
     }
 
+    public function exportExcel(ItemDataTable $dataTable)
+    {
+        return $dataTable->excel();
+    }
 
+    public function importForm(Request $request)
+    {
+        return view('items.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv', // Validate file type
+        ]);
+
+        // Import the Excel file
+        Excel::import(new ItemsImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Items imported successfully!');
+    }
     /**
      * Display the specified resource.
      */

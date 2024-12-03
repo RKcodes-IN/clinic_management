@@ -99,7 +99,10 @@ class PatientDetailController extends Controller
         $healthEvalutions = HealthEvaluation::where('patient_id', $paitent->id)->get();
 
         $appontments = Appointment::with(['doctor'])->where('patient_id', $id)->get();
-        $investigationReport = InvestigationReport::with(['reportType'])->where('patient_id', $id)->get();
+        $investigationReport =
+        InvestigationReport::with(['reportTypeValues.reportType'])
+        ->where('patient_id', $id)
+        ->get();
 
         return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport'));
     }

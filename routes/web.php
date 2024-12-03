@@ -1,5 +1,6 @@
 <?php
 
+use App\DataTables\ItemDataTable;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
@@ -189,6 +190,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::resource('items', ItemController::class);
 
+    Route::post('/import-items', [ItemController::class, 'import'])->name('items.import');
+    Route::get('/import-items', [ItemController::class, 'importForm'])->name('items.importform');
+    Route::get('/export-excel', [ItemController::class, 'exportExcel'])->name('items.export-excel');
+
 
     // Puchase orders
 
@@ -214,6 +219,9 @@ Route::group(['middleware' => 'guest'], function () {
     Route::get('/reset-password/{token}', [ResetController::class, 'resetPass'])->name('password.reset');
     Route::post('/reset-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
 });
+
+
+
 
 Route::get('/login', function () {
     return view('session/login-session');

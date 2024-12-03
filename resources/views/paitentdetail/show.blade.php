@@ -24,7 +24,7 @@
         }
 
         .profile-info-card {
-            padding: 20px;
+            padding: 5px;
             background-color: #f8f9fa;
             border-radius: 8px;
             margin-bottom: 30px;
@@ -49,21 +49,29 @@
             color: #007bff;
         }
 
-        iframe{
-border: none;
+        iframe {
+            border: none;
         }
     </style>
 
-    <div class="container card p-4 shadow-lg">
+    <div class="container card p-3 shadow-lg">
         <!-- Profile Header Section -->
         <div class="profile-header">
             <img src="{{ $paitent->image ?? 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png' }}"
                 alt="Profile Picture">
-            <div>
-                <h3 class="mb-0">{{ $paitent->name ?? 'Unknown' }}</h3>
-                <p class="text-muted">Patient ID: {{ $paitent->id }}</p>
-                <!-- Optional button to edit profile -->
-                {{-- <button class="btn btn-primary btn-sm">Edit Profile</button> --}}
+            <div class="row">
+                <div class="col-6">
+                    <h3 class="mb-0">{{ $paitent->name ?? 'Unknown' }}</h3>
+                    <p class="text-muted">Patient ID: {{ $paitent->id }}</p>
+                    <!-- Optional button to edit profile -->
+                    {{-- <button class="btn btn-primary btn-sm">Edit Profile</button> --}}
+                </div>
+                <div class="col-6">
+
+                    <a href="#previousreport" class="btn btn-primary"> Go to Reports</a>
+                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#viewAllModal">View
+                        All Reports</button>
+                </div>
             </div>
         </div>
 
@@ -83,7 +91,7 @@ border: none;
         </div>
 
         <!-- Appointment History Section -->
-        <div class="appointment-section">
+        <div class="appointment-section" style="margin-top: -25px !important;">
             <h4 class="mb-4">Appointment History</h4>
             <table class="table table-hover table-bordered">
                 <thead class="table-primary">
@@ -162,7 +170,7 @@ border: none;
         </div>
 
 
-        <div class="healthevalution-section">
+        <div class="healthevalution-section" id="previousreport">
             <h4 class="mb-4">Previous Reports</h4>
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#viewAllModal">View All</button>
 
@@ -170,7 +178,7 @@ border: none;
                 <thead class="table-primary">
                     <tr>
                         <th>Date</th>
-                        <th>Report Type</th>
+                        <th>Report Types</th>
                         <th>File</th>
                     </tr>
                 </thead>
@@ -179,7 +187,32 @@ border: none;
                         @if ($report)
                             <tr>
                                 <td>{{ \Carbon\Carbon::parse($report->report_date)->format('F j, Y') }}</td>
-                                <td>{{ $report->reportType->name }}</td>
+                                <td>
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Value</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($report->reportTypeValues as $value)
+                                                <tr>
+                                                    <td>{{ $value->reportType->name ?? 'N/A' }}</td>
+                                                    <td>{{ $value->value }}</td>
+                                                    <td>
+                                                        @if ($value->out_of_range == "yes")
+                                                            <span class="text-danger">Out of Range</span>
+                                                        @else
+                                                            Normal
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </td>
                                 <td>
                                     <a href="{{ asset('storage/app/public/' . $report->report_url) }}" target="_blank"
                                         class="btn btn-primary btn-sm">View File</a>
@@ -187,12 +220,14 @@ border: none;
                             </tr>
                         @else
                             <tr>
-                                <td colspan="5">Previous reports not found</td>
+                                <td colspan="3">Previous reports not found</td>
                             </tr>
                         @endif
                     @endforeach
                 </tbody>
             </table>
+
+
         </div>
 
     </div>
@@ -203,7 +238,15 @@ border: none;
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="viewAllModalLabel">View Report</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+
+                    <div class="float-right">
+                        <button id="previousReportTop" class="btn btn-secondary">Previous</button>
+                        <button id="nextReportTop" class="btn btn-secondary">Next</button>
+                        <button type="button" class="btn-close text-dark" data-bs-dismiss="modal"
+                            aria-label="Close">X</button>
+
+                    </div>
                 </div>
                 <div class="modal-body">
                     <!-- PDF Viewer -->
@@ -220,40 +263,53 @@ border: none;
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    // Pass reports data from Laravel to JavaScript
-    const reports = @json($investigationReport);
-    const pdfViewer = document.getElementById('pdfViewer');
-    let currentIndex = 0;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Pass reports data from Laravel to JavaScript
+            const reports = @json($investigationReport);
+            const pdfViewer = document.getElementById('pdfViewer');
+            let currentIndex = 0;
 
-    // Function to load a report into the iframe
-    function loadReport(index) {
-        if (index >= 0 && index < reports.length) {
-            const reportUrl = reports[index].report_url; // Get the report URL
-            pdfViewer.src = `/storage/${reportUrl}`; // Set the iframe source
-            currentIndex = index;
-        }
-    }
+            // Function to load a report into the iframe
+            function loadReport(index) {
+                if (index >= 0 && index < reports.length) {
+                    const reportUrl = reports[index].report_url; // Get the report URL
+                    pdfViewer.src = `/storage/${reportUrl}`; // Set the iframe source
+                    currentIndex = index;
+                }
+            }
 
-    // Event Listener: Load the first report when modal is shown
-    document.getElementById('viewAllModal').addEventListener('shown.bs.modal', function () {
-        loadReport(currentIndex);
-    });
+            // Event Listener: Load the first report when modal is shown
+            document.getElementById('viewAllModal').addEventListener('shown.bs.modal', function() {
+                loadReport(currentIndex);
+            });
 
-    // Event Listener: Navigate to the previous report
-    document.getElementById('previousReport').addEventListener('click', function () {
-        if (currentIndex > 0) {
-            loadReport(currentIndex - 1);
-        }
-    });
+            // Event Listener: Navigate to the previous report
+            document.getElementById('previousReport').addEventListener('click', function() {
+                if (currentIndex > 0) {
+                    loadReport(currentIndex - 1);
+                }
+            });
 
-    // Event Listener: Navigate to the next report
-    document.getElementById('nextReport').addEventListener('click', function () {
-        if (currentIndex < reports.length - 1) {
-            loadReport(currentIndex + 1);
-        }
-    });
-});
+            // Event Listener: Navigate to the next report
+            document.getElementById('nextReport').addEventListener('click', function() {
+                if (currentIndex < reports.length - 1) {
+                    loadReport(currentIndex + 1);
+                }
+            });
 
+            document.getElementById('previousReportTop').addEventListener('click', function() {
+                if (currentIndex > 0) {
+                    loadReport(currentIndex - 1);
+                }
+            });
+
+            // Event Listener: Navigate to the next report
+            document.getElementById('nextReportTop').addEventListener('click', function() {
+                if (currentIndex < reports.length - 1) {
+                    loadReport(currentIndex + 1);
+                }
+            });
+
+        });
     </script>
 @endsection
