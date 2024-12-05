@@ -9,7 +9,17 @@ class PurchaseOrder extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'source_company_id',
+        'total_item',
+        'total_quantity',
+        'price',
+        'creation_date',
+        'status',
+        'created_at',
+        'updated_at',
 
+    ];
 
     const STATUS_PENDING = 1;
 

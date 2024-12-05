@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\purchaseOrderDataTable;
+use App\Imports\PurchaseOrderImport;
 use App\Models\Item;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\SourceCompany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PurchaseOrderController extends Controller
 {
@@ -162,7 +165,21 @@ class PurchaseOrderController extends Controller
             ], 400);
         }
     }
+    public function importForm()
+    {
+        return view('purchase_order.import');
+    }
 
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new PurchaseOrderImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Purchase Order Imported!');
+    }
 
     /**
      * Store a newly created resource in storage.

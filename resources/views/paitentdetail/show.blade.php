@@ -273,7 +273,7 @@
             function loadReport(index) {
                 if (index >= 0 && index < reports.length) {
                     const reportUrl = reports[index].report_url; // Get the report URL
-                    pdfViewer.src = `/storage/${reportUrl}`; // Set the iframe source
+                    pdfViewer.src = `https://indiaseva.net/storage/app/public/${reportUrl}`; // Set the iframe source
                     currentIndex = index;
                 }
             }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\StockDataTable;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\GstType;
@@ -15,9 +16,10 @@ class StockController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(StockDataTable $dataTable)
     {
-        //
+        $status = request()->get('status');
+        return $dataTable->with('status', $status)->render('stock.index');
     }
 
     /**

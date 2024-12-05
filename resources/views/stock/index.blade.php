@@ -8,8 +8,7 @@
     <div class="container">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Category</span>
-                <a href="{{ route('brand.create') }}" class="btn btn-primary">Create Brand</a>
+                <span>Stock</span>
             </div>
             <div class="table-responsive">
                 <div class="card-body">

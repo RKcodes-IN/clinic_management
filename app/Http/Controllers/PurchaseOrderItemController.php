@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\PurchaseOrderItem;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\PurchaseOrderItemsImport;
+
+
 
 class PurchaseOrderItemController extends Controller
 {
@@ -30,7 +34,16 @@ class PurchaseOrderItemController extends Controller
     {
         //
     }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
 
+        Excel::import(new PurchaseOrderItemsImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Purchase Order Item Imported!');
+    }
     /**
      * Display the specified resource.
      */
@@ -62,6 +75,4 @@ class PurchaseOrderItemController extends Controller
     {
         //
     }
-
-    
 }

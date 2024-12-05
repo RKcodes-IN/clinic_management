@@ -15,6 +15,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PurchaseorderController;
+use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\RoleController;
@@ -205,6 +206,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/purchase-order', [PurchaseOrderController::class, 'index'])->name('purchaseorder.index');
     Route::get('/purchase-orders/{id}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
     Route::post('/purchase-orders/items/{itemId}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.recieve');
+
+    Route::get('purchase-order/import-form', [PurchaseorderController::class, 'importForm'])->name('purchaseorder.importForm');
+    Route::post('purchase-orders/import', [PurchaseorderController::class, 'import'])->name('purchaseorder.import');
+    Route::post('purchase-orders-item/import', [PurchaseOrderItemController::class, 'import'])->name('purchaseorderItem.import');
+
+    Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+
 });
 
 

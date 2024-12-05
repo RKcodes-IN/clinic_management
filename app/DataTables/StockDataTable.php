@@ -3,13 +3,12 @@
 namespace App\DataTables;
 
 use App\Models\Stock;
+use App\Models\StockTransaction;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
 class StockDataTable extends DataTable
@@ -22,6 +21,15 @@ class StockDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->addColumn('item_name', function (Stock $stock) {
+                return $stock->item->name ?? 'N/A'; // Replace 'name' with your item's name column
+            })
+            ->addColumn('item_code', function (Stock $stock) {
+                return $stock->item->item_code ?? 'N/A'; // Replace 'item_code' with your item's code column
+            })
+            ->addColumn('total_stock', function (Stock $stock) {
+                return $stock->getTotalStock($stock->id); // Call method in Stock model
+            })
             ->addColumn('action', 'stock.action')
             ->setRowId('id');
     }
@@ -31,7 +39,7 @@ class StockDataTable extends DataTable
      */
     public function query(Stock $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->with('item');
     }
 
     /**
@@ -40,20 +48,19 @@ class StockDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('stock-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('stock-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->orderBy(1)
+            ->selectStyleSingle()
+            ->buttons([
+                Button::make('excel'),
+                Button::make('csv'),
+                Button::make('pdf'),
+                Button::make('print'),
+                Button::make('reset'),
+                Button::make('reload'),
+            ]);
     }
 
     /**
@@ -63,14 +70,16 @@ class StockDataTable extends DataTable
     {
         return [
             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('id'),
-            Column::make('add your columns'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+
+            Column::make('item_name')->title('Item Name'), // Custom title for clarity
+            Column::make('item_code')->title('Item Code'), // Custom title for clarity
+            Column::computed('total_stock')->title('Total Stock'),
+            Column::make('expiry_date'),
         ];
     }
 

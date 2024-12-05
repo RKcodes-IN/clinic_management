@@ -201,6 +201,7 @@
                     <li><a class="dropdown-item" href="{{ Route('items.index') }}">Items List</a></li>
                     <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
                     <li><a class="dropdown-item" href="{{ Route('purchaseorder.index') }}">Purchase Order</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('stock.index') }}">Stock</a></li>
                     {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
                     <!-- Add more submenu items as needed -->
