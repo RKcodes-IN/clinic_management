@@ -45,20 +45,12 @@ class AppointmentDataTable extends DataTable
 
         // Get the status from the request
         $status = request()->get('status');
-        $fromDate = request()->get('from_date');
-        $toDate = request()->get('to_date');
+
         // Apply the status filter if it exists
         if ($status) {
             $query->where('status', $status);
         }
 
-        if ($fromDate) {
-            $query->whereDate('confirmation_date', '>=', $fromDate);
-        }
-
-        if ($toDate) {
-            $query->whereDate('confirmation_date', '<=', $toDate);
-        }
         return $query;
     }
 
@@ -89,31 +81,6 @@ class AppointmentDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-
-            Column::make('patient_name')
-                ->title('Patient Name')
-                ->defaultContent('N/A'),
-            // Column::make('doctor_name')
-            //     ->title('Doctor Name')
-            //     ->defaultContent('N/A'),
-            // Column::make('email')
-            //     ->defaultContent('No Email'),
-            // Column::make('phone_number')
-            //     ->defaultContent('No Phone Number'),
-            Column::make('main_complaint')
-                ->defaultContent('No Complaint'),
-            // Column::make('time_from')
-            //     ->defaultContent('Not Set'),
-            // Column::make('time_to')
-            //     ->defaultContent('Not Set'),
-
-            Column::make('confirmation_date')
-                ->defaultContent('Not Set'),
-
-
-            Column::make('confirmation_time')
-                ->defaultContent('Not Set'),
-
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)
@@ -124,9 +91,38 @@ class AppointmentDataTable extends DataTable
                 ->printable(false)
                 ->width(60)
                 ->addClass('text-center'),
-            Column::make('id'),
+            // Column::make('id'),
             Column::make('status')
                 ->defaultContent('Unknown'),
+            Column::make('patient_name')
+                ->defaultContent('N/A'),
+                Column::make('confirmation_date')
+                ->title('Conf. Date')
+
+                ->defaultContent('Not Set'),
+
+
+                Column::make('confirmation_time')
+                ->title('Conf. Time')
+                ->defaultContent('Not Set'),
+                Column::make('available_date')
+                ->defaultContent('Not Set'),
+                Column::make('time_from')
+                ->defaultContent('Not Set'),
+            Column::make('time_to')
+                ->defaultContent('Not Set'),
+
+                Column::make('main_complaint')
+                ->defaultContent('No Complaint'),
+            Column::make('doctor_name')
+                ->title('Doctor Name')
+                ->defaultContent('N/A'),
+            Column::make('email')
+                ->defaultContent('No Email'),
+            Column::make('phone_number')
+                ->defaultContent('No Phone Number'),
+
+
 
         ];
     }

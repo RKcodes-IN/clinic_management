@@ -11,6 +11,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InfoUserController;
 use App\Http\Controllers\InvestigationReportController;
 use App\Http\Controllers\InvestigationReportTypeController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
@@ -212,6 +214,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('purchase-orders-item/import', [PurchaseOrderItemController::class, 'import'])->name('purchaseorderItem.import');
 
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+
+
+    // invoice Import
+
+    Route::get('/invoice-import', [InvoiceController::class, 'importForm'])->name('invoice.importform');
+    Route::post('/invoice-import', [InvoiceController::class, 'import'])->name('invoice.import');
+
+    Route::get('/invoicedetail-import', [InvoiceDetailController::class, 'importForm'])->name('invoiceDetail.importform');
+    Route::post('/invoicedetail-import', [InvoiceDetailController::class, 'import'])->name('invoiceDetail.import');
 
 });
 

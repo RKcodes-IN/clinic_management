@@ -10,9 +10,9 @@ class Item extends Model
     use HasFactory;
 
     const TYPE_PHARMACY = 1;
-    const TYPE_LAB = 2;
+    const TYPE_LAB = 3;
 
-    const MISCELLANEOUS = 3;
+    const MISCELLANEOUS = 2;
     protected $fillable = [
         'item_code',
         'name',

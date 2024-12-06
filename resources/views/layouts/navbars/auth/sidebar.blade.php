@@ -95,7 +95,7 @@
 
                         @can(['create appointment', 'edit appointment'])
                             <li><a class="dropdown-item" href="{{ route('appointments.create') }}">New Appointment</a></li>
-                            <li><a class="dropdown-item" href="{{ route('appointments.create') }}">Appointment Reports</a></li>
+                            <li><a class="dropdown-item" href="{{ route('appointments.create') }}">Appointment (WA)</a></li>
                         @endcan
 
 
