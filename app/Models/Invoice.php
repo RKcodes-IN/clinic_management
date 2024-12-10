@@ -28,5 +28,8 @@ class Invoice extends Model
         'created_at',
         'updated_at',
     ];
-
+    public function paitent()
+    {
+        return $this->belongsTo(PatientDetail::class, 'paitent_id');
+    }
 }

@@ -43,6 +43,22 @@ class Item extends Model
         return $this->belongsTo(Category::class, 'category', 'id');
     }
 
+
+    public static function getTotalStockByItem(int $itemId): int
+    {
+        // Correct usage of where clause for filtering by item_id
+        $incomingStock = StockTransaction::where('status', StockTransaction::STATUS_INCOMING_STOCK)
+            ->where('item_id', $itemId) // Separate column and value
+            ->sum('quantity');
+
+        $outgoingStock = StockTransaction::where('status', StockTransaction::STATUS_OUTGOING_STOCK)
+            ->where('item_id', $itemId) // Separate column and value
+            ->sum('quantity');
+
+        return $incomingStock - $outgoingStock;
+    }
+    
+
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand', 'id');

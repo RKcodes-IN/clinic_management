@@ -19,6 +19,8 @@ class PurchaseOrderController extends Controller
      */
     public function index(purchaseOrderDataTable $dataTable)
     {
+
+        // Cast the view to a type Laravel expects
         return $dataTable->render('purchase_order.index');
     }
 

@@ -22,7 +22,13 @@ class InvoiceDetail extends Model
         'add_dis_amount',
         'add_dis_percent',
         'total_amount',
+
         'created_at',
         'updated_at',
     ];
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
 }

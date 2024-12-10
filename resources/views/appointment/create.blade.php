@@ -429,7 +429,8 @@
                                         <div class="col-md-6" id="lmp_cpont">
                                             <div class="form-group">
                                                 <label for="lmp">Last Menstrual Period (LMP)</label>
-                                                <input type="text" name="lmp" id="lmp"  value="{{ old('lmp') }}"  class="form-control">
+                                                <input type="text" name="lmp" id="lmp"
+                                                    value="{{ old('lmp') }}" class="form-control">
                                                 @error('lmp')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
@@ -467,13 +468,21 @@
                                 query: params.term // Send the search query to the server
                             };
                         },
+
                         processResults: function(data) {
                             return {
+
+
                                 results: data.map(function(item) {
+                                    console.log(item);
+
                                     return {
                                         id: item.id,
                                         text: item
-                                            .name // Assuming 'name' is the patient name in your JSON response
+                                            .name + " (" + item
+                                            .phone_number + ")" + " (" + item
+                                            .place +
+                                            ")" // Assuming 'name' is the patient name in your JSON response
                                     };
                                 })
                             };

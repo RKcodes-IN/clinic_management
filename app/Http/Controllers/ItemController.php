@@ -3,13 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\ItemDataTable;
+use App\DataTables\StockReportDataTable;
 use App\Imports\ItemsImport;
 use App\Models\Brand;
 use App\Models\Item;
 use App\Models\SourceCompany;
+use App\Models\Stock;
+use App\Models\StockTransaction;
 use App\Models\UomType;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Mpdf\Mpdf;
 
 class ItemController extends Controller
 {
@@ -22,6 +27,13 @@ class ItemController extends Controller
         return $dataTable->with('status', $status)->render('items.index');
     }
 
+
+
+    public function stockReport(StockReportDataTable $dataTable)
+    {
+        $status = request()->get('status');
+        return $dataTable->with('status', $status)->render('items.stockreport');
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -79,6 +91,32 @@ class ItemController extends Controller
     public function show(Item $item)
     {
         //
+    }
+
+    public function stockReportView(Item $item)
+    {
+        // `$item` already contains the Item instance passed via route model binding
+        $stock = Stock::where('item_id', $item->id)->get(); // Retrieve stock related to the item
+        $stockTransaction = StockTransaction::where('item_id', $item->id)->get(); // Retrieve stock transactions
+
+        return view('items.stockreportview', compact('item', 'stock', 'stockTransaction'));
+    }
+    public function stockReportPDF(Item $item)
+    { // Retrieve stock and stock transactions data
+        $stock = Stock::where('item_id', $item->id)->get();
+        $stockTransaction = StockTransaction::where('item_id', $item->id)->get();
+
+        // Render the Blade view to HTML (for mPDF rendering)
+        $pdfContent = view('items.stockreportpdf', compact('item', 'stock', 'stockTransaction'))->render();
+
+        // Initialize mPDF
+        $mpdf = new Mpdf();
+
+        // Write HTML to PDF
+        $mpdf->WriteHTML($pdfContent);
+
+        // Return the generated PDF for download
+        return $mpdf->Output('Stock_Report_' . $item->name . '.pdf', 'D');
     }
 
     /**

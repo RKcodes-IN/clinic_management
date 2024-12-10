@@ -8,8 +8,10 @@
     <div class="container">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Purchase Orders</span>
-                <a href="{{ route('purchase_order.create') }}" class="btn btn-primary">Create Purchase Order</a>
+                <span>Pharmacy Item Stock Report</span>
+                {{-- <a href="{{ route('items.create') }}" class="btn btn-primary">Create Items</a>
+                <a href="{{ route('items.export-excel') }}" class="btn btn-success">Export to Excel</a> <!-- Export Button --> --}}
+
             </div>
             <div class="table-responsive">
                 <div class="card-body">
@@ -19,6 +21,8 @@
         </div>
     </div>
 @endsection
+
 @push('scripts')
     {{ $dataTable->scripts(attributes: ['type' => 'module', 'responsive' => true]) }}
+    <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script>
 @endpush

@@ -1,6 +1,7 @@
 <?php
 
 use App\DataTables\ItemDataTable;
+use App\Exports\StockTransactionsExport;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
@@ -31,6 +32,7 @@ use App\Models\InvestigationReportType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,6 +136,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/appointments/calendar-view', [AppointmentController::class, 'calendarView'])->name('appointent.calander');
     Route::post('/appointments/{id}/approve', [AppointmentController::class, 'approve'])->name('appointments.approve');
     Route::post('/appointments/{id}/reject', [AppointmentController::class, 'reject'])->name('appointments.reject');
+    Route::get('/appointments/watsapp', [AppointmentController::class, 'AppointmentWa'])->name('appointments.wa');
 
     Route::get('health-evalution/create', [HealthEvaluationController::class, 'create'])->name('healthevalution.create');
     Route::get('health-evalution', [HealthEvaluationController::class, 'index'])->name('healthevalution.index');
@@ -197,6 +200,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/import-items', [ItemController::class, 'importForm'])->name('items.importform');
     Route::get('/export-excel', [ItemController::class, 'exportExcel'])->name('items.export-excel');
 
+    Route::get('/item/stock/report', [ItemController::class, 'stockReport'])->name('items.stockReport');
+    Route::get('/item/stock/report/view/{item}', [ItemController::class, 'stockReportView'])->name('items.stockreportview');
+    Route::get('items/{item}/stock-report/pdf', [ItemController::class, 'stockReportPDF'])->name('stockReport.pdf');
 
     // Puchase orders
 
@@ -213,8 +219,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('purchase-orders/import', [PurchaseorderController::class, 'import'])->name('purchaseorder.import');
     Route::post('purchase-orders-item/import', [PurchaseOrderItemController::class, 'import'])->name('purchaseorderItem.import');
 
-    Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
 
+    Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+    Route::get('/stock/fliter', [StockController::class, 'stockFilterView'])->name('stock.filterview');
+    Route::post('/stock/fliter', [StockController::class, 'filter'])->name('stock.filter');
+    Route::post('/export-pdf', [StockController::class, 'exportPdf'])->name('stock.export.pdf');
+    Route::get('/stock/fliter/report', [StockController::class, 'stockReportFilterView'])->name('stock.filte.report');
+    Route::post('/stock/fliter/report/filter', [StockController::class, 'filterReport'])->name('stock.filte.filter');
+    Route::post('/stock/fliter/report/exportexcel', [StockController::class, 'exportReport'])->name('stock.filte.exportexcel');
+    Route::post('/stock/fliter/report/exportpdf', [StockController::class, 'exportPdfReport'])->name('stock.filte.exportpdf');
 
     // invoice Import
 
@@ -223,10 +236,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/invoicedetail-import', [InvoiceDetailController::class, 'importForm'])->name('invoiceDetail.importform');
     Route::post('/invoicedetail-import', [InvoiceDetailController::class, 'import'])->name('invoiceDetail.import');
-
 });
 
 
+Route::post('/stock/export', [StockController::class, 'export'])->name('stock.export');
 
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/register', [RegisterController::class, 'create']);

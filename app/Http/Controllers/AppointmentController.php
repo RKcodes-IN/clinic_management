@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\AppointmentDataTable;
+use App\DataTables\AppointmentswaDataTable;
 use App\DataTables\DoctorDetailDataTable;
 use App\Models\Appointment;
 use App\Models\DoctorDetail;
@@ -24,7 +25,10 @@ class AppointmentController extends Controller
     {
         return $dataTable->render('appointment.index');
     }
-
+    public function AppointmentWa(AppointmentswaDataTable $dataTable)
+    {
+        return $dataTable->render('appointment.appointmentwa');
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -49,6 +53,7 @@ class AppointmentController extends Controller
                 'name' => $patient->name,
                 'email' => optional($patient->user)->email, // Handle null user
                 'phone_number' => $patient->phone_number,
+                'place' => $patient->place ?? "",
             ];
         }));
     }

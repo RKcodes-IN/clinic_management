@@ -87,7 +87,7 @@
                         role="button" data-bs-toggle="dropdown" data-target="#appointmentsMenu" aria-expanded="false">
                         <div
                             class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fas fa-unlock-alt"></i>
+                            <i class="fa-solid fa-calendar-check"></i>
                         </div>
                         <span class="nav-link-text ms-1">Appointments</span>
                     </a>
@@ -95,7 +95,7 @@
 
                         @can(['create appointment', 'edit appointment'])
                             <li><a class="dropdown-item" href="{{ route('appointments.create') }}">New Appointment</a></li>
-                            <li><a class="dropdown-item" href="{{ route('appointments.create') }}">Appointment (WA)</a></li>
+                            <li><a class="dropdown-item" href="{{ route('appointments.wa') }}">Appointment (WA)</a></li>
                         @endcan
 
 
@@ -118,15 +118,15 @@
                         role="button" data-bs-toggle="dropdown" data-target="#paitentdropdown" aria-expanded="false">
                         <div
                             class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fas fa-unlock-alt"></i>
+                            <i class="fa-solid fa-square-plus"></i>
                         </div>
-                        <span class="nav-link-text ms-1">Paitent's</span>
+                        <span class="nav-link-text ms-1">Patient's</span>
                     </a>
 
 
                     <ul class="dropdown-menu" id="paitentdropdown">
                         @can(['read paitent', 'edit paitent', 'create paitent'])
-                            <li><a class="dropdown-item" href="{{ route('paitent.index') }}">Paitent List</a></li>
+                            <li><a class="dropdown-item" href="{{ route('paitent.index') }}">Patient List</a></li>
                         @endcan
 
 
@@ -169,7 +169,7 @@
                     role="button" data-bs-toggle="dropdown" data-target="#doctordropdown" aria-expanded="false">
                     <div
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-unlock-alt"></i>
+                        <i class="fa-solid fa-user-doctor"></i>
                     </div>
                     <span class="nav-link-text ms-1">Doctor</span>
                 </a>
@@ -193,7 +193,7 @@
                     role="button" data-bs-toggle="dropdown" data-target="#inventorydeopdown" aria-expanded="false">
                     <div
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-unlock-alt"></i>
+                        <i class="fa-solid fa-warehouse"></i>
                     </div>
                     <span class="nav-link-text ms-1">Inventory</span>
                 </a>
@@ -202,6 +202,9 @@
                     <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
                     <li><a class="dropdown-item" href="{{ Route('purchaseorder.index') }}">Purchase Order</a></li>
                     <li><a class="dropdown-item" href="{{ Route('stock.index') }}">Stock</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('stock.filterview') }}">Pharmacy Transactions</a>
+                    <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a>
+                    </li>
                     {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
                     <!-- Add more submenu items as needed -->
@@ -214,7 +217,7 @@
                     role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
                     <div
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-unlock-alt"></i>
+                        <i class="fa-solid fa-file-invoice"></i>
                     </div>
                     <span class="nav-link-text ms-1">Invoice</span>
                 </a>
@@ -232,10 +235,11 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" data-target="#adminsettingdropdown" aria-expanded="false">
+                    role="button" data-bs-toggle="dropdown" data-target="#adminsettingdropdown"
+                    aria-expanded="false">
                     <div
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-unlock-alt"></i>
+                        <i class="fa-solid fa-gear"></i>
                     </div>
                     <span class="nav-link-text ms-1">Admin Settings</span>
                 </a>
@@ -259,7 +263,7 @@
                         role="button" data-bs-toggle="dropdown" data-target="#variabledropdown" aria-expanded="false">
                         <div
                             class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fas fa-unlock-alt"></i>
+                            <i class="fa-solid fa-list-check"></i>
                         </div>
                         <span class="nav-link-text ms-1">Variables Settings</span>
                     </a>
@@ -276,7 +280,9 @@
                     </ul>
                 </li>
             @endcan
-
+            <li class="nav-item mt-2">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dummy</h6>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
                     role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">

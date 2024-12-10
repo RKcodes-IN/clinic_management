@@ -20,6 +20,7 @@ class StockTransaction extends Model
         'item_price',
         'total_price',
         'status',
+        'transaction_date',
         'created_by',
         'updated_by',
     ];
@@ -62,5 +63,46 @@ class StockTransaction extends Model
 
         // Calculate net stock
         return $incomingStock - $outgoingStock;
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
+    public function stock()
+    {
+        return $this->belongsTo(Stock::class, 'stock_id');
+    }
+
+
+    public function invoiceDetail()
+    {
+        return $this->belongsTo(InvoiceDetail::class, 'invoice_id');
+    }
+
+
+    public static function getBalanceStockByDate($stockId, $currentTransactionId)
+    {
+        // Fetch all transactions up to the current transaction ID
+        $stockTransactions = StockTransaction::where('stock_id', $stockId)
+            ->where('id', '<=', $currentTransactionId)->orderBy('id', 'asc')
+            ->get();
+
+        // Calculate total incoming and outgoing stock
+        $totalIncomingStock = $stockTransactions
+            ->where('status', self::STATUS_INCOMING_STOCK)
+            ->sum('quantity');
+
+
+        $totalOutgoingStock = $stockTransactions
+            ->where('status', self::STATUS_OUTGOING_STOCK)
+            ->sum('quantity');
+
+
+        // Calculate balance stock
+        $balanceStock = $totalIncomingStock - $totalOutgoingStock;
+
+        return $balanceStock;
     }
 }

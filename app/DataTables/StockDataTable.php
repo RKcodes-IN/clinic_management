@@ -28,7 +28,7 @@ class StockDataTable extends DataTable
                 return $stock->item->item_code ?? 'N/A'; // Replace 'item_code' with your item's code column
             })
             ->addColumn('total_stock', function (Stock $stock) {
-                return $stock->getTotalStock($stock->id); // Call method in Stock model
+                return $stock->getTotalStock($stock->item_id); // Call method in Stock model
             })
             ->addColumn('action', 'stock.action')
             ->setRowId('id');

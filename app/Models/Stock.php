@@ -43,6 +43,20 @@ class Stock extends Model
         return $incomingStock - $outgoingStock;
     }
 
+
+    public static function getTotalStockByItem(int $itemId): int
+    {
+
+
+        $incomingStock = StockTransaction::where('status', StockTransaction::STATUS_INCOMING_STOCK)->andWhere(['item_id', $itemId])
+            ->sum('quantity');
+
+        $outgoingStock = StockTransaction::where('status', StockTransaction::STATUS_OUTGOING_STOCK)->andWhere(['item_id', $itemId])
+            ->sum('quantity');
+
+        return $incomingStock - $outgoingStock;
+    }
+
     public function transactions()
     {
         return $this->hasMany(StockTransaction::class, 'stock_id');

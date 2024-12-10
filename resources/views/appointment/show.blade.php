@@ -19,23 +19,23 @@
                 <ul class="list-group list-group-flush mt-4">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <strong>Patient Name:</strong>
-                        <span>{{ $appointment->patient->name }}</span>
+                        <span>{{ $appointment->patient->name??"" }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <strong>Email:</strong>
-                        <span>{{ $appointment->email }}</span>
+                        <span>{{ $appointment->email??"" }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <strong>Phone Number:</strong>
-                        <span>{{ $appointment->phone_number }}</span>
+                        <span>{{ $appointment->phone_number??"" }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <strong>Address:</strong>
-                        <span>{{ $appointment->address }}</span>
+                        <span>{{ $appointment->address??"" }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <strong>Main Complaint:</strong>
-                        <span>{{ $appointment->main_complaint }}</span>
+                        <span>{{ $appointment->main_complaint??"" }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <strong>Previous Report Available:</strong>

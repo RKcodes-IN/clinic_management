@@ -3,13 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\StockDataTable;
+use App\Exports\StockExport;
+use App\Exports\StockTransactionsExport;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\GstType;
+use App\Models\Item;
 use App\Models\SourceCompany;
 use App\Models\Stock;
+use App\Models\StockTransaction;
 use App\Models\UomType;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Mpdf\Mpdf;
 
 class StockController extends Controller
 {
@@ -35,6 +41,277 @@ class StockController extends Controller
 
         return view('stock.create', compact('sourceCompanies', 'uomTypes', 'brands', 'categories', 'gstTypes'));
     }
+
+
+    public function stockReportFilterView()
+    {
+        $items = Item::where('item_type', 1)
+            ->whereNotNull('name') // Exclude items with null names
+            ->where('name', '!=', '') // Exclude items with empty names
+            ->get(); // Fetch all items to populate the dropdown
+        return view('stock.stockreport', compact('items'));
+    }
+
+    public function filterReport(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'item' => 'nullable|array',
+            'item.*' => 'exists:items,id',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
+        ]);
+
+        $itemIds = $request->input('item', []);
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        // Build the query
+        $query = Stock::query();
+
+        // Apply filters
+        if (!empty($itemIds) && !in_array('all', $itemIds)) {
+            $query->whereIn('item_id', $itemIds);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('created_at', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->where('created_at', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->where('created_at', '<=', $toDate);
+        }
+
+        // Fetch filtered transactions with relationships
+        $transactions = $query->with(['item'])->orderBy('id', 'asc')->get();
+
+        // Fetch all items for the dropdown
+        $items = Item::all();
+
+        // Return view with data
+        return view('stock.stockreport', compact('transactions', 'items', 'itemIds', 'fromDate', 'toDate'));
+    }
+
+
+    public function exportReport(Request $request)
+    {
+        // Decode the JSON-encoded `item` input or set to an empty array if null
+        $itemIds = $request->input('item', '[]');
+        $itemIds = is_string($itemIds) ? json_decode($itemIds, true) : $itemIds;
+
+        // Ensure $itemIds is an array
+        if (!is_array($itemIds)) {
+            $itemIds = [];
+        }
+
+        // dd($itemIds);
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        // Build the query
+        $query = Stock::query();
+
+        // Apply filters
+        if (!empty($itemIds) && !in_array('all', $itemIds)) {
+            $query->whereIn('item_id', $itemIds);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('created_at', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->where('created_at', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->where('created_at', '<=', $toDate);
+        }
+
+        // Fetch filtered transactions
+        $transactions = $query->with(['item'])->orderBy('id', 'asc')->get();
+
+        // Use Maatwebsite Excel to create and download the export
+        return Excel::download(new StockExport($transactions), 'stock_transactions.xlsx');
+    }
+
+
+    public function exportPdfReport(Request $request)
+    {
+        // Fetch the filter values
+        $itemIds = $request->input('item', []);
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        // Validate the filter values (same as for the export)
+        if (!is_array($itemIds)) {
+            $itemIds = json_decode($itemIds, true) ?? [];
+        }
+
+        // Query the filtered transactions
+        $query = Stock::query();
+
+        if (!empty($itemIds) && !in_array('all', $itemIds)) {
+            $query->whereIn('item_id', $itemIds);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('created_at', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->where('created_at', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->where('created_at', '<=', $toDate);
+        }
+
+        // Fetch the filtered transactions with the related data
+        $transactions = $query->with('item')->orderBy('id', 'asc')->get();
+
+        // Generate the HTML content for the PDF
+        $html = view('stock.pdf.stock_report_export', compact('transactions', 'fromDate', 'toDate'))->render();
+
+        // Initialize mPDF
+        $mpdf = new Mpdf();
+
+        // Write HTML to PDF
+        $mpdf->WriteHTML($html);
+
+        // Output PDF (download the file)
+        return $mpdf->Output('stock_report_export.pdf', 'D');
+    }
+
+
+
+
+
+
+    // Report
+
+
+    public function stockFilterView()
+    {
+        $items = Item::all(); // Fetch all items to populate the dropdown
+        return view('stock.stocktransaction', compact('items'));
+    }
+
+    public function filter(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'item' => 'nullable|array',
+            'item.*' => 'exists:items,id',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
+        ]);
+
+        $itemIds = $request->input('item', []);
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        // Build the query
+        $query = StockTransaction::query();
+
+        // Apply filters
+        if (!empty($itemIds) && !in_array('all', $itemIds)) {
+            $query->whereIn('item_id', $itemIds);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('created_at', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->where('created_at', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->where('created_at', '<=', $toDate);
+        }
+
+        // Fetch filtered transactions with relationships
+        $transactions = $query->with(['item', 'invoiceDetail'])->orderBy('id', 'asc')->get();
+
+        // Fetch all items for the dropdown
+        $items = Item::all();
+
+        // Return view with data
+        return view('stock.stocktransaction', compact('transactions', 'items', 'itemIds', 'fromDate', 'toDate'));
+    }
+
+
+    public function export(Request $request)
+    {
+        // Decode the JSON-encoded `item` input or set to an empty array if null
+        $itemIds = $request->input('item', '[]');
+        $itemIds = is_string($itemIds) ? json_decode($itemIds, true) : $itemIds;
+
+        // Ensure $itemIds is an array
+        if (!is_array($itemIds)) {
+            $itemIds = [];
+        }
+
+        // dd($itemIds);
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        // Build the query
+        $query = StockTransaction::query();
+
+        // Apply filters
+        if (!empty($itemIds) && !in_array('all', $itemIds)) {
+            $query->whereIn('item_id', $itemIds);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('created_at', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->where('created_at', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->where('created_at', '<=', $toDate);
+        }
+
+        // Fetch filtered transactions
+        $transactions = $query->with(['item', 'invoiceDetail'])->orderBy('id', 'asc')->get();
+
+        // Use Maatwebsite Excel to create and download the export
+        return Excel::download(new StockTransactionsExport($transactions), 'stock_transactions.xlsx');
+    }
+
+
+    public function exportPdf(Request $request)
+    {
+        // Fetch the filter values
+        $itemIds = $request->input('item', []);
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        // Validate the filter values (same as for the export)
+        if (!is_array($itemIds)) {
+            $itemIds = json_decode($itemIds, true) ?? [];
+        }
+
+        // Query the filtered transactions
+        $query = StockTransaction::query();
+
+        if (!empty($itemIds) && !in_array('all', $itemIds)) {
+            $query->whereIn('item_id', $itemIds);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('created_at', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->where('created_at', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->where('created_at', '<=', $toDate);
+        }
+
+        // Fetch the filtered transactions with the related data
+        $transactions = $query->with('item')->orderBy('id', 'asc')->get();
+
+        // Generate the HTML content for the PDF
+        $html = view('stock.pdf.stock_transactions', compact('transactions', 'fromDate', 'toDate'))->render();
+
+        // Initialize mPDF
+        $mpdf = new Mpdf();
+
+        // Write HTML to PDF
+        $mpdf->WriteHTML($html);
+
+        // Output PDF (download the file)
+        return $mpdf->Output('stock_transactions.pdf', 'D');
+    }
+
 
     /**
      * Store a newly created resource in storage.
