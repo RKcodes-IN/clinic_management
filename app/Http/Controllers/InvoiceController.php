@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\InvoiceImport;
 use App\Models\Invoice;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -39,7 +40,11 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        //
+        $stocks = Stock::with(['item'])->whereHas('item', function ($query) {
+            $query->where('item_type', 1);
+        })->get();
+
+        return view('invoice.create', compact('stocks'));
     }
 
     /**

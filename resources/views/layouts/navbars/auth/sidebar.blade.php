@@ -131,12 +131,12 @@
 
 
                         @can(['read healthevalution', 'create healthevalution', 'edit healthevalution'])
-                            <li><a class="dropdown-item" href="{{ route('healthevalution.create') }}">Create Health Evalution
+                            <li><a class="dropdown-item" href="{{ route('healthevalution.create') }}">Create Health Evalaution
                                     Sheet</a>
                             </li>
                         @endcan
                         @can('read healthevalution')
-                            <li><a class="dropdown-item" href="{{ route('healthevalution.index') }}">Patient Health Evalutions
+                            <li><a class="dropdown-item" href="{{ route('healthevalution.index') }}">Patient Health Evalautions
                                 </a>
                             </li>
                         @endcan
@@ -203,8 +203,8 @@
                     <li><a class="dropdown-item" href="{{ Route('purchaseorder.index') }}">Purchase Order</a></li>
                     <li><a class="dropdown-item" href="{{ Route('stock.index') }}">Stock</a></li>
                     <li><a class="dropdown-item" href="{{ Route('stock.filterview') }}">Pharmacy Transactions</a>
-                    <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a>
-                    </li>
+                    {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a>
+                    </li> --}}
                     {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
                     <!-- Add more submenu items as needed -->

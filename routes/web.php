@@ -236,6 +236,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/invoicedetail-import', [InvoiceDetailController::class, 'importForm'])->name('invoiceDetail.importform');
     Route::post('/invoicedetail-import', [InvoiceDetailController::class, 'import'])->name('invoiceDetail.import');
+    Route::get('/invoice/create', [InvoiceController::class, 'create'])->name('invoice.create');
+    Route::post('/invoice/store', [InvoiceController::class, 'store'])->name('invoice.store');
 });
 
 
