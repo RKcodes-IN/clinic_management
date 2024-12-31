@@ -29,6 +29,26 @@ class AppointmentController extends Controller
     {
         return $dataTable->render('appointment.appointmentwa');
     }
+
+    public function patientDetails($id = '')
+    {
+        $data = [];
+
+
+
+
+        $patientDetails = PatientDetail::find($id);
+        $patientUser = User::find($patientDetails->user_id);
+        $arrayMerge = array_merge($patientDetails->toArray(), $patientUser->toArray());
+        if ($arrayMerge) {
+            $data["success"] = true;
+            $data["details"] = $arrayMerge;
+        } else {
+            $data["success"] = false;
+            $data["error"] = "patient not found";
+        }
+        return json_encode($data);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -131,8 +151,10 @@ class AppointmentController extends Controller
             }
 
             // Ensure patient ID is not null
-            if (is_null(value: $patientId)) {
-                throw new \Exception("Patient ID is missing.");
+            if (is_null($patientId) || !$patientId) {
+                return redirect()->route('appointments.create')
+                    ->with('error', 'missing patient id please retry again')
+                    ->with('toast', 'error');  // Added error toast
             }
 
             // Create appointment
@@ -140,37 +162,27 @@ class AppointmentController extends Controller
             $appointment->patient_id = $patientId;
             $appointment->doctor_id = $request->input('doctor_id');
             $appointment->email = $request->input('email');
-            $appointment->phone_number = $request->input('phone_number');
+            $appointment->phone_number = $request->input('country_code') . $request->input('phone_number');
             $appointment->address = $request->input('address');
             $appointment->is_previous_report_available = $request->input('is_previous_report_available', false);
             $appointment->main_complaint = $request->input('main_complaint');
             $appointment->available_date = $request->input('available_date');
             $appointment->time_from = $request->input('time_from');
             $appointment->time_to = $request->input('time_to');
+            $appointment->confirmation_date = $request->input('available_date');
+            $appointment->country = $request->input('country');
+            $appointment->city = $request->input('city');
+            $appointment->confirmation_time = $request->input('time_from');
             $appointment->message = $request->input('message');
+            $appointment->age = $request->input('age');
+            $appointment->age = $request->input('message');
             $appointment->status = $request->input('status', 'pending'); // Default status
+            $appointment->type = $request->input('type'); // Default status
+            $appointment->is_online = $request->input('is_online'); // Default status
             $appointment->save();
 
             // Ensure patient object exists for evaluation
-            if (isset($patient)) {
-                $evaluation = new HealthEvaluation();
-                $evaluation->patient_id = $patient->id;
-                $evaluation->appointment_id = $appointment->id;
-                $evaluation->age = $request->input('age');
-                $evaluation->weight = $request->input('weight');
-                $evaluation->height = $request->input('height');
-                $evaluation->occupation = $request->input('occupation');
-                $evaluation->gender = $request->input('gender');
-                $evaluation->working_hours = $request->input('working_hours');
-                $evaluation->night_shift = $request->input('night_shift', false);
-                $evaluation->climatic_condition = $request->input('climatic_condition');
-                $evaluation->allergic_to_drugs = $request->input('allergic_to_any_drugs', false);
-                $evaluation->allergic_drug_names = $request->input('allergic_drug_names');
-                $evaluation->food_allergies = $request->input('food_allergies');
-                $evaluation->lactose_tolerance = $request->input('tolerance_to_lactose');
-                $evaluation->lmp = $request->input('lmp');
-                $evaluation->save();
-            }
+
 
             DB::commit();
             // flash()->success('Appointment created successfully.');

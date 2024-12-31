@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\purchaseOrder;
+use App\Models\PurchaseOrder;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -27,7 +27,7 @@ class purchaseOrderDataTable extends DataTable
             })
 
             ->addColumn('status', function ($row) {
-                return (new purchaseOrder())->getStatusLabel($row->status);
+                return (new PurchaseOrder())->getStatusLabel($row->status);
             })
             ->addColumn('action', 'purchase_order.action')
             ->rawColumns(['status', 'action'])

@@ -8,8 +8,6 @@ use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
 class PaitentDetailDataTable extends DataTable
@@ -22,6 +20,13 @@ class PaitentDetailDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->addColumn('name', function ($row) {
+                return strtoupper($row->name);
+            })
+            ->filterColumn('name', function ($query, $keyword) {
+                // Debug search keyword
+                $query->where('name', 'like', "%{$keyword}%");
+            })
             ->addColumn('action', 'paitentdetail.action')
             ->setRowId('id');
     }
@@ -60,22 +65,22 @@ class PaitentDetailDataTable extends DataTable
      * Get the dataTable columns definition.
      */
     public function getColumns(): array
-{
-    return [
-        Column::computed('action')
-            ->exportable(false)
-            ->printable(false)
-            ->width(60)
-            ->addClass('text-center'),
-        Column::make('id'),
-        Column::make('name')->data('name')->defaultContent('N/A'),
-        Column::make('phone_number')->data('phone_number')->defaultContent('N/A'),
-        Column::make('gender')->data('gender')->defaultContent('Unknown'),
-        Column::make('age')->data('age')->defaultContent('0'),
-        Column::make('address')->data('address')->defaultContent('Not Provided'),
-    ];
-}
-
+    {
+        return [
+            Column::computed('action')
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
+            Column::make('id'),
+            Column::make('name')->data('name')->defaultContent('N/A')->searchable(true),
+            Column::make('phone_number')->data('phone_number')->defaultContent('N/A'),
+            Column::make(data: 'gender')->data('gender')->defaultContent('Unknown'),
+            Column::make('age')->data('age')->defaultContent('0'),
+            Column::make('address')->data('address')->defaultContent('Not Provided'),
+            Column::make('place')->title('Location')->defaultContent('Not Provided'),
+        ];
+    }
 
     /**
      * Get the filename for export.

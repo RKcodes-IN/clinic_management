@@ -9,7 +9,7 @@
         <div class="card">
             @can('create doctordetail')
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Manage Users</span>
+                <span>Doctor</span>
                 <a href="{{ route('doctorDetail.create') }}" class="btn btn-primary">Create New Doctor</a>
             </div>
             @endcan

@@ -76,6 +76,7 @@ class PatientDetailController extends Controller
         $patientDetail->date_of_birth = $request->input('date_of_birth');
         $patientDetail->address = $request->input('address');
         $patientDetail->status = $request->input('status');
+        $patientDetail->age = $request->input('age');
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -100,11 +101,13 @@ class PatientDetailController extends Controller
 
         $appontments = Appointment::with(['doctor'])->where('patient_id', $id)->get();
         $investigationReport =
-        InvestigationReport::with(['reportTypeValues.reportType'])
-        ->where('patient_id', $id)
-        ->get();
+            InvestigationReport::with(['reportTypeValues.reportType'])
+            ->where('patient_id', $id)
+            ->get();
 
-        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport'));
+        $appontmentCount = Appointment::where('patient_id', $id)->count();
+
+        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport', 'appontmentCount'));
     }
 
 

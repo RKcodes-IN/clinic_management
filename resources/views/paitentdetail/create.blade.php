@@ -33,6 +33,14 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="phone_number">Age</label>
+                                <input type="text" name="age" id="age" class="form-control" required>
+                                @error('age')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
                                 <label for="date_of_birth">Date of Birth</label>
                                 <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" required>
                                 @error('date_of_birth')

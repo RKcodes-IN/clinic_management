@@ -20,6 +20,7 @@ class Item extends Model
         'uom_type',
         'brand',
         'category',
+        'max_discount_percentage',
         'source_company',
         'alert_quantity',
         'status',
@@ -38,10 +39,17 @@ class Item extends Model
         ];
     }
 
-    public function category()
+    public static function getTypeLabel($type)
     {
-        return $this->belongsTo(Category::class, 'category', 'id');
+        return match ($type) {
+            self::TYPE_PHARMACY => 'Pharmacy',
+            self::TYPE_LAB => 'Lab',
+            self::MISCELLANEOUS => 'Miscellaneous',
+            default => 'Unknown',
+        };
     }
+
+
 
 
     public static function getTotalStockByItem(int $itemId): int
@@ -57,15 +65,21 @@ class Item extends Model
 
         return $incomingStock - $outgoingStock;
     }
-    
+
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category', 'id'); // Ensure 'category' is the foreign key in your `items` table
+    }
 
     public function brand()
     {
-        return $this->belongsTo(Brand::class, 'brand', 'id');
+        return $this->belongsTo(Brand::class, 'brand', 'id'); // Ensure 'brand' is the foreign key in your `items` table
     }
 
     public function company()
     {
-        return $this->belongsTo(SourceCompany::class, 'source_company', 'id');
+        return $this->belongsTo(SourceCompany::class, 'source_company', 'id'); // Ensure 'source_company' is the foreign key in your `items` table
     }
+
 }

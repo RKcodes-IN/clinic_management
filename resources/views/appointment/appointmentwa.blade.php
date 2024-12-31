@@ -10,13 +10,18 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Appointments WA</span>
                 <div class="d-flex align-items-center">
-                    <input type="date" id="fromDate" class="form-control me-2" placeholder="From Date">
-                    <input type="date" id="toDate" class="form-control me-2" placeholder="To Date">
+                    <input type="date" id="fromDate" value="{{ date('Y-m-d') }}" class="form-control me-2"
+                        placeholder="From Date">
+                    <input type="date" id="toDate" value="{{ date('Y-m-d') }}" class="form-control me-2"
+                        placeholder="To Date">
                     <button id="applyFilters" class="btn btn-primary">Apply</button>
-                    <button id="resetFilters" class="btn btn-secondary ms-2">Reset</button>
+
                 </div>
             </div>
+
             <div class="table-responsive">
+                <button id="copyTableData" class="btn btn-info ms-2">Copy All Data</button> <!-- New Button -->
+
                 <div class="card-body">
                     {{ $dataTable->table() }}
                 </div>
@@ -38,19 +43,18 @@
             let fromDate = document.getElementById('fromDate').value;
             let toDate = document.getElementById('toDate').value;
 
-            // Reload DataTable with date filters
-            let table = $('#appointmentdetail-table').DataTable();
-            table.ajax.url(`{{ route('appointments.index') }}?from_date=${fromDate}&to_date=${toDate}`).load();
-        });
+            if (!fromDate || !toDate) {
+                Swal.fire('Error', 'Both dates are required for filtering.', 'error');
+                return;
+            }
 
-        document.getElementById('resetFilters').addEventListener('click', function() {
-            // Clear date fields
-            document.getElementById('fromDate').value = '';
-            document.getElementById('toDate').value = '';
+            let table = $('#appointmentdetail-wa-table').DataTable();
+            console.log('Applying filters with:', {
+                fromDate,
+                toDate
+            });
 
-            // Reload DataTable without filters
-            let table = $('#appointmentdetail-table').DataTable();
-            table.ajax.url(`{{ route('appointments.index') }}`).load();
+            table.ajax.url(`{{ route('appointments.wa') }}?from_date=${fromDate}&to_date=${toDate}`).load();
         });
     </script>
     <script>
@@ -161,5 +165,40 @@
                 }
             });
         }
+    </script>
+    <script>
+        document.getElementById('copyTableData').addEventListener('click', function() {
+            // Get the DataTable instance
+            let table = $('#appointmentdetail-wa-table').DataTable();
+
+            // Get headers as plain text
+            let headers = table.columns().header().toArray().map(header => {
+                return $(header).text().trim(); // Use jQuery to extract text content
+            });
+
+            // Get data for all visible rows (search and filters applied)
+            let rows = table.rows({
+                search: 'applied'
+            }).indexes().toArray().map(rowIdx => {
+                return table.columns().indexes().toArray().map(colIdx => {
+                    // Fetch the cell data and strip HTML tags
+                    let cellNode = table.cell(rowIdx, colIdx).node();
+                    let cellText = $(cellNode).text().trim(); // Extract visible text
+                    return cellText;
+                }).join('\t'); // Join columns with a tab delimiter
+            });
+
+            // Combine headers and rows
+            let tableText = [headers.join('\t'), ...rows].join('\n');
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(tableText)
+                .then(() => {
+                    Swal.fire('Copied!', 'Table data has been copied to clipboard.', 'success');
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'Failed to copy data to clipboard.', 'error');
+                });
+        });
     </script>
 @endpush

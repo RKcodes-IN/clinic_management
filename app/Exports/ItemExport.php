@@ -32,9 +32,9 @@ class ItemExport implements FromCollection, WithHeadings
                 'ID' => $item->id,
                 'Item Code' => $item->item_code,
                 'Name' => $item->name,
-                'Category' => $categories[$item->category], // Lookup category name
-                'Source Company' => $item->company->name,
-                'Brand' => $brands[$item->brand], // Lookup brand name
+                'Category' => $categories[$item->category]??"", // Lookup category name
+                'Source Company' => $item->company->name??"",
+                'Brand' => $brands[$item->brand]??"", // Lookup brand name
             ];
         });
     }

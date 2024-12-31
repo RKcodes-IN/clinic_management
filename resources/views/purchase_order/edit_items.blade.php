@@ -27,14 +27,14 @@
             <tbody>
                 @foreach ($purchaseOrder->purchaseOrderItems as $orderItem)
                     <tr>
-                        <td>{{ $orderItem->item->item_code }}</td>
-                        <td>{{ $orderItem->item->name }}</td>
+                        <td>{{ $orderItem->item->item_code??"" }}</td>
+                        <td>{{ $orderItem->item->name??"" }}</td>
 
-                        <td>{{ $orderItem->item->alert_quantity }}</td>
+                        <td>{{ $orderItem->item->alert_quantity??"" }}</td>
 
-                        <td>{{ $orderItem->item->ideal_quantity }}</td>
+                        <td>{{ $orderItem->item->ideal_quantity??"" }}</td>
 
-                        <td>{{ $orderItem->item->reorder_quantity }}</td>
+                        <td>{{ $orderItem->item->reorder_quantity??"" }}</td>
 
                         <td>
                             <input type="number" name="items[{{ $orderItem->item->id }}]"

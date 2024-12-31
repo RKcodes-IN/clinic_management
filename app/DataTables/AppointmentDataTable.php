@@ -30,9 +30,38 @@ class AppointmentDataTable extends DataTable
             ->addColumn('status', function ($row) {
                 return Appointment::getStatusLabel($row->status);
             })
+
+            ->addColumn('type', function ($row) {
+                return Appointment::getTypeLabes($row->type);
+            })
+
+            ->addColumn('is_online', function ($row) {
+
+                if ($row->is_online == 1) {
+                    return 'Online';
+                } else {
+                    return 'Visit';
+                }
+            })
+
+            ->addColumn('age', function ($row) {
+
+                if ($row->age == 0) {
+                    return $row->patient->age;
+                } else {
+                    return $row->age;
+                }
+            })
+
+            ->filterColumn('patient_name', function ($query, $keyword) {
+                $query->whereHas('patient', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%$keyword%");
+                });
+            })
+            ->addColumn('appointment_type', '')
             ->addColumn('action', 'appointment.action')
             ->addColumn('approve', 'appointment.approve')
-            ->rawColumns(['status', 'action', 'approve'])
+            ->rawColumns(['status', 'type', 'action', 'approve'])
             ->setRowId('id');
     }
 
@@ -43,16 +72,30 @@ class AppointmentDataTable extends DataTable
     {
         $query = $model->newQuery()->with(['patient', 'doctor']);
 
-        // Get the status from the request
-        $status = request()->get('status');
+        // Apply filters for confirmation_date
+        $fromDate = request()->get('from_date');
+        $toDate = request()->get('to_date');
 
-        // Apply the status filter if it exists
+        if ($fromDate && $toDate) {
+            $query->whereBetween('confirmation_date', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->whereDate('confirmation_date', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->whereDate('confirmation_date', '<=', $toDate);
+        }
+
+        // Existing status filter
+        $status = request()->get('status');
         if ($status) {
             $query->where('status', $status);
         }
 
+        // Order by created_at
+        $query->orderBy('created_at', 'desc');
+
         return $query;
     }
+
 
     /**
      * Optional method if you want to use the html builder.
@@ -94,26 +137,33 @@ class AppointmentDataTable extends DataTable
             // Column::make('id'),
             Column::make('status')
                 ->defaultContent('Unknown'),
+            Column::make('type')
+                ->title('Type')
+                ->defaultContent('Unknown'),
+            Column::make('is_online')
+                ->title('Online/Visit')
+                ->defaultContent('Unknown'),
             Column::make('patient_name')
                 ->defaultContent('N/A'),
-                Column::make('confirmation_date')
+            Column::make('main_complaint')
+                ->defaultContent('No Complaint'),
+            Column::make('confirmation_date')
                 ->title('Conf. Date')
 
                 ->defaultContent('Not Set'),
 
 
-                Column::make('confirmation_time')
+            Column::make('confirmation_time')
                 ->title('Conf. Time')
                 ->defaultContent('Not Set'),
-                Column::make('available_date')
+            Column::make('available_date')
                 ->defaultContent('Not Set'),
-                Column::make('time_from')
+            Column::make('time_from')
                 ->defaultContent('Not Set'),
             Column::make('time_to')
                 ->defaultContent('Not Set'),
 
-                Column::make('main_complaint')
-                ->defaultContent('No Complaint'),
+
             Column::make('doctor_name')
                 ->title('Doctor Name')
                 ->defaultContent('N/A'),

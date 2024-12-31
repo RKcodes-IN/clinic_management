@@ -50,6 +50,21 @@
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assets/css/soft-ui-dashboard.css?v=1.0.3') }}" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .main-content {
+            overflow-y: scroll !important;
+        }
+
+        .dataTable th {
+            padding: 0px 6px 10px 13px !important;
+            text-align: left !important;
+        }
+
+        .dataTable tr th {
+            padding: 0px 6px 10px 13px !important;
+            text-align: left !important;
+        }
+    </style>
 
 </head>
 
@@ -87,8 +102,8 @@
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
 
-        .fixed-plugin.ps {
-            display: none !important;
+        .fixed - plugin.ps {
+            display: none!important;
         }
     </script>
 

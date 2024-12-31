@@ -17,6 +17,7 @@ class Stock extends Model
         'total_price',
         'order_date',
         'received_date',
+        'batch_no',
         'expiry_date',
         'status',
         'created_by',

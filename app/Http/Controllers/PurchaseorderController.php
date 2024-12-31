@@ -8,6 +8,8 @@ use App\Models\Item;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\SourceCompany;
+use App\Models\Stock;
+use App\Models\StockTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -116,11 +118,10 @@ class PurchaseOrderController extends Controller
         if (!empty($request->all())) {
             $requestData = $request->all();
 
-            // Loop through the received items
             foreach ($requestData as $data) {
                 // Validate the data for each item
                 $validator = Validator::make($data, [
-                    'item_id' => 'required|integer|exists:purchaseorder_items,id',
+                    'item_id' => 'required|integer',
                     'received_quantity' => 'required|numeric|min:1',
                     'unit_price' => 'required|numeric|min:0',
                     'total_price' => 'required|numeric|min:0',
@@ -137,24 +138,73 @@ class PurchaseOrderController extends Controller
                 }
 
                 // Fetch the item from the database
-                $purchaseOrderItem = PurchaseOrderItem::find($data['item_id']);
+                $purchaseOrderItem = PurchaseOrderItem::find($data['purchase_order_item_id']);
 
-                if ($purchaseOrderItem) {
-                    // Update the item's details
-                    $purchaseOrderItem->update([
-                        'received_quantity' => $data['received_quantity'],
-                        'unit_price' => $data['unit_price'],
-                        'total_price' => $data['total_price'],
-                        'expiry_date' => $data['expiry_date'],
-                        'received_date' => $data['received_date']
-                    ]);
+                // if (!$purchaseOrderItem) {
+                //     return response()->json([
+                //         'success' => false,
+                //         'message' => "Purchase order item with ID {$data['item_id']} not found."
+                //     ], 404);
+                // }
+
+                // Determine status of the current item
+                if ($purchaseOrderItem->quantity ==  ($purchaseOrderItem->received_quantity + $data["received_quantity"])) {
+                    $status = PurchaseOrderItem::STATUS_RECIEVED;
                 } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Purchase order item with ID {$data['item_id']} not found."
-                    ], 404);
+                    $status = PurchaseOrderItem::STATUS_PARTIAL_RECIEVED;
+                }
+
+                // Update the item's details
+                $purchaseOrderItem->update([
+                    'received_quantity' => $purchaseOrderItem->received_quantity + $data['received_quantity'],
+                    'item_price' => $data['unit_price'],
+                    'total_price' => $data['total_price'],
+                    'expiry_date' => $data['expiry_date'],
+                    'received_date' => $data['received_date'],
+                    'status' => $status
+                ]);
+
+                // Save stock data
+                $stock = new Stock();
+                $stock->purchase_order_id = $purchaseOrderItem->purchase_order_id;
+                $stock->purchase_order_item_id = $purchaseOrderItem->id;
+                $stock->item_id = $data['item_id'];
+                $stock->order_quantity = $data['received_quantity'];
+                $stock->item_price = $data['unit_price'];
+                $stock->total_price = $purchaseOrderItem->total_price;
+                $stock->order_date = $purchaseOrderItem->created_on;
+                $stock->received_date = $purchaseOrderItem->received_date;
+                $stock->expiry_date = $data['expiry_date'];
+                $stock->status = 1;
+
+                if ($stock->save()) {
+                    // Save stock transaction
+                    $stockTransaction = new StockTransaction();
+                    $stockTransaction->stock_id = $stock->id;
+                    $stockTransaction->item_id = $stock->item_id;
+                    $stockTransaction->invoice_id = 0;
+                    $stockTransaction->purchase_order_id = $purchaseOrderItem->purchase_order_id;
+                    $stockTransaction->quantity = $stock->order_quantity;
+                    $stockTransaction->item_price = $stock->item_price;
+                    $stockTransaction->status = StockTransaction::STATUS_INCOMING_STOCK;
+                    $stockTransaction->transaction_date = date('Y-m-d');
+                    $stockTransaction->save();
                 }
             }
+
+            // Update the purchase order status
+            $purchaseOrderId = $purchaseOrderItem->purchase_order_id;
+            $purchaseOrderItems = PurchaseOrderItem::where('purchase_order_id', $purchaseOrderId)->get();
+
+            if ($purchaseOrderItems->every(fn($item) => $item->status == PurchaseOrderItem::STATUS_RECIEVED)) {
+                // All items are received
+                $purchaseOrderStatus = PurchaseOrder::STATUS_RECIEVED;
+            } else {
+                // Some items are partially received
+                $purchaseOrderStatus = PurchaseOrder::STATUS_PARTIAL_RECIEVED;
+            }
+
+            PurchaseOrder::where('id', $purchaseOrderId)->update(['status' => $purchaseOrderStatus]);
 
             return response()->json([
                 'success' => true,
@@ -167,6 +217,7 @@ class PurchaseOrderController extends Controller
             ], 400);
         }
     }
+
     public function importForm()
     {
         return view('purchase_order.import');

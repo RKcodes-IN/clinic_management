@@ -24,8 +24,11 @@ class StockController extends Controller
      */
     public function index(StockDataTable $dataTable)
     {
-        $status = request()->get('status');
-        return $dataTable->with('status', $status)->render('stock.index');
+        // Get the 'item_type' parameter from the query string
+        $itemType = request()->get('item_type');
+
+        // Pass 'item_type' to the DataTable
+        return $dataTable->with('item_type', $itemType)->render('stock.index');
     }
 
     /**
@@ -176,8 +179,33 @@ class StockController extends Controller
     }
 
 
+    public function getAvailableStock($stockId)
+    {
+        $stock = Stock::find($stockId);
+
+        if (!$stock) {
+            return response()->json(['available_stock' => 0], 404);
+        }
+
+        $availableStock = $stock->getTotalStock($stockId);
+
+        return response()->json(['available_stock' => $availableStock]);
+    }
+
+    public function getDisount($itemId)
+    {
+        $item = Item::find($itemId);
+
+        if (!$item) {
+            return response()->json(['discount' => 0]);
+        }
+        if (empty($item->max_discount_percentage)) {
+            return response()->json(['discount' => 0]);
+        }
 
 
+        return response()->json(['discount' => $item->max_discount_percentage]);
+    }
 
 
     // Report

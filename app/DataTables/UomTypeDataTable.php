@@ -22,7 +22,13 @@ class UomTypeDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'uomtype.action')
+            ->addColumn('action', content: 'uomtype.action')
+            ->addColumn('formatted_created_at', function ($row) {
+                return $row->created_at ? $row->created_at->format('Y-m-d') : '';
+            })
+            ->addColumn('formatted_updated_at', function ($row) {
+                return $row->updated_at ? $row->updated_at->format('Y-m-d') : '';
+            })
             ->setRowId('id');
     }
 
@@ -70,8 +76,11 @@ class UomTypeDataTable extends DataTable
             Column::make('id'),
             Column::make('name'),
             Column::make('status'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+            Column::computed('formatted_created_at')
+                ->title('Created At'),
+            Column::computed('formatted_updated_at')
+                ->title('Updated At'),
+
         ];
     }
 

@@ -15,7 +15,7 @@
     </a>
 @endif
 
-@if ($status == Appointment::STATUS_CONFIRMED)
+@if ($status == Appointment::STATUS_CANCELLED)
     <!-- Show only Reject when the status is confirmed -->
     <a href="javascript:void(0);" class="" data-bs-toggle="tooltip" data-bs-original-title="Reject Appointment"
         id="reject-appointment-{{ $id }}" onclick="rejectAppointment('{{ $id }}')">
@@ -23,7 +23,7 @@
     </a>
 @endif
 
-@if ($status == Appointment::STATUS_CANCELLED)
+@if ($status == Appointment::STATUS_CONFIRMED)
     <!-- Show only Approve when the status is cancelled -->
     <a href="javascript:void(0);" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Approve Appointment"
         id="approve-appointment-{{ $id }}" onclick="showApproveForm('{{ $id }}')">

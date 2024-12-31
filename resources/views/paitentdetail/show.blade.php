@@ -70,7 +70,7 @@
 
                     <a href="#previousreport" class="btn btn-primary"> Go to Reports</a>
                     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#viewAllModal">View
-                        All Reports</button>
+                        All Reports ({{ count($investigationReport) }})</button>
                 </div>
             </div>
         </div>
@@ -82,10 +82,13 @@
                     <p><strong>Date of Birth:</strong> {{ $paitent->date_of_birth ?? 'Not available' }}</p>
                     <p><strong>Age:</strong> {{ $paitent->age ?? 'N/A' }}</p>
                     <p><strong>Gender:</strong> {{ $paitent->gender ?? 'Not specified' }}</p>
+                    {{-- <p><strong>Total Reports:</strong> {{  }}</p> --}}
+
                 </div>
                 <div class="col-md-6">
                     <p><strong>Contact:</strong> {{ $paitent->phone_number ?? 'N/A' }}</p>
                     <p><strong>Address:</strong> {{ $paitent->address ?? 'No address provided' }}</p>
+                    <p><strong>Total Visits:</strong> {{ $appontmentCount }}</p>
                 </div>
             </div>
         </div>
@@ -98,7 +101,7 @@
                     <tr>
                         <th>Appointment Date</th>
                         <th>Doctor's Name</th>
-                        <th>Reason</th>
+                        <th>Main Complaint</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -128,7 +131,7 @@
 
 
         <div class="healthevalution-section">
-            <h4 class="mb-4">Health Evalution</h4>
+            <h4 class="mb-4">Health Evaluation</h4>
             <table class="table table-hover table-bordered">
                 <thead class="table-primary">
                     <tr>
@@ -174,6 +177,7 @@
             <h4 class="mb-4">Previous Reports</h4>
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#viewAllModal">View All</button>
 
+
             <table class="table table-hover table-bordered">
                 <thead class="table-primary">
                     <tr>
@@ -198,11 +202,11 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($report->reportTypeValues as $value)
-                                                <tr>
+                                                <tr class="{{ $value->out_of_range == 'yes' ? 'text-danger' : '' }}">
                                                     <td>{{ $value->reportType->name ?? 'N/A' }}</td>
                                                     <td>{{ $value->value }}</td>
                                                     <td>
-                                                        @if ($value->out_of_range == "yes")
+                                                        @if ($value->out_of_range == 'yes')
                                                             <span class="text-danger">Out of Range</span>
                                                         @else
                                                             Normal
@@ -215,7 +219,7 @@
                                 </td>
                                 <td>
                                     <a href="{{ asset('storage/app/public/' . $report->report_url) }}" target="_blank"
-                                        class="btn btn-primary btn-sm">View File</a>
+                                        class="btn btn-primary btn-sm">View</a>
                                 </td>
                             </tr>
                         @else
@@ -226,6 +230,7 @@
                     @endforeach
                 </tbody>
             </table>
+
 
 
         </div>
@@ -273,7 +278,8 @@
             function loadReport(index) {
                 if (index >= 0 && index < reports.length) {
                     const reportUrl = reports[index].report_url; // Get the report URL
-                    pdfViewer.src = `https://indiaseva.net/storage/app/public/${reportUrl}`; // Set the iframe source
+                    pdfViewer.src =
+                        `https://indiaseva.net/storage/app/public/${reportUrl}`; // Set the iframe source
                     currentIndex = index;
                 }
             }

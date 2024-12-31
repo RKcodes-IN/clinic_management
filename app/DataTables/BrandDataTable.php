@@ -70,8 +70,7 @@ class BrandDataTable extends DataTable
             Column::make('id'),
             Column::make('name'),
             Column::make('status'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+
         ];
     }
 

@@ -23,18 +23,33 @@ class ItemDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+
+
             ->addColumn('action', 'items.action')
             ->setRowId('id');
     }
 
     /**
      * Get the query source of dataTable.
-     */ public function query(Item $model = null): QueryBuilder
+     */
+    public function query(Item $model = null): QueryBuilder
     {
+        $itemType = $this->request()->get('item_type');
         $model = $model ?: new Item();
-        return $model->newQuery()
-            ->with(['category', 'company', 'brand']);
+
+        // Initialize the query
+        $query = $model->newQuery()
+            ->with(['category', 'brand', 'company']) // Load the relationships
+            ->select('items.*'); // Select from the main table
+
+        // Add a condition for item_type if it exists
+        if ($itemType) {
+            $query->where('items.item_type', $itemType);
+        }
+
+        return $query;
     }
+
     /**
      * Optional method if you want to use the html builder.
      */
@@ -70,21 +85,13 @@ class ItemDataTable extends DataTable
                 ->addClass('text-center'),
             Column::make('id'),
             Column::make('item_code'),
-            Column::make('name')->title('Item Name'),  // Main item name
-            Column::make('category.name')  // Column for category name
-                ->title('Category')
-                ->searchable(true)  // Optional: Enable search based on category name
-                ->sortable(true),   // Optional: Enable sorting
-            Column::make('company.name')  // Column for source company name
-                ->title('Source Company')
-                ->searchable(true)
-                ->sortable(true),
-            Column::make('brand.name')  // Column for brand name
-                ->title('Brand')
-                ->searchable(true)
-                ->sortable(true),
+            Column::make('name')->title('Item Name'),
+            Column::make('category.name')->title('Category')->data('category.name'), // Correct relationship path
+            Column::make('brand.name')->title('Brand')->data('brand.name'),         // Correct relationship path
+            Column::make('company.name')->title('Source Company')->data('company.name'), // Correct relationship path
         ];
     }
+
 
 
     /**
@@ -97,7 +104,16 @@ class ItemDataTable extends DataTable
 
     public function excel()
     {
-        $items = $this->query()->with(['category', 'company', 'brand'])->get(); // Ensure relationships are loaded
+        // Apply the same filtering logic for export
+        $query = $this->query();
+
+        if ($this->request()->has('item_type')) {
+            $itemType = $this->request()->get('item_type');
+            $query->where('item_type', $itemType);
+        }
+
+        $items = $query->with(['category', 'company', 'brand'])->get();
+
         return Excel::download(new \App\Exports\ItemExport($items), $this->filename() . '.xlsx');
     }
 }

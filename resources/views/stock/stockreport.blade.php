@@ -154,13 +154,14 @@
                                 <div class="form-group">
                                     <label for="from_date" class="sr-only">From Date</label>
                                     <input type="date" name="from_date" id="from_date" class="form-control"
-                                        placeholder="From Date" value="{{ isset($fromDate) ? $fromDate : '' }}">
+                                        placeholder="From Date" value="{{ isset($fromDate) ? $fromDate : date('Y-m-d') }}">
                                 </div>
                                 <div class="form-group">
                                     <label for="to_date" class="sr-only">To Date</label>
                                     <input type="date" name="to_date" id="to_date" class="form-control"
-                                        placeholder="To Date" value="{{ isset($toDate) ? $toDate : '' }}">
+                                        placeholder="To Date" value="{{ isset($toDate) ? $toDate : date('Y-m-d') }}">
                                 </div>
+
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary">Search</button>
                                 </div>
@@ -178,6 +179,8 @@
                                         <th class="name-col">#</th>
                                         <th class="name-col">Item Name</th>
                                         <th class="code-col">Item Code</th>
+                                        <th class="brand-col">Brand</th>
+                                        <th class="price-col">price</th>
                                         <th class="expiry-col">Expiry Date</th>
                                         <th class="balance-col">Balance Stock</th>
                                     </tr>
@@ -189,6 +192,15 @@
                                             <td>{{ $sr++ }}</td>
                                             <td>{{ $transaction->item->name }}</td>
                                             <td>{{ $transaction->item->item_code }}</td>
+                                            @php
+                                                $brand = \App\Models\Brand::where(
+                                                    'id',
+                                                    $transaction->item->brand,
+                                                )->first();
+                                            @endphp
+                                            <td>{{ Str::limit($brand->name ?? 'N/A', 5, '') }}</td>
+
+                                            <td>{{ $transaction->item_price }}</td>
                                             {{-- <td>{{ $transaction->invoiceDetail->invoice->paitent->name ?? '' }}</td> --}}
                                             <td>{{ isset($transaction->expiry_date) ? \Carbon\Carbon::parse($transaction->expiry_date)->format('d-M-Y') : '' }}
                                             </td>

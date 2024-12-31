@@ -33,6 +33,14 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
+{{--
+                            <div class="form-group">
+                                <label for="phone_number">Age</label>
+                                <input type="text" name="phone_number" id="phone_number" class="form-control" value="{{ old('phone_number', $patientDetail->phone_number) }}" required>
+                                @error('phone_number')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div> --}}
 
                             <div class="form-group">
                                 <label for="date_of_birth">Date of Birth</label>

@@ -68,16 +68,47 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="phone_number">Phone Number</label>
-                                                <input type="text" name="phone_number" value="{{ old('phone_number') }}"
-                                                    id="phone_number" class="form-control" placeholder="Enter phone number">
+                                                <div class="input-group">
+                                                    <input type="text" name="country_code" id="country_code"
+                                                        class="form-control" value="{{ old('country_code', '+91') }}"
+                                                        placeholder="+91" style="max-width: 80px;">
+                                                    <input type="text" name="phone_number" id="phone_number"
+                                                        class="form-control" value="{{ old('phone_number') }}"
+                                                        placeholder="Enter phone number">
+                                                </div>
+                                                @error('country_code')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                                 @error('phone_number')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
                                             </div>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="is_previous_report_available">Whats App Available?</label>
+                                                <label for="country">Country</label>
+                                                <input type="text" name="country" id="country" class="form-control"
+                                                    value="{{ old('country') }}" placeholder="Enter country" required>
+                                                @error('country')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="state">City</label>
+                                                <input type="text" name="city" id="city" class="form-control"
+                                                    value="{{ old('city') }}" placeholder="Enter city" required>
+                                                @error('city')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="is_previous_report_available">Whatsapp Available?</label>
                                                 <div class="form-check">
                                                     <input type="checkbox" class="form-check-input"
                                                         name="is_previous_report_available"
@@ -88,6 +119,27 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="col-md-3">
+                                            <label for="consultation_type">Consultation Type</label>
+
+                                            <div class="form-group">
+                                                <div class="form-check form-check-inline">
+                                                    <input type="radio" class="form-check-input" name="consultation_type"
+                                                        id="online" value="1"
+                                                        {{ old('consultation_type') == '1' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="online">Online</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input type="radio" class="form-check-input" name="consultation_type"
+                                                        id="physical" value="2"
+                                                        {{ old('consultation_type') == '2' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="physical">Physical</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
 
 
                                         <!-- Email -->
@@ -127,7 +179,8 @@
                                         <!-- Previous Report Available -->
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="is_previous_report_available">Previous Report Available?</label>
+                                                <label for="is_previous_report_available">Previous Report
+                                                    Available?</label>
                                                 <div class="form-check">
                                                     <input type="checkbox" class="form-check-input"
                                                         name="is_previous_report_available"
@@ -155,9 +208,10 @@
                                         <!-- Available Date -->
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="available_date">Available Date</label>
+                                                <label for="available_date">Prefferable Date</label>
                                                 <input type="date" name="available_date" id="available_date"
-                                                    class="form-control" value="{{ old('available_date') }}">
+                                                    class="form-control"
+                                                    value="{{ old('available_date', date('Y-m-d')) }}">
                                                 @error('available_date')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
@@ -169,7 +223,7 @@
                                             <div class="form-group">
                                                 <label for="time_from">Time From</label>
                                                 <input type="time" name="time_from" id="time_from"
-                                                    class="form-control" value="{{ old('time_from') }}">
+                                                    class="form-control" value="{{ old('time_from', date('H:i')) }}">
                                                 @error('time_from')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
@@ -181,7 +235,7 @@
                                             <div class="form-group">
                                                 <label for="time_to">Time To</label>
                                                 <input type="time" name="time_to" id="time_to" class="form-control"
-                                                    value="{{ old('time_to') }}">
+                                                    value="{{ old('time_to', date('H:i')) }}">
                                                 @error('time_to')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
@@ -222,6 +276,23 @@
                                                 @enderror
                                             </div>
                                         </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="status">Type</label>
+                                                <select name="type" id="type" class="form-control">
+                                                    @foreach (\App\Models\Appointment::typeLables() as $key => $label)
+                                                        <option value="{{ $key }}"
+                                                            {{ old('type') == $key ? 'selected' : '' }}>
+                                                            {{ $label }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('status')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                 </fieldset>
 
@@ -239,48 +310,6 @@
                                                 @enderror
                                             </div>
                                         </div>
-
-                                        <!-- Weight -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="weight">Weight (kg)</label>
-                                                <input type="number" name="weight" value="{{ old('weight') }}"
-                                                    id="weight" class="form-control" placeholder="Enter weight">
-                                                @error('weight')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <!-- Height -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="height">Height (cm)</label>
-                                                <input type="number" name="height" value="{{ old('height') }}"
-                                                    id="height" class="form-control" placeholder="Enter height">
-                                                @error('height')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Occupation -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="occupation">Occupation</label>
-                                                <input type="text" name="occupation" value="{{ old('occupation') }}"
-                                                    id="occupation" class="form-control" placeholder="Enter occupation">
-                                                @error('occupation')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <!-- Gender -->
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="gender">Gender</label>
@@ -296,16 +325,29 @@
                                                             {{ old('gender') == 'female' ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="female">Female</label>
                                                     </div>
-
+                                                    <div class="col-2">
+                                                        <input type="radio" name="gender" id="other"
+                                                            value="other"
+                                                            {{ old('gender') == 'other' ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="other">Others</label>
+                                                    </div>
                                                 </div>
+
                                                 @error('gender')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
                                             </div>
                                         </div>
 
+
+                                    </div>
+
+
+                                    <div class="row">
+                                        <!-- Gender -->
+
                                         <!-- Working Hours -->
-                                        <div class="col-md-6">
+                                        {{-- <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="working_hours">Working Hours</label>
                                                 <input type="text" name="working_hours"
@@ -315,128 +357,15 @@
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
 
-                                    <div class="row">
-                                        <!-- Night Shift -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="night_shift">Night Shift</label>
-                                                <div>
-                                                    <input type="radio" name="night_shift" id="night_shift_yes"
-                                                        value="yes" {{ old('night_shift') == 'yes' ? 'checked' : '' }}>
-                                                    <label for="night_shift_yes">Yes</label>
-                                                    <input type="radio" name="night_shift" id="night_shift_no"
-                                                        value="no" {{ old('night_shift') == 'no' ? 'checked' : '' }}>
-                                                    <label for="night_shift_no">No</label>
-                                                </div>
-                                                @error('night_shift')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Climatic Condition -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="climatic_condition">Climatic Condition</label>
-                                                <select name="climatic_condition" value="{{ old('climatic_condition') }}"
-                                                    id="climatic_condition" class="form-control">
-                                                    <option value="cold">Cold</option>
-                                                    <option value="hot">Hot</option>
-                                                    <option value="dusty">Dusty</option>
-                                                    <option value="moist">Moist</option>
-                                                </select>
-                                                @error('climatic_condition')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <!-- Allergic to Any Drugs -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="allergic_to_any_drugs">Allergic to Any Drugs</label>
-                                                <div>
-                                                    <input type="radio" name="allergic_to_any_drugs"
-                                                        id="allergic_to_any_drugs_yes" value="1"
-                                                        {{ old('allergic_to_any_drugs') == '1' ? 'checked' : '' }}>
-                                                    <label for="allergic_to_any_drugs_yes">Yes</label>
-
-                                                    <input type="radio" name="allergic_to_any_drugs"
-                                                        id="allergic_to_any_drugs_no" value="2"
-                                                        {{ old('allergic_to_any_drugs') == '2' ? 'checked' : '' }}>
-                                                    <label for="allergic_to_any_drugs_no">No</label>
-                                                </div>
-                                                @error('allergic_to_any_drugs')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
 
 
-                                        <!-- Allergic Drugs Name -->
-                                        <div class="col-md-6" id="allergic_drugs_name">
-                                            <div class="form-group">
-                                                <label for="allergic_drugs_name">Allergic Drugs Name</label>
-                                                <input type="text" name="allergic_drugs_name"
-                                                    value="{{ old('allergic_drugs_name') }}" id="allergic_drugs_name"
-                                                    class="form-control" placeholder="Enter allergic drugs names">
-                                                @error('allergic_drugs_name')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="row">
-                                        <!-- Food Allergies -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="food_allergies">Food Allergies</label>
-                                                <input type="text" name="food_allergies"
-                                                    value="{{ old('food_allergies') }}" id="food_allergies"
-                                                    class="form-control" placeholder="Enter food allergies">
-                                                @error('food_allergies')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
 
-                                        <!-- Tolerance to Lactose -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="tolerance_to_lactose">Tolerance to Lactose</label>
-                                                <select name="tolerance_to_lactose"
-                                                    value="{{ old('tolerance_to_lactose') }}" id="tolerance_to_lactose"
-                                                    class="form-control">
-                                                    <option value="">--Select--</option>
-                                                    <option value="yes">Yes</option>
-                                                    <option value="no">No</option>
-                                                </select>
-                                                @error('tolerance_to_lactose')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="row">
-                                        <!-- Last Menstrual Period (LMP) -->
-                                        <div class="col-md-6" id="lmp_cpont">
-                                            <div class="form-group">
-                                                <label for="lmp">Last Menstrual Period (LMP)</label>
-                                                <input type="text" name="lmp" id="lmp"
-                                                    value="{{ old('lmp') }}" class="form-control">
-                                                @error('lmp')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
+
                                 </fieldset>
 
                                 <!-- Submit Button -->
@@ -549,6 +478,57 @@
                         $('#lmp_cpont').hide();
                     } else {
                         $('#lmp_cpont').show();
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            $(document).ready(function() {
+                // Handle the change event of the patient dropdown
+                $('#patient').change(function() {
+                    let val = $(this).val(); // Get the selected value
+                    console.log(val);
+
+                    if (val) { // Ensure a valid ID is selected
+                        $.ajax({
+                            type: "get",
+                            url: "{{ url('appointments') }}/" + val +
+                                "/getpatientdetail", // Append the ID to the URL
+                            dataType: "json",
+                            success: function(response) {
+                                if (response) {
+                                    console.log(response)
+                                    $('#phone_number').val(response.details.phone_number || '');
+                                    $('#email').val(response.details.email || '');
+                                    $('#address').val(response.details.address || '');
+                                    $('#main_complaint').val(response.details.main_complaint || '');
+                                    $('#available_date').val(response.details.available_date || '');
+                                    $('#time_from').val(response.details.time_from || '');
+                                    $('#time_to').val(response.details.time_to || '');
+                                    $('#age').val(response.details.age || '');
+                                    $('#weight').val(response.details.weight || '');
+                                    $('#height').val(response.details.height || '');
+                                    $('#occupation').val(response.details.occupation || '');
+
+                                    // Gender radio button
+                                    if (response.details.gender === 'Male') {
+                                        $('#male').prop('checked', true);
+                                    } else if (response.details.gender === 'Female') {
+                                        $('#female').prop('checked', true);
+                                    }
+
+                                    // Checkbox example (for boolean fields)
+                                    $('#is_previous_report_available').prop('checked', response
+                                        .details.is_previous_report_available || false);
+                                }
+                            },
+                            error: function(xhr) {
+                                console.error("Error fetching patient details:", xhr.responseText);
+                            }
+                        });
+                    } else {
+                        console.warn("No patient ID selected.");
                     }
                 });
             });

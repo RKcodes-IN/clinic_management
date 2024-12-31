@@ -8,13 +8,28 @@
 <link href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap4.css" rel="stylesheet">
 @stack('style') {{-- This will yield the scripts section --}}
 <style>
-        .navbar-vertical.navbar-expand-xs{
-            background: #fff !important;
-            margin: 0 !important;
-            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .16) !important  ;
-        }
+    .navbar-vertical.navbar-expand-xs {
+        background: #fff !important;
+        margin: 0 !important;
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .16) !important;
+    }
 
+    .ps__rail-y {
+        display: none !important;
+    }
 
+    .navbar-vertical.navbar-expand-xs .navbar-collapse {
+        overflow-y: scroll !important;
+    }
+
+    .main-content {
+        overflow-y: scroll !important;
+    }
+
+    body {
+
+        overflow: hidden !important;
+    }
 </style>
 
 @section('auth')

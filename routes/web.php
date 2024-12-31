@@ -6,6 +6,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorDetailController;
 use App\Http\Controllers\HealthEvaluationController;
 use App\Http\Controllers\HomeController;
@@ -17,7 +18,7 @@ use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\PurchaseorderController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
@@ -112,7 +113,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('doctor/index', [DoctorDetailController::class, 'index'])->name('doctorDetail.index');
     Route::get('doctor/create', [DoctorDetailController::class, 'create'])->name('doctorDetail.create');
     Route::post('doctor/store', [DoctorDetailController::class, 'store'])->name('doctorDetail.store');
-
+    Route::get('doctorDetail/{id}/edit', [DoctorDetailController::class, 'edit'])->name('doctorDetail.edit');
+    Route::put('doctorDetail/{id}', [DoctorDetailController::class, 'update'])->name('doctorDetail.update');
     Route::get('patient/index', [PatientDetailController::class, 'index'])->name('paitent.index');
     Route::put('patient/update/{id}', [PatientDetailController::class, 'update'])->name('paitent.edit');
     Route::get('patient/view/{id}', [PatientDetailController::class, 'show'])->name('patient.show');
@@ -137,6 +139,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/appointments/{id}/approve', [AppointmentController::class, 'approve'])->name('appointments.approve');
     Route::post('/appointments/{id}/reject', [AppointmentController::class, 'reject'])->name('appointments.reject');
     Route::get('/appointments/watsapp', [AppointmentController::class, 'AppointmentWa'])->name('appointments.wa');
+    Route::get('/appointments/{id}/getpatientdetail', [AppointmentController::class, 'patientDetails'])->name('appointments.patientdetails');
 
     Route::get('health-evalution/create', [HealthEvaluationController::class, 'create'])->name('healthevalution.create');
     Route::get('health-evalution', [HealthEvaluationController::class, 'index'])->name('healthevalution.index');
@@ -199,7 +202,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/import-items', [ItemController::class, 'import'])->name('items.import');
     Route::get('/import-items', [ItemController::class, 'importForm'])->name('items.importform');
     Route::get('/export-excel', [ItemController::class, 'exportExcel'])->name('items.export-excel');
-
+    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
+    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
     Route::get('/item/stock/report', [ItemController::class, 'stockReport'])->name('items.stockReport');
     Route::get('/item/stock/report/view/{item}', [ItemController::class, 'stockReportView'])->name('items.stockreportview');
     Route::get('items/{item}/stock-report/pdf', [ItemController::class, 'stockReportPDF'])->name('stockReport.pdf');
@@ -228,16 +232,24 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/stock/fliter/report/filter', [StockController::class, 'filterReport'])->name('stock.filte.filter');
     Route::post('/stock/fliter/report/exportexcel', [StockController::class, 'exportReport'])->name('stock.filte.exportexcel');
     Route::post('/stock/fliter/report/exportpdf', [StockController::class, 'exportPdfReport'])->name('stock.filte.exportpdf');
+    Route::get('/stocks/available/{stockId}', [StockController::class, 'getAvailableStock'])->name('stocks.available');
+    Route::get('/stocks/get-discount/{itemId}', [StockController::class, 'getDisount'])->name('stocks.getdiscount');
 
     // invoice Import
 
     Route::get('/invoice-import', [InvoiceController::class, 'importForm'])->name('invoice.importform');
+    Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
     Route::post('/invoice-import', [InvoiceController::class, 'import'])->name('invoice.import');
 
     Route::get('/invoicedetail-import', [InvoiceDetailController::class, 'importForm'])->name('invoiceDetail.importform');
     Route::post('/invoicedetail-import', [InvoiceDetailController::class, 'import'])->name('invoiceDetail.import');
-    Route::get('/invoice/create', [InvoiceController::class, 'create'])->name('invoice.create');
+    Route::get('/invoice/create/{patient_id?}', [InvoiceController::class, 'create'])->name('invoice.create');
     Route::post('/invoice/store', [InvoiceController::class, 'store'])->name('invoice.store');
+    Route::get('/search-items', [InvoiceController::class, 'searchItems'])->name('items.search');
+    Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+    Route::get('/invoice/{id}/download', [InvoiceController::class, 'downloadInvoice'])->name('invoice.download');
+    Route::patch('/invoice/{id}/update-payment', [InvoiceController::class, 'updatePayPayment'])->name('invoice.updatePayment');
+    Route::get('/dashboard/stats', [DashboardController::class, 'dashboardStats'])->name('dashboard.counts');
 });
 
 

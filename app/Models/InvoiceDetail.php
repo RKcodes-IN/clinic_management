@@ -22,7 +22,7 @@ class InvoiceDetail extends Model
         'add_dis_amount',
         'add_dis_percent',
         'total_amount',
-
+        'quantity',
         'created_at',
         'updated_at',
     ];
@@ -30,5 +30,12 @@ class InvoiceDetail extends Model
     public function invoice()
     {
         return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+
+
+    // Relationship with Stock
+    public function stock()
+    {
+        return $this->belongsTo(Stock::class, 'stock_id');
     }
 }

@@ -2,7 +2,7 @@
     <i class="fas fa-edit text-secondary" aria-hidden="true"></i>
 </a>
 
-<span>
+{{-- <span>
     <form action="{{ route('items.destroy', $id) }}" method="POST" style="display: inline;">
         @csrf
         @method('DELETE')
@@ -10,4 +10,4 @@
             <i class="fas fa-trash text-secondary" aria-hidden="true"></i>
         </button>
     </form>
-</span>
+</span> --}}

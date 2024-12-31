@@ -24,16 +24,56 @@ class AppointmentswaDataTable extends DataTable
             ->addColumn('patient_name', function ($row) {
                 return $row->patient->name ?? "";
             })
+
+            ->addColumn('gender', function ($row) {
+                return $row->patient->gender ?? "";
+            })
+            ->addColumn('age', function ($row) {
+                return $row->patient->age ?? "";
+            })
             ->addColumn('doctor_name', function ($row) {
                 return $row->doctor->name ?? "";
             })
             ->addColumn('status', function ($row) {
                 return Appointment::getStatusLabel($row->status);
             })
+
+            ->addColumn('type', function ($row) {
+                return Appointment::getTypeLabes($row->type);
+            })
+
+            ->addColumn('is_online', function ($row) {
+
+                if ($row->is_online == 1) {
+                    return 'Online';
+                } else {
+                    return 'Visit';
+                }
+            })
+
+            ->addColumn('age', function ($row) {
+                if ($row->age == 0) {
+                    return $row->patient->age ?? "NA";
+                } else {
+                    return $row->age ?? "NA";
+                }
+            })
             ->addColumn('action', 'appointment.action')
             ->addColumn('approve', 'appointment.approve')
-            ->rawColumns(['status', 'action', 'approve'])
-            ->setRowId('id');
+            ->rawColumns(['status', 'type', 'action', 'approve'])
+            ->setRowId('id')
+
+            ->filterColumn('age', function ($query, $keyword) {
+                $query->whereHas('patient', function ($q) use ($keyword) {
+                    $q->where('age', 'like', "%$keyword%");
+                });
+            })
+
+            ->filterColumn('patient_name', function ($query, $keyword) {
+                $query->whereHas('patient', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%$keyword%");
+                });
+            });
     }
 
     /**
@@ -43,13 +83,24 @@ class AppointmentswaDataTable extends DataTable
     {
         $query = $model->newQuery()->with(['patient', 'doctor']);
 
-        // Get the status from the request
-        $status = request()->get('status');
+        // Apply filters for confirmation_date
+        $fromDate = request()->get('from_date');
+        $toDate = request()->get('to_date');
 
-        // Apply the status filter if it exists
-        if ($status) {
-            $query->where('status', $status);
+        if ($fromDate && $toDate) {
+            $query->whereBetween('confirmation_date', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->whereDate('confirmation_date', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->whereDate('confirmation_date', '<=', $toDate);
         }
+
+        // Existing status filter
+
+        $query->where('status', Appointment::STATUS_CONFIRMED);
+
+        // Order by created_at
+        $query->orderBy('created_at', 'desc');
 
         return $query;
     }
@@ -60,7 +111,7 @@ class AppointmentswaDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('appointmentdetail-table')
+            ->setTableId('appointmentdetail-wa-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->orderBy(1)
@@ -86,7 +137,19 @@ class AppointmentswaDataTable extends DataTable
             // Column::make('id'),
 
             Column::make('patient_name')
+                ->defaultContent('N/A')
+                ->title('Patient Name'),
+            Column::make('main_complaint')
+                ->defaultContent('No Complaint'),
+            Column::make('type')
+                ->defaultContent('New')
+                ->title('Type'),
+            Column::make('gender')
+                ->defaultContent('Gender'),
+            Column::make('age')
+                ->title('Age')
                 ->defaultContent('N/A'),
+
             Column::make('confirmation_date')
                 ->title('Conf. Date')
 
@@ -96,18 +159,12 @@ class AppointmentswaDataTable extends DataTable
             Column::make('confirmation_time')
                 ->title('Conf. Time')
                 ->defaultContent('Not Set'),
-            Column::make('available_date')
-                ->defaultContent('Not Set'),
-            Column::make('time_from')
-                ->defaultContent('Not Set'),
-            Column::make('time_to')
+            Column::make('is_online')
+                ->title('Online/Visit')
                 ->defaultContent('Not Set'),
 
-            Column::make('main_complaint')
-                ->defaultContent('No Complaint'),
-            Column::make('age')
-                ->title('Age')
-                ->defaultContent('N/A'),
+
+
 
 
 

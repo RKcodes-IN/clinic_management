@@ -23,8 +23,10 @@ class ItemController extends Controller
      */
     public function index(ItemDataTable $dataTable)
     {
-        $status = request()->get('status');
-        return $dataTable->with('status', $status)->render('items.index');
+        // Get 'item_type' parameter dynamically from the request
+        $itemType = request()->get('item_type');
+        // Pass 'item_type' to the DataTable
+        return $dataTable->with('item_type', $itemType)->render('items.index');
     }
 
 
@@ -122,24 +124,49 @@ class ItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Item $item)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
     {
-        //
+        $item = Item::findOrFail($id);
+        $uomTypes = UomType::all();
+        $brands = Brand::all();
+        $companies = SourceCompany::all();
+
+        return view('items.update', compact('item', 'uomTypes', 'brands', 'companies'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Item $item)
+    public function update(Request $request, $id)
     {
-        //
+        $item = Item::findOrFail($id);
+
+        $request->validate([
+            'item_code' => "required|unique:items,item_code,{$id}|string|max:255",
+            'name' => 'required|string|max:255',
+            'item_type' => 'required|in:'.implode(',', array_keys(Item::getItemTypes())),
+            'uom_type' => 'required|exists:uom_types,id',
+            'brand' => 'required|exists:brands,id',
+            'source_company' => 'required|exists:source_companies,id',
+            'alert_quantity' => 'required|numeric|min:0',
+            'ideal_quantity' => 'required|numeric|min:0',
+            'reorder_quantity' => 'required|numeric|min:0',
+            'max_discount_percentage' => 'nullable|numeric|min:0|max:100', // New validation rule
+        ]);
+
+        $item->update($request->all());
+
+        return redirect()->route('items.edit', $item->id)->with('success', 'Item updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Item $item)
-    {
-        //
-    }
+    // public function destroy(Item $item)
+    // {
+    //     //
+    // }
 }

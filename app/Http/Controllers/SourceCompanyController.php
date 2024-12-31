@@ -67,19 +67,27 @@ class SourceCompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // dd($category);
-        // Validate the input
         $request->validate([
             'name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'email' => 'required|email|max:100',
+            'phone_one' => 'required|string|max:50',
+            'phone_two' => 'nullable|string|max:50',
+            'gst_no' => 'required|string|max:30',
+            'contact_person' => 'required|string|max:50',
         ]);
-        $sourceCompany = SourceCompany::where('id', $id)->first();
 
-        // Update the category details
+        $sourceCompany = SourceCompany::findOrFail($id);
         $sourceCompany->name = $request->input('name');
+        $sourceCompany->address = $request->input('address');
+        $sourceCompany->email = $request->input('email');
+        $sourceCompany->phone_one = $request->input('phone_one');
+        $sourceCompany->phone_two = $request->input('phone_two');
+        $sourceCompany->gst_no = $request->input('gst_no');
+        $sourceCompany->contact_person = $request->input('contact_person');
         $sourceCompany->save();
 
-        // Redirect to the category index page with a success message
-        return redirect()->route('source-company.index')->with('success', 'Category Updated Successfully');
+        return redirect()->route('source-company.index')->with('success', 'Source Company Updated Successfully');
     }
 
     /**

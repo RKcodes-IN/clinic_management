@@ -27,6 +27,8 @@ class PurchaseOrder extends Model
     const STATUS_RECIEVED = 3;
     const STATUS_REJECTED = 4;
 
+    const STATUS_PARTIAL_RECIEVED = 5;
+
     public function getStatusLabel($status): string
     {
         switch ($status) {
@@ -38,6 +40,8 @@ class PurchaseOrder extends Model
                 return '<span class="badge bg-success">Received All</span>';
             case PurchaseOrder::STATUS_REJECTED:
                 return '<span class="badge bg-danger">Rejected</span>';
+            case PurchaseOrder::STATUS_PARTIAL_RECIEVED:
+                return '<span class="badge bg-warning">Partial Recieved</span>';
             default:
                 return '<span class="badge bg-secondary">Unknown</span>';
         }

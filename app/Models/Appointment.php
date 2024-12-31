@@ -19,6 +19,12 @@ class Appointment extends Model
         'available_date',
         'time_from',
         'time_to',
+        'type',
+        'age',
+        'is_online',
+        'country',
+        'city',
+        'country_code',
         'message',
         'status',
         'patient_name', // Add 'patient_name' to the fillable attributes
@@ -29,6 +35,11 @@ class Appointment extends Model
     const STATUS_CANCELLED = 4;
 
 
+
+    const NEW = 1;
+    const REVIEW = 2;
+    const REVISIT = 3;
+
     public static function getStatusLabels()
     {
         return [
@@ -36,6 +47,16 @@ class Appointment extends Model
             self::STATUS_CONFIRMED => 'Confirmed',
             self::STATUS_COMPLETED => 'Completed',
             self::STATUS_CANCELLED => 'Cancelled',
+        ];
+    }
+
+
+    public static function typeLables()
+    {
+        return [
+            self::NEW => 'New',
+            self::REVIEW => 'Review',
+            self::REVISIT => 'Revisit',
         ];
     }
 
@@ -61,6 +82,20 @@ class Appointment extends Model
                 return '<span class="badge bg-success">Completed</span>';
             case self::STATUS_CANCELLED:
                 return '<span class="badge bg-danger">Cancelled</span>';
+            default:
+                return 'Unknown';
+        }
+    }
+    public static function getTypeLabes($type)
+    {
+        switch ($type) {
+            case self::NEW:
+                return '<span class="badge bg-warning">New</span>';
+            case self::REVIEW:
+                return '<span class="badge bg-success">Review</span>';
+            case self::REVISIT:
+                return '<span class="badge bg-success">Revisit</span>';
+
             default:
                 return 'Unknown';
         }

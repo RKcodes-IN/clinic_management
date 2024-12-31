@@ -120,7 +120,7 @@
                             class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-square-plus"></i>
                         </div>
-                        <span class="nav-link-text ms-1">Patient's</span>
+                        <span class="nav-link-text ms-1">Patients</span>
                     </a>
 
 
@@ -131,12 +131,12 @@
 
 
                         @can(['read healthevalution', 'create healthevalution', 'edit healthevalution'])
-                            <li><a class="dropdown-item" href="{{ route('healthevalution.create') }}">Create Health Evalaution
+                            <li><a class="dropdown-item" href="{{ route('healthevalution.create') }}">Create Health Evaluation
                                     Sheet</a>
                             </li>
                         @endcan
                         @can('read healthevalution')
-                            <li><a class="dropdown-item" href="{{ route('healthevalution.index') }}">Patient Health Evalautions
+                            <li><a class="dropdown-item" href="{{ route('healthevalution.index') }}">Patient Health Evaluations
                                 </a>
                             </li>
                         @endcan
@@ -161,32 +161,11 @@
                 </li>
 
             @endcan
-            <li class="nav-item mt-2">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Doctor's Management</h6>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" data-target="#doctordropdown" aria-expanded="false">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-user-doctor"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Doctor</span>
-                </a>
-                <ul class="dropdown-menu" id="doctordropdown">
-                    @can('create doctordetail')
-                        <li><a class="dropdown-item" href="{{ Route('doctorDetail.create') }}">Create Doctor</a></li>
-                    @endcan
-                    @can('read doctordetail')
-                        <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li>
-                    @endcan
-                    <!-- Add more submenu items as needed -->
-                </ul>
-            </li>
+
 
 
             <li class="nav-item mt-2">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Inventroy</h6>
+                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Pharmacy</h6>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
@@ -195,151 +174,240 @@
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="fa-solid fa-warehouse"></i>
                     </div>
-                    <span class="nav-link-text ms-1">Inventory</span>
+                    <span class="nav-link-text ms-1">Pharmacy</span>
                 </a>
                 <ul class="dropdown-menu" id="inventorydeopdown">
-                    <li><a class="dropdown-item" href="{{ Route('items.index') }}">Items List</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 1]) }}">Items List</a>
+                    </li>
                     <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
                     <li><a class="dropdown-item" href="{{ Route('purchaseorder.index') }}">Purchase Order</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('stock.index') }}">Stock</a></li>
+                    <li><a class="dropdown-item" href="{{ route('stock.index', ['item_type' => 1]) }}">Stock</a></li>
                     <li><a class="dropdown-item" href="{{ Route('stock.filterview') }}">Pharmacy Transactions</a>
-                    {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a>
-                    </li> --}}
+                    <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a>
+                    </li>
                     {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
                     <!-- Add more submenu items as needed -->
                 </ul>
             </li>
-
-
+            <li class="nav-item mt-2">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Lab</h6>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
+                    role="button" data-bs-toggle="dropdown" data-target="#lab" aria-expanded="false">
                     <div
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-file-invoice"></i>
+                        <i class="fa-solid fa-warehouse"></i>
                     </div>
-                    <span class="nav-link-text ms-1">Invoice</span>
+                    <span class="nav-link-text ms-1">Labs</span>
                 </a>
-                <ul class="dropdown-menu" id="invoicedropdown">
-                    <li><a class="dropdown-item" href="{{ Route('items.index') }}">Create Invoice</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('items.create') }}">Invoice List</a></li>
-                    {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
+                <ul class="dropdown-menu" id="lab">
+                    <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 3]) }}">Items List</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li>
+                    {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
+            </li>
+            {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
+            <!-- Add more submenu items as needed -->
+        </ul>
+        </li>
+
+        <li class="nav-item mt-2">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Miscellaneous</h6>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                role="button" data-bs-toggle="dropdown" data-target="#miscellaneous" aria-expanded="false">
+                <div
+                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-warehouse"></i>
+                </div>
+                <span class="nav-link-text ms-1">Miscellaneous</span>
+            </a>
+            <ul class="dropdown-menu" id="miscellaneous">
+                <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 2]) }}">Items List</a></li>
+                <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
+                <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 2]) }}">Stock</a></li>
+                {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
+        </li>
+        {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
+        </li> --}}
+        <!-- Add more submenu items as needed -->
+        </ul>
+        </li>
+        <li class="nav-item mt-2">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Invoice</h6>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
+                <div
+                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-file-invoice"></i>
+                </div>
+                <span class="nav-link-text ms-1">Invoice</span>
+            </a>
+            <ul class="dropdown-menu" id="invoicedropdown">
+                <li><a class="dropdown-item" href="{{ Route('invoice.create') }}">Create Invoice</a></li>
+                <li><a class="dropdown-item" href="{{ Route('invoice.index') }}">Invoice List</a></li>
+                {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
+        </li> --}}
+                <!-- Add more submenu items as needed -->
+            </ul>
+        </li>
+
+        <li class="nav-item mt-2">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin Settings</h6>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                role="button" data-bs-toggle="dropdown" data-target="#adminsettingdropdown" aria-expanded="false">
+                <div
+                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-gear"></i>
+                </div>
+                <span class="nav-link-text ms-1">Admin Settings</span>
+            </a>
+            <ul class="dropdown-menu" id="adminsettingdropdown">
+                @can('create users')
+                    <li><a class="dropdown-item" href="{{ Route('users.create') }}">Users Create</a></li>
+                @endcan
+                @can('read users')
+                    <li><a class="dropdown-item" href="{{ Route('users.index') }}">Users List</a></li>
+                @endcan
+
+                @can('read roles')
+                    <li><a class="dropdown-item" href="{{ Route('roles.index') }}">Roles</a></li>
+                @endcan
+
+
+            </ul>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                role="button" data-bs-toggle="dropdown" data-target="#doctordropdown" aria-expanded="false">
+                <div
+                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <span class="nav-link-text ms-1">Doctor</span>
+            </a>
+            <ul class="dropdown-menu" id="doctordropdown">
+                @can('create doctordetail')
+                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.create') }}">Create Doctor</a></li>
+                @endcan
+                @can('read doctordetail')
+                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li>
+                @endcan
+                <!-- Add more submenu items as needed -->
+            </ul>
+        </li>
+
+        </li>
+
+        @can('read variables')
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                    role="button" data-bs-toggle="dropdown" data-target="#variabledropdown" aria-expanded="false">
+                    <div
+                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Variables Settings</span>
+                </a>
+                <ul class="dropdown-menu" id="variabledropdown">
+                    <li><a class="dropdown-item" href="{{ Route('source-company.index') }}">Source Company</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('category.index') }}">Category</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('brand.index') }}">Brand</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('uomtype.index') }}">UOM Type</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('investigationreporttype.index') }}">Investigation
+                            Report Type</a>
+                    </li>
+
                     <!-- Add more submenu items as needed -->
                 </ul>
             </li>
-
-            <li class="nav-item mt-2">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin Settings</h6>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" data-target="#adminsettingdropdown"
-                    aria-expanded="false">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-gear"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Admin Settings</span>
-                </a>
-                <ul class="dropdown-menu" id="adminsettingdropdown">
-                    @can('create users')
-                        <li><a class="dropdown-item" href="{{ Route('users.create') }}">Users Create</a></li>
-                    @endcan
-                    @can('read users')
-                        <li><a class="dropdown-item" href="{{ Route('users.index') }}">Users List</a></li>
-                    @endcan
-
-                    @can('read roles')
-                        <li><a class="dropdown-item" href="{{ Route('roles.index') }}">Roles</a></li>
-                    @endcan
-                </ul>
-            </li>
-
-            @can('read variables')
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                        role="button" data-bs-toggle="dropdown" data-target="#variabledropdown" aria-expanded="false">
-                        <div
-                            class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-list-check"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Variables Settings</span>
-                    </a>
-                    <ul class="dropdown-menu" id="variabledropdown">
-                        <li><a class="dropdown-item" href="{{ Route('source-company.index') }}">Source Company</a></li>
-                        <li><a class="dropdown-item" href="{{ Route('category.index') }}">Category</a></li>
-                        <li><a class="dropdown-item" href="{{ Route('brand.index') }}">Brand</a></li>
-                        <li><a class="dropdown-item" href="{{ Route('uomtype.index') }}">UOM Type</a></li>
-                        <li><a class="dropdown-item" href="{{ Route('investigationreporttype.index') }}">Investigation
-                                Report Type</a>
-                        </li>
-
-                        <!-- Add more submenu items as needed -->
-                    </ul>
-                </li>
-            @endcan
-            <li class="nav-item mt-2">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dummy</h6>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-unlock-alt"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Dummy</span>
-                </a>
+        @endcan
+        <li class="nav-item mt-2">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dummy 1</h6>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
+                <div
+                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-unlock-alt"></i>
+                </div>
+                <span class="nav-link-text ms-1">Dummy</span>
+            </a>
 
 
-            </li>
+        </li>
 
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-unlock-alt"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Dummy</span>
-                </a>
+        <li class="nav-item mt-2">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dummy 2</h6>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
+                <div
+                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-unlock-alt"></i>
+                </div>
+                <span class="nav-link-text ms-1">Dummy</span>
+            </a>
 
-            </li>
+
+        </li>
+
         </ul>
     </div>
 </aside>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Select all parent menu items with dropdowns
-        const dropdownToggles = document.querySelectorAll('.nav-link.dropdown-toggle');
-
-        dropdownToggles.forEach(toggle => {
-            toggle.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent default anchor behavior
-
-                // Find the target submenu
-                const targetMenu = document.querySelector(toggle.getAttribute('data-target'));
-
-                if (targetMenu) {
-                    // Toggle the 'active' class
-                    const isActive = targetMenu.classList.contains('active');
-                    targetMenu.classList.toggle('active', !isActive);
-
-                    // Ensure max-height is reset when closing for smooth transition
-                    if (!isActive) {
-                        targetMenu.style.maxHeight = targetMenu.scrollHeight +
-                            'px'; // Set to the full height
-                    } else {
-                        targetMenu.style.maxHeight = '0'; // Collapse smoothly
-                    }
-                } else {
-                    console.error('Target submenu not found:', toggle.getAttribute(
-                        'data-target'));
-                }
-            });
+   document.addEventListener('click', function (event) {
+    // Check if the clicked element is not inside the sidenav or dropdown menu
+    if (!event.target.closest('.sidenav') && !event.target.closest('.dropdown-menu')) {
+        // Find all open dropdown menus
+        const openMenus = document.querySelectorAll('.sidenav .dropdown-menu.active');
+        openMenus.forEach(menu => {
+            // Remove 'active' class and reset max-height
+            menu.classList.remove('active');
+            menu.style.maxHeight = null;
+            menu.style.opacity = 0;
         });
+    }
+});
+
+// Handle toggling of dropdown menus
+document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        // Find the associated dropdown menu
+        const menu = this.nextElementSibling;
+
+        if (menu.classList.contains('active')) {
+            // Collapse menu if already open
+            menu.classList.remove('active');
+            menu.style.maxHeight = null;
+            menu.style.opacity = 0;
+        } else {
+            // Close other open menus
+            document.querySelectorAll('.sidenav .dropdown-menu.active').forEach(openMenu => {
+                openMenu.classList.remove('active');
+                openMenu.style.maxHeight = null;
+                openMenu.style.opacity = 0;
+            });
+
+            // Expand the clicked menu
+            menu.classList.add('active');
+            menu.style.maxHeight = menu.scrollHeight + 'px'; // Adjust height dynamically
+            menu.style.opacity = 1;
+        }
     });
+});
+
 </script>

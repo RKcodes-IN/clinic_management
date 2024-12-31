@@ -76,6 +76,7 @@ class ItemsImport implements ToModel, WithHeadingRow
                 'order_date' => null,
                 'received_date' => $row['receive_date'],
                 'expiry_date' => $expiryDate, // Assume expiry_date is in Excel
+                'batch_no' => $row['batch_no'], // Assume expiry_date is in Excel
                 'status' => 1, // In Stock
                 'created_by' => auth()->id() ?? 1, // Or default user ID
                 'updated_by' => auth()->id() ?? 1

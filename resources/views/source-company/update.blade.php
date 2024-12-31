@@ -14,22 +14,74 @@
                             </div>
                         @endif
 
-                        {{-- @php
-                        @endphp --}}
-
-                        <form action="{{ route('source-company.update', $sourceCompany->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('source-company.update', $sourceCompany->id) }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
                             <div class="form-group">
                                 <label for="name">Name</label>
-                                <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $sourceCompany->name) }}" required>
+                                <input type="text" name="name" id="name" class="form-control"
+                                    value="{{ old('name', $sourceCompany->name) }}" required>
                                 @error('name')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
 
-                            <button type="submit" class="btn btn-primary">Update Category</button>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <textarea name="address" id="address" class="form-control" required>{{ old('address', $sourceCompany->address) }}</textarea>
+                                @error('address')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" name="email" id="email" class="form-control"
+                                    value="{{ old('email', $sourceCompany->email) }}" required>
+                                @error('email')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone_one">Phone One</label>
+                                <input type="text" name="phone_one" id="phone_one" class="form-control"
+                                    value="{{ old('phone_one', $sourceCompany->phone_one) }}" required>
+                                @error('phone_one')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone_two">Phone Two</label>
+                                <input type="text" name="phone_two" id="phone_two" class="form-control"
+                                    value="{{ old('phone_two', $sourceCompany->phone_two) }}">
+                                @error('phone_two')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gst_no">GST Number</label>
+                                <input type="text" name="gst_no" id="gst_no" class="form-control"
+                                    value="{{ old('gst_no', $sourceCompany->gst_no) }}" required>
+                                @error('gst_no')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contact_person">Contact Person</label>
+                                <input type="text" name="contact_person" id="contact_person" class="form-control"
+                                    value="{{ old('contact_person', $sourceCompany->contact_person) }}" required>
+                                @error('contact_person')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Update Source Company</button>
                         </form>
                     </div>
                 </div>

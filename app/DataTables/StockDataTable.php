@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Models\Item;
 use App\Models\Stock;
 use App\Models\StockTransaction;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
@@ -24,6 +25,10 @@ class StockDataTable extends DataTable
             ->addColumn('item_name', function (Stock $stock) {
                 return $stock->item->name ?? 'N/A'; // Replace 'name' with your item's name column
             })
+
+            ->editColumn('item.item_type', function (Stock $stock) {
+                return (new Item())->getTypeLabel($stock->item->item_type); // Use accessor
+            })
             ->addColumn('item_code', function (Stock $stock) {
                 return $stock->item->item_code ?? 'N/A'; // Replace 'item_code' with your item's code column
             })
@@ -37,9 +42,22 @@ class StockDataTable extends DataTable
     /**
      * Get the query source of dataTable.
      */
+    /**
+     * Get the query source of dataTable.
+     */
     public function query(Stock $model): QueryBuilder
     {
-        return $model->newQuery()->with('item');
+        $query = $model->newQuery()->with('item'); // Load the related 'item' table
+
+        // Check for 'item_type' in the request and filter accordingly
+        if ($this->request()->has('item_type')) {
+            $itemType = $this->request()->get('item_type');
+            $query->whereHas('item', function ($q) use ($itemType) {
+                $q->where('item_type', $itemType); // Filter based on item_type
+            });
+        }
+
+        return $query;
     }
 
     /**
@@ -78,7 +96,9 @@ class StockDataTable extends DataTable
 
             Column::make('item_name')->title('Item Name'), // Custom title for clarity
             Column::make('item_code')->title('Item Code'), // Custom title for clarity
-            Column::computed('total_stock')->title('Total Stock'),
+            Column::make('item_price')->title('Price'), // Custom title for clarity
+            Column::make('item.item_type')->title('Item Type'),
+            Column::make('total_stock')->data('total_stock')->title('Total Stock'),
             Column::make('expiry_date'),
         ];
     }
