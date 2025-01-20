@@ -15,6 +15,7 @@ class PurchaseOrder extends Model
         'total_quantity',
         'price',
         'creation_date',
+
         'status',
         'created_at',
         'updated_at',

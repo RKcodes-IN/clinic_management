@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class UomType extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'created_by',
+        'created_at',
+        'updated_at',
+        'status',
+    ];
 }

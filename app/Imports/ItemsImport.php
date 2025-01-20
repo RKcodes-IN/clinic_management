@@ -8,65 +8,70 @@ use App\Models\Item;
 use App\Models\SourceCompany;
 use App\Models\Stock;
 use App\Models\StockTransaction;
+use App\Models\UomType;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\DB;
 
+
+
 class ItemsImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        DB::beginTransaction(); // Start transaction for consistency
+        DB::beginTransaction();
 
         try {
+            // Parse and validate receive_date
+            $receiveDate = $this->parseDate($row['receive_date'] ?? null, 'd-m-Y', 'Y-m-d H:i:s');
 
-            $expiryDate = null;
-            if (!empty($row['expiry_date'])) {
-                try {
-                    // Try to parse the date, assuming it follows 'd/m/Y'
-                    $expiryDate = Carbon::createFromFormat('d/m/Y', $row['expiry_date'])->format('Y-m-d');
-                } catch (\Exception $e) {
-                    // Log or handle invalid date formats
-                    $expiryDate = null;  // Set to null or handle accordingly
-                }
-            }
+
+            // Parse expiry_date
+            $expiryDate = $this->parseDate($row['expiry_date'] ?? null, 'd-m-Y', 'Y-m-d H:i:s');
+
             // Handle Company
             $company = SourceCompany::firstOrCreate(
                 ['name' => $row['company_name']],
-                ['created_at' => now(), 'updated_at' => now()]
+                ['created_at' => $receiveDate, 'updated_at' => now()]
             );
 
             // Handle Brand
             $brand = Brand::firstOrCreate(
                 ['name' => $row['brand']],
-                ['created_at' => now(), 'updated_at' => now()]
+                ['created_at' => $receiveDate, 'updated_at' => now()]
             );
 
             // Handle Category
             $category = Category::firstOrCreate(
                 ['name' => $row['category']],
-                ['created_at' => now(), 'updated_at' => now()]
+                ['created_at' => $receiveDate, 'updated_at' => now()]
             );
 
+            // Handle UOM
+            $uom = UomType::firstOrCreate(
+                ['name' => $row['uom'] ?? "na"],
+                ['created_at' => $receiveDate, 'updated_at' => now()]
+            );
 
             // Create or find the Item
             $item = Item::firstOrCreate(
                 ['item_code' => $row['item_code']],
                 [
                     'item_type' => 1,
-                    'uom_type' => 0,
+                    'uom_type' => $uom->id,
                     'name' => $row['name'],
                     'source_company' => $company->id,
                     'brand' => $brand->id,
                     'category' => $category->id,
                     'ideal_quantity' => $row['ideal_stock_alerts'],
+                    'created_at' => $receiveDate,
                     'status' => 1
                 ]
             );
 
-            // Handle Stock based on expiry date
-            $stock = Stock::create([
+            // Handle Stock
+            $stock = new Stock([
                 'purchase_order_id' => 0,
                 'purchase_order_item_id' => 0,
                 'item_id' => $item->id,
@@ -74,33 +79,66 @@ class ItemsImport implements ToModel, WithHeadingRow
                 'item_price' => $row['item_price'],
                 'total_price' => $row['quantity'] * $row['item_price'],
                 'order_date' => null,
-                'received_date' => $row['receive_date'],
-                'expiry_date' => $expiryDate, // Assume expiry_date is in Excel
-                'batch_no' => $row['batch_no'], // Assume expiry_date is in Excel
-                'status' => 1, // In Stock
-                'created_by' => auth()->id() ?? 1, // Or default user ID
+                'received_date' => $receiveDate,
+                'expiry_date' => $expiryDate,
+                'batch_no' => $row['batch_no'],
+                'status' => 1,
+                'created_by' => auth()->id() ?? 1,
                 'updated_by' => auth()->id() ?? 1
             ]);
 
-            // Create a Stock Transaction
-            StockTransaction::create([
+            // Disable automatic timestamps and set created_at
+            $stock->timestamps = false;
+            $stock->created_at = $receiveDate;
+            $stock->save();
+
+            // Handle Stock Transaction
+            $stockTransaction = new StockTransaction([
                 'stock_id' => $stock->id,
                 'item_id' => $item->id,
                 'purchase_order_id' => 0,
                 'quantity' => $row['quantity'],
                 'item_price' => $row['item_price'],
-                'total_price' => $row['item_price'],
-                'status' => 1, // Transaction status (e.g., incoming stock)
+                'total_price' => $row['quantity'] * $row['item_price'],
+                'transaction_date' => $receiveDate,
+                'status' => 1,
                 'created_by' => auth()->id() ?? 1,
                 'updated_by' => auth()->id() ?? 1
             ]);
 
-            DB::commit(); // Commit transaction
+            // Disable automatic timestamps and set created_at
+            $stockTransaction->timestamps = false;
+            $stockTransaction->created_at = $receiveDate;
+            $stockTransaction->save();
 
-            return $item; // Return the item for consistency
+            DB::commit();
+
+            return $item;
         } catch (\Exception $e) {
-            DB::rollback(); // Rollback on failure
-            throw $e; // Handle error gracefully
+            DB::rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Parse a date string with fallback for invalid formats.
+     *
+     * @param string|null $date
+     * @param string $inputFormat
+     * @param string $outputFormat
+     * @return string|null
+     */
+    private function parseDate($date, $inputFormat = 'd-m-Y', $outputFormat = 'Y-m-d H:i:s')
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        try {
+            return Carbon::createFromFormat($inputFormat, $date)->format($outputFormat);
+        } catch (\Exception $e) {
+            \Log::warning('Invalid date format', ['date' => $date, 'expected_format' => $inputFormat]);
+            return null;
         }
     }
 }

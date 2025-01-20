@@ -94,14 +94,7 @@
                             </div>
 
 
-                            <div class="form-group">
-                                <label for="item_code">Reorder Quantity</label>
-                                <input type="text" name="reorder_quantity" id="reorder_quantity" class="form-control"
-                                    required>
-                                @error('item_code')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
+                      asdc
 
                             <button type="submit" class="btn btn-primary">Create</button>
                         </form>

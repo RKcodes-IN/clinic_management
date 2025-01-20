@@ -5,6 +5,8 @@ namespace App\Imports;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\Item;
+use App\Models\LabPrescription;
+use App\Models\PharmacyPrescription;
 use App\Models\Stock;
 use App\Models\StockTransaction;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +82,28 @@ class InvoiceDetailImport implements ToModel, WithHeadingRow
                 'status' => 2, // Outgoing transaction
                 'transaction_date' => $row['created_at'] ?? now(),
             ]);
+
+            if ($row['item_type'] == Item::TYPE_PHARMACY) {
+                PharmacyPrescription::create([
+                    'stock_id' => $stock->id,
+                    'item_id' => $item->id,
+                    'patient_id' => $patientId,
+                    'quantity' => $row['quantitiy'],
+                    'description' => "",
+                    "date" => $row['created_at']
+                ]);
+            }
+
+            if ($row['item_type'] == Item::TYPE_LAB) {
+                LabPrescription::create([
+                    'stock_id' => $stock->id,
+                    'item_id' => $item->id,
+                    'patient_id' => $patientId,
+                    'quantity' => $row['quantitiy'],
+                    'description' => "",
+                    "date" => $row['created_at']
+                ]);
+            }
         });
     }
 }

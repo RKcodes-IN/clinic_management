@@ -8,7 +8,9 @@ use App\Models\DoctorDetail;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\Item;
+use App\Models\LabPrescription;
 use App\Models\PatientDetail;
+use App\Models\PharmacyPrescription;
 use App\Models\Stock;
 use App\Models\StockTransaction;
 use Carbon\Carbon;
@@ -62,11 +64,15 @@ class InvoiceController extends Controller
             })->get();
 
         $labTestStocks = Stock::with(['item'])
+            ->where('status', Stock::IN_STOCK) // Add condition for status
             ->whereHas('item', function ($query) {
-                $query->where('item_type', 3);
-            })->get();
+                $query->where('item_type', 3); // Condition for item_type
+            })
+            ->get();
 
         $miscellaneousStocks = Stock::with(['item'])
+            ->where('status', Stock::IN_STOCK) // Add condition for status
+
             ->whereHas('item', function ($query) {
                 $query->where('item_type', 2);
             })->get();
@@ -313,5 +319,38 @@ class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         //
+    }
+
+    public function getPrescriptions($patientId)
+    {
+        $pharmacyPrescriptions = PharmacyPrescription::where('patient_id', $patientId)->get();
+        $labPrescriptions = LabPrescription::where('patient_id', $patientId)->get();
+
+        $pharmacyData = $pharmacyPrescriptions->map(function ($prescription) {
+            return [
+                'item_id' => $prescription->stock_id,
+                'available_quantity' =>  Stock::getTotalStock($prescription->stock_id),
+                'expiry_date' =>  $prescription->stock->expiry_date,
+                'price' =>  $prescription->stock->item_price,
+                'item_name' => $prescription->item->name,
+                'batch_number' => $prescription->stock->batch_no,
+
+                'quantity' => $prescription->quantity,
+
+            ];
+        });
+
+        $labData = $labPrescriptions->map(function ($prescription) {
+            return [
+                'item_id' => $prescription->stock_id,
+                'expiry_date' =>  $prescription->stock->expiry_date,
+                'price' =>  $prescription->stock->item_price,
+                'item_name' => $prescription->item->name,
+                'quantity' => $prescription->quantity,
+
+            ];
+        });
+
+        return response()->json(['pharmacy' => $pharmacyData, 'lab' => $labData]);
     }
 }

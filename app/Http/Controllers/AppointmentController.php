@@ -8,6 +8,7 @@ use App\DataTables\DoctorDetailDataTable;
 use App\Models\Appointment;
 use App\Models\DoctorDetail;
 use App\Models\HealthEvaluation;
+use App\Models\Item;
 use App\Models\PatientDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class AppointmentController extends Controller
      */
     public function index(AppointmentDataTable $dataTable)
     {
-        return $dataTable->render('appointment.index');
+        $items = Item::all();
+        return $dataTable->render('appointment.index', compact('items'));
     }
     public function AppointmentWa(AppointmentswaDataTable $dataTable)
     {
@@ -107,7 +109,13 @@ class AppointmentController extends Controller
         DB::beginTransaction();
 
         try {
-            $patientId = null;
+
+
+            if ($request->filled('patient_id')) {
+                $patientId = $request->input('patient_id');
+            } else {
+                $patientId = null;
+            }
 
             // Check if new patient name is provided
             if ($request->filled('new_patient_name')) {
@@ -147,16 +155,26 @@ class AppointmentController extends Controller
                 $patientId = $patient->id;
             } elseif ($request->filled('patient_id')) {
                 // Use existing patient
+
+                if ($patientId < 1) {
+                    return redirect()->back()
+                        ->with('error', 'Invalid patient ID provided.  ')
+                        ->with('toast', 'error');
+                }
                 $patientId = $request->input('patient_id');
             }
 
             // Ensure patient ID is not null
             if (is_null($patientId) || !$patientId) {
                 return redirect()->route('appointments.create')
-                    ->with('error', 'missing patient id please retry again')
+                    ->with('error', 'missing patient id please retry again. Please Refresh and try again')
                     ->with('toast', 'error');  // Added error toast
             }
-
+            if (empty($patientId) || $patientId < 1) {
+                return redirect()->back()
+                    ->with('error', 'Valid patient ID is required. Please Refresh and try again')
+                    ->with('toast', 'error');
+            }
             // Create appointment
             $appointment = new Appointment();
             $appointment->patient_id = $patientId;

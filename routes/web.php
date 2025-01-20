@@ -18,6 +18,7 @@ use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PharmacyPrescriptionController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\RegisterController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\UomTypeController;
 use App\Http\Controllers\UsersController;
 use App\Models\HealthEvaluation;
 use App\Models\InvestigationReportType;
+use App\Models\PharmacyPrescription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
@@ -203,7 +205,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/import-items', [ItemController::class, 'importForm'])->name('items.importform');
     Route::get('/export-excel', [ItemController::class, 'exportExcel'])->name('items.export-excel');
     Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
-    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
+    // Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
     Route::get('/item/stock/report', [ItemController::class, 'stockReport'])->name('items.stockReport');
     Route::get('/item/stock/report/view/{item}', [ItemController::class, 'stockReportView'])->name('items.stockreportview');
     Route::get('items/{item}/stock-report/pdf', [ItemController::class, 'stockReportPDF'])->name('stockReport.pdf');
@@ -218,6 +220,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/purchase-order', [PurchaseOrderController::class, 'index'])->name('purchaseorder.index');
     Route::get('/purchase-orders/{id}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
     Route::post('/purchase-orders/items/{itemId}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.recieve');
+    Route::get('/purchase-orders/{id}/pdf', [PurchaseOrderController::class, 'downloadPdf'])->name('purchase_order.pdf');
 
     Route::get('purchase-order/import-form', [PurchaseorderController::class, 'importForm'])->name('purchaseorder.importForm');
     Route::post('purchase-orders/import', [PurchaseorderController::class, 'import'])->name('purchaseorder.import');
@@ -234,6 +237,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/stock/fliter/report/exportpdf', [StockController::class, 'exportPdfReport'])->name('stock.filte.exportpdf');
     Route::get('/stocks/available/{stockId}', [StockController::class, 'getAvailableStock'])->name('stocks.available');
     Route::get('/stocks/get-discount/{itemId}', [StockController::class, 'getDisount'])->name('stocks.getdiscount');
+    Route::get('/item/update-pricing/{type}', [StockController::class, 'updatePricing'])->name('stock.updatepricing');
+    Route::post('/item/update-pricing', [StockController::class, 'updatePrice'])->name('stock.updatePrice');
 
     // invoice Import
 
@@ -250,6 +255,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/invoice/{id}/download', [InvoiceController::class, 'downloadInvoice'])->name('invoice.download');
     Route::patch('/invoice/{id}/update-payment', [InvoiceController::class, 'updatePayPayment'])->name('invoice.updatePayment');
     Route::get('/dashboard/stats', [DashboardController::class, 'dashboardStats'])->name('dashboard.counts');
+    Route::get('/prescription/create', [PharmacyPrescriptionController::class, 'create'])->name('prescription.create');
+    Route::post('/prescription/store', [PharmacyPrescriptionController::class, 'store'])->name('prescription.store');
+    Route::get('/prescriptions/{patientId}', [InvoiceController::class, 'getPrescriptions']);
 });
 
 

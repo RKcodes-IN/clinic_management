@@ -24,9 +24,25 @@ class ItemDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
 
-
+            ->addColumn('status', function ($item) {
+                switch ($item->status) {
+                    case 1:
+                        return '<span class="badge bg-success">Active</span>';
+                    case 0:
+                        return '<span class="badge bg-warning">Inactive</span>';
+                    case 2:
+                        return '<span class="badge bg-danger">Deleted</span>';
+                    default:
+                        return '<span class="badge bg-secondary">Unknown</span>';
+                }
+            })
+            ->addColumn('created_at', function ($item) {
+                return \Carbon\Carbon::parse($item->created_at)->format('d M Y, h:i A');
+            })
             ->addColumn('action', 'items.action')
-            ->setRowId('id');
+            ->setRowId('id')
+
+            ->rawColumns(['status', 'action']);
     }
 
     /**
@@ -89,6 +105,8 @@ class ItemDataTable extends DataTable
             Column::make('category.name')->title('Category')->data('category.name'), // Correct relationship path
             Column::make('brand.name')->title('Brand')->data('brand.name'),         // Correct relationship path
             Column::make('company.name')->title('Source Company')->data('company.name'), // Correct relationship path
+            Column::make('status')->title('Status'),
+            Column::make('created_at')->title('Created At')
         ];
     }
 

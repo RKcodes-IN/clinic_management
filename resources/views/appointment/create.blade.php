@@ -304,7 +304,7 @@
                                             <div class="form-group">
                                                 <label for="age">Age</label>
                                                 <input type="number" name="age" value="{{ old('age') }}"
-                                                    id="age" class="form-control" placeholder="Enter age">
+                                                    id="age" class="form-control" placeholder="Enter age" required>
                                                 @error('age')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
@@ -316,19 +316,20 @@
                                                 <div class="row">
                                                     <div class="col-2">
                                                         <input type="radio" name="gender" id="male"
-                                                            value="male" {{ old('gender') == 'male' ? 'checked' : '' }}>
+                                                            value="male" {{ old('gender') == 'male' ? 'checked' : '' }}
+                                                            required>
                                                         <label class="form-check-label" for="male">Male</label>
                                                     </div>
                                                     <div class="col-2">
                                                         <input type="radio" name="gender" id="female"
                                                             value="female"
-                                                            {{ old('gender') == 'female' ? 'checked' : '' }}>
+                                                            {{ old('gender') == 'female' ? 'checked' : '' }} required>
                                                         <label class="form-check-label" for="female">Female</label>
                                                     </div>
                                                     <div class="col-2">
                                                         <input type="radio" name="gender" id="other"
-                                                            value="other"
-                                                            {{ old('gender') == 'other' ? 'checked' : '' }}>
+                                                            value="other" {{ old('gender') == 'other' ? 'checked' : '' }}
+                                                            required>
                                                         <label class="form-check-label" for="other">Others</label>
                                                     </div>
                                                 </div>

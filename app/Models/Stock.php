@@ -24,6 +24,9 @@ class Stock extends Model
         'updated_by',
     ];
 
+    const IN_STOCK = 1;
+    const OUT_OF_STOCK = 2;
+    const EXPIRED = 3;
 
     public static function getTotalStock(int $stockId): int
     {
@@ -49,12 +52,14 @@ class Stock extends Model
     {
 
 
-        $incomingStock = StockTransaction::where('status', StockTransaction::STATUS_INCOMING_STOCK)->andWhere(['item_id', $itemId])
+        $incomingStock = StockTransaction::where('status', StockTransaction::STATUS_INCOMING_STOCK)
+            ->where('item_id', $itemId)
             ->sum('quantity');
 
-        $outgoingStock = StockTransaction::where('status', StockTransaction::STATUS_OUTGOING_STOCK)->andWhere(['item_id', $itemId])
+        // Calculate outgoing stock
+        $outgoingStock = StockTransaction::where('status', StockTransaction::STATUS_OUTGOING_STOCK)
+            ->where('item_id', $itemId)
             ->sum('quantity');
-
         return $incomingStock - $outgoingStock;
     }
 

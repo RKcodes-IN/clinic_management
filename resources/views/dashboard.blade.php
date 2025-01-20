@@ -117,7 +117,7 @@
                         <div class="">
 
                             <div class="d-flex justify-content-center">
-                                <div id="loader" class="spinner-grow text-primary" role="status">
+                                <div id="loader" class="loader spinner-border text-primary" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
                             </div>
@@ -212,7 +212,13 @@
                                 <div class="numbers">
                                     <p class="text-sm mb-0 text-capitalize font-weight-bold">Patients</p>
                                     <div class="table-responsive">
-                                        <table class="table table-sm table-striped">
+
+                                        <div class="d-flex justify-content-center">
+                                            <div id="loader" class="spinner-border text-primary loader" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                        <table class="table table-sm table-striped loading-show" style="display: none;">
                                             <thead>
                                                 <tr>
                                                     <th>Category</th>
@@ -225,23 +231,28 @@
                                                 <!-- Overall Counts -->
                                                 <tr>
                                                     <td><strong>Overall</strong></td>
-                                                    <td>100</td> <!-- Replace with dynamic value -->
-                                                    <td>30</td> <!-- Replace with dynamic value -->
-                                                    <td>50</td> <!-- Replace with dynamic value -->
+                                                    <td id="patient-overall"></td> <!-- Replace with dynamic value -->
+                                                    <td id="patient-male-overall"></td> <!-- Replace with dynamic value -->
+                                                    <td id="patient-female-overall"></td>
+                                                    <!-- Replace with dynamic value -->
                                                 </tr>
                                                 <!-- Current Month Counts -->
                                                 <tr>
                                                     <td><strong>Month</strong></td>
-                                                    <td>40</td> <!-- Replace with dynamic value -->
-                                                    <td>15</td> <!-- Replace with dynamic value -->
-                                                    <td>20</td> <!-- Replace with dynamic value -->
+                                                    <td id="patient-month-overall"></td>
+                                                    <!-- Replace with dynamic value -->
+                                                    <td id="patient-month-male"></td>
+                                                    <!-- Replace with dynamic value -->
+                                                    <td id="patient-month-female"></td>
+                                                    <!-- Replace with dynamic value -->
                                                 </tr>
                                                 <!-- Today's Counts -->
                                                 <tr>
                                                     <td><strong>Today</strong></td>
-                                                    <td>10</td> <!-- Replace with dynamic value -->
-                                                    <td>5</td> <!-- Replace with dynamic value -->
-                                                    <td>3</td> <!-- Replace with dynamic value -->
+                                                    <td id="patient-today-overall"></td>
+                                                    <!-- Replace with dynamic value -->
+                                                    <td id="patient-today-male"></td> <!-- Replace with dynamic value -->
+                                                    <td id="patient-today-female"></td> <!-- Replace with dynamic value -->
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -611,7 +622,7 @@
         <script>
             $(document).ready(function() {
                 // Show loader and hide table initially
-                $("#loader").show();
+                $(".loader").show();
                 $("#data-table").hide();
 
                 $.ajax({
@@ -622,24 +633,40 @@
                         console.log(response); // Debug the response if needed
 
                         // Populate the table with the response data
-                        $("#overall-total").text(response.totalAppointments || 0);
-                        $("#overall-new").text(response.totalAppointmentsNew || 0);
-                        $("#overall-review").text(response.totalAppointmentsReview || 0);
-                        $("#overall-second").text(response.patientsWithTwoOrMoreTotal || 0);
+                        $("#overall-total").text(response.appointmentCounts.totalAppointments || 0);
+                        $("#overall-new").text(response.appointmentCounts.totalAppointmentsNew || 0);
+                        $("#overall-review").text(response.appointmentCounts.totalAppointmentsReview || 0);
+                        $("#overall-second").text(response.appointmentCounts.patientsWithTwoOrMoreTotal ||
+                            0);
 
-                        $("#month-total").text(response.thisMonthAppointments || 0);
-                        $("#month-new").text(response.thisMonthAppointmentsNew || 0);
-                        $("#month-review").text(response.thisMonthAppointmentsReview || 0);
-                        $("#month-second").text(response.patientsWithTwoOrMoreThisMonth || 0);
+                        $("#month-total").text(response.appointmentCounts.thisMonthAppointments || 0);
+                        $("#month-new").text(response.appointmentCounts.thisMonthAppointmentsNew || 0);
+                        $("#month-review").text(response.appointmentCounts.thisMonthAppointmentsReview ||
+                            0);
+                        $("#month-second").text(response.appointmentCounts.patientsWithTwoOrMoreThisMonth ||
+                            0);
 
-                        $("#today-total").text(response.todayAppointments || 0);
-                        $("#today-new").text(response.todayAppointmentsNew || 0);
-                        $("#today-review").text(response.todayAppointmentsReview || 0);
-                        $("#today-second").text(response.patientsWithTwoOrMoreToday || 0);
+                        $("#today-total").text(response.appointmentCounts.todayAppointments || 0);
+                        $("#today-new").text(response.appointmentCounts.todayAppointmentsNew || 0);
+                        $("#today-review").text(response.appointmentCounts.todayAppointmentsReview || 0);
+                        $("#today-second").text(response.appointmentCounts.patientsWithTwoOrMoreToday || 0);
+
+                        // Patient Counts
+                        $("#patient-overall").text(response.patientCounts.total.all || 0);
+                        $("#patient-male-overall").text(response.patientCounts.total.male ||
+                            0);
+                        $("#patient-female-overall").text(response.patientCounts.total.female || 0);
+                        $("#patient-month-overall").text(response.patientCounts.thisMonth.all || 0);
+                        $("#patient-month-male").text(response.patientCounts.thisMonth.male || 0);
+                        $("#patient-month-female").text(response.patientCounts.thisMonth.female || 0);
+                        $("#patient-today-overall").text(response.patientCounts.today.all || 0);
+                        $("#patient-today-male").text(response.patientCounts.today.male || 0);
+                        $("#patient-today-female").text(response.patientCounts.today.female || 0);
 
                         // Hide loader and show the table
-                        $("#loader").hide();
+                        $(".loader").hide();
                         $("#data-table").show();
+                        $(".loading-show").show();
                     },
                     error: function(xhr, status, error) {
                         console.error("Error occurred: " + error); // Handle error if any

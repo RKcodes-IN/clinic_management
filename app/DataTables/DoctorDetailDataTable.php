@@ -23,6 +23,12 @@ class DoctorDetailDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', 'doctor-details.action')
+            ->editColumn('profile_image', function ($row) {
+                // Assuming the image path is stored in the 'profile_image' field
+                $imageUrl = asset('storage/' . $row->profile_image); // Adjust the path based on your setup
+                return '<img src="' . $imageUrl . '" alt="Profile Image" width="50" height="50" class="img-thumbnail">';
+            })
+            ->rawColumns(['profile_image', 'action']) // Mark these columns as raw to render HTML
             ->setRowId('id');
     }
 
@@ -71,6 +77,7 @@ class DoctorDetailDataTable extends DataTable
                 ->addClass('text-center'),
 
             Column::make('id'),
+            Column::make('name'),
             Column::make('age'),
             Column::make('gender'),
             Column::make('education'),

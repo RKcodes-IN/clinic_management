@@ -26,14 +26,15 @@
 
         <h4>Items</h4>
         <div class="card  p-2">
-            <table class="table table-striped">
+            <table class="table table-striped table-responsive">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Item Name</th>
                         <th>Quantity</th>
                         <th>Recieve Quantity</th>
-                        <th>Price</th>
+                        <th>MRP</th>
+                        <th>Purchase Price</th>
                         <th>Total</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -47,6 +48,7 @@
                             <td>{{ $item->quantity }}</td>
                             <td>{{ $item->received_quantity }}</td>
                             <td>₹{{ number_format($item->item_price, 2) }}</td>
+                            <td>₹{{ number_format($item->purchase_price, 2) }}</td>
                             <td>₹{{ number_format($item->total_price, 2) }}</td>
                             <td>{!! $item->getStatusLabel($item->status) !!}</td>
                             <td>
@@ -74,32 +76,38 @@
             Swal.fire({
                 title: 'Mark Receive',
                 html: `
-                <div class="table-responsive">
-                    <table class="table" id="markReceiveTable">
-                        <thead>
-                            <tr>
-                                <th>Received Quantity</th>
-                                <th>Unit MRP</th>
-                                <th>Total Price</th>
-                                <th>Expiry Date</th>
-                                <th>Received Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
-                                <td><input type="number" name="unit_price[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Enter unit price" required></td>
-                                <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
-                                <td><input type="date" name="expiry_date[]" class="form-control" required></td>
-                                <td><input type="date" name="received_date[]" class="form-control" value="${new Date().toISOString().split('T')[0]}" required></td>
-                                <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button type="button" class="btn btn-primary btn-sm" id="addRow">Add Row</button>
-                </div>
-            `,
+        <div class="table-responsive">
+            <table class="table" id="markReceiveTable">
+                <thead>
+                    <tr>
+                        <th>Received Quantity</th>
+                        <th>Purchase Price</th>
+                        <th>MRP</th>
+                        <th>GST Percentage</th>
+                        <th>GST Amount</th>
+                        <th>Total Price</th>
+                        <th>Expiry Date</th>
+                        <th>Received Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
+                        <td><input type="number" name="purchase_price[]" class="form-control purchase-price" placeholder="Enter purchase price" required></td>
+                        <td><input type="number" name="unit_price[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Enter unit price" required></td>
+                        <td><input type="number" name="gst_percentage[]" class="form-control gst-percentage" placeholder="Enter GST percentage" required></td>
+                        <td><input type="number" name="gst_amount[]" class="form-control gst-amount" readonly></td>
+                        <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
+                        <td><input type="date" name="expiry_date[]" class="form-control" required></td>
+                        <td><input type="date" name="received_date[]" class="form-control" value="${new Date().toISOString().split('T')[0]}" required></td>
+                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-minus"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-primary btn-sm" id="addRow">Add Row</button>
+        </div>
+    `,
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
                 customClass: {
@@ -112,7 +120,9 @@
 
                     rows.forEach((row) => {
                         const receivedQuantity = row.querySelector(".received-quantity").value;
+                        const purchasePrice = row.querySelector(".purchase-price").value;
                         const unitPrice = row.querySelector(".unit-price").value;
+                        const gstPercentage = row.querySelector(".gst-percentage").value;
                         const expiryDate = row.querySelector('[name="expiry_date[]"]').value;
                         const receivedDate = row.querySelector('[name="received_date[]"]').value;
 
@@ -123,9 +133,21 @@
                             return;
                         }
 
+                        if (!purchasePrice || purchasePrice <= 0) {
+                            isValid = false;
+                            Swal.showValidationMessage('Please enter a valid purchase price.');
+                            return;
+                        }
+
                         if (!unitPrice || unitPrice <= 0) {
                             isValid = false;
                             Swal.showValidationMessage('Please enter a valid unit price.');
+                            return;
+                        }
+
+                        if (!gstPercentage || gstPercentage < 0) {
+                            isValid = false;
+                            Swal.showValidationMessage('Please enter a valid GST percentage.');
                             return;
                         }
 
@@ -141,12 +163,18 @@
                             return;
                         }
 
+                        const gstAmount = (receivedQuantity * purchasePrice * gstPercentage) / 100;
+                        const totalPrice = (receivedQuantity * purchasePrice) + gstAmount;
+
                         data.push({
                             item_id: itemId,
                             "purchase_order_item_id": $purchaseOrderItemId,
                             received_quantity: receivedQuantity,
+                            purchase_price: purchasePrice,
                             unit_price: unitPrice,
-                            total_price: receivedQuantity * unitPrice,
+                            gst_percentage: gstPercentage,
+                            gst_amount: gstAmount,
+                            total_price: totalPrice,
                             expiry_date: expiryDate,
                             received_date: receivedDate
                         });
@@ -190,13 +218,16 @@
             document.getElementById("addRow").addEventListener("click", () => {
                 const newRow = document.createElement("tr");
                 newRow.innerHTML = `
-                <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
-                <td><input type="number" name="unit_price[]" class="form-control unit-price" placeholder="Enter unit price" required></td>
-                <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
-                <td><input type="date" name="expiry_date[]" class="form-control" required></td>
-                <td><input type="date" name="received_date[]" class="form-control" value="${new Date().toISOString().split('T')[0]}" required></td>
-                <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-            `;
+        <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
+        <td><input type="number" name="purchase_price[]" class="form-control purchase-price" placeholder="Enter purchase price" required></td>
+        <td><input type="number" name="unit_price[]" class="form-control unit-price" placeholder="Enter unit price" required></td>
+        <td><input type="number" name="gst_percentage[]" class="form-control gst-percentage" placeholder="Enter GST percentage" required></td>
+        <td><input type="number" name="gst_amount[]" class="form-control gst-amount" readonly></td>
+        <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
+        <td><input type="date" name="expiry_date[]" class="form-control" required></td>
+        <td><input type="date" name="received_date[]" class="form-control" value="${new Date().toISOString().split('T')[0]}" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-minus"></i></button></td>
+    `;
                 tableBody.appendChild(newRow);
                 attachEventListeners(newRow);
             });
@@ -204,7 +235,8 @@
             function attachEventListeners(row) {
                 row.querySelector(".remove-row").addEventListener("click", () => row.remove());
                 row.querySelector(".received-quantity").addEventListener("input", updateTotalPrice);
-                row.querySelector(".unit-price").addEventListener("input", updateTotalPrice);
+                row.querySelector(".purchase-price").addEventListener("input", updateTotalPrice);
+                row.querySelector(".gst-percentage").addEventListener("input", updateTotalPrice);
             }
 
             tableBody.querySelectorAll("tr").forEach((row) => attachEventListeners(row));
@@ -213,8 +245,13 @@
                 const rows = tableBody.querySelectorAll("tr");
                 rows.forEach((row) => {
                     const receivedQuantity = parseFloat(row.querySelector(".received-quantity").value) || 0;
-                    const unitPrice = parseFloat(row.querySelector(".unit-price").value) || 0;
-                    row.querySelector(".total-price").value = (receivedQuantity * unitPrice).toFixed(2);
+                    const purchasePrice = parseFloat(row.querySelector(".purchase-price").value) || 0;
+                    const gstPercentage = parseFloat(row.querySelector(".gst-percentage").value) || 0;
+                    const gstAmount = (receivedQuantity * purchasePrice * gstPercentage) / 100;
+                    const totalPrice = (receivedQuantity * purchasePrice) + gstAmount;
+
+                    row.querySelector(".gst-amount").value = gstAmount.toFixed(2);
+                    row.querySelector(".total-price").value = totalPrice.toFixed(2);
                 });
             }
         }

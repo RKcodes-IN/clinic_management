@@ -203,9 +203,12 @@
                     <span class="nav-link-text ms-1">Labs</span>
                 </a>
                 <ul class="dropdown-menu" id="lab">
-                    <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 3]) }}">Items List</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 3]) }}">Items List</a>
+                    </li>
                     <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li>
+                    <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'lab']) }}">Update
+                            Pricing</a></li>
+                    {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li> --}}
                     {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
             </li>
             {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
@@ -227,19 +230,22 @@
                 <span class="nav-link-text ms-1">Miscellaneous</span>
             </a>
             <ul class="dropdown-menu" id="miscellaneous">
-                <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 2]) }}">Items List</a></li>
+                <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 2]) }}">Items List</a>
+                </li>
                 <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
-                <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 2]) }}">Stock</a></li>
-                {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
-        </li>
-        {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
+                {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 2]) }}">Stock</a></li> --}}
+                <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'mis']) }}">Update
+                        Pricing</a></li>
+
+                {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
-        <!-- Add more submenu items as needed -->
-        </ul>
+                <!-- Add more submenu items as needed -->
+            </ul>
         </li>
         <li class="nav-item mt-2">
             <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Invoice</h6>
         </li>
+
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
                 role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
@@ -257,7 +263,6 @@
                 <!-- Add more submenu items as needed -->
             </ul>
         </li>
-
         <li class="nav-item mt-2">
             <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin Settings</h6>
         </li>
@@ -367,47 +372,46 @@
 </aside>
 
 <script>
-   document.addEventListener('click', function (event) {
-    // Check if the clicked element is not inside the sidenav or dropdown menu
-    if (!event.target.closest('.sidenav') && !event.target.closest('.dropdown-menu')) {
-        // Find all open dropdown menus
-        const openMenus = document.querySelectorAll('.sidenav .dropdown-menu.active');
-        openMenus.forEach(menu => {
-            // Remove 'active' class and reset max-height
-            menu.classList.remove('active');
-            menu.style.maxHeight = null;
-            menu.style.opacity = 0;
-        });
-    }
-});
-
-// Handle toggling of dropdown menus
-document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-    toggle.addEventListener('click', function (event) {
-        event.preventDefault();
-
-        // Find the associated dropdown menu
-        const menu = this.nextElementSibling;
-
-        if (menu.classList.contains('active')) {
-            // Collapse menu if already open
-            menu.classList.remove('active');
-            menu.style.maxHeight = null;
-            menu.style.opacity = 0;
-        } else {
-            // Close other open menus
-            document.querySelectorAll('.sidenav .dropdown-menu.active').forEach(openMenu => {
-                openMenu.classList.remove('active');
-                openMenu.style.maxHeight = null;
-                openMenu.style.opacity = 0;
+    document.addEventListener('click', function(event) {
+        // Check if the clicked element is not inside the sidenav or dropdown menu
+        if (!event.target.closest('.sidenav') && !event.target.closest('.dropdown-menu')) {
+            // Find all open dropdown menus
+            const openMenus = document.querySelectorAll('.sidenav .dropdown-menu.active');
+            openMenus.forEach(menu => {
+                // Remove 'active' class and reset max-height
+                menu.classList.remove('active');
+                menu.style.maxHeight = null;
+                menu.style.opacity = 0;
             });
-
-            // Expand the clicked menu
-            menu.classList.add('active');
-            menu.style.maxHeight = menu.scrollHeight + 'px'; // Adjust height dynamically
-            menu.style.opacity = 1;
         }
     });
-});
 
+    // Handle toggling of dropdown menus
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            // Find the associated dropdown menu
+            const menu = this.nextElementSibling;
+
+            if (menu.classList.contains('active')) {
+                // Collapse menu if already open
+                menu.classList.remove('active');
+                menu.style.maxHeight = null;
+                menu.style.opacity = 0;
+            } else {
+                // Close other open menus
+                document.querySelectorAll('.sidenav .dropdown-menu.active').forEach(openMenu => {
+                    openMenu.classList.remove('active');
+                    openMenu.style.maxHeight = null;
+                    openMenu.style.opacity = 0;
+                });
+
+                // Expand the clicked menu
+                menu.classList.add('active');
+                menu.style.maxHeight = menu.scrollHeight + 'px'; // Adjust height dynamically
+                menu.style.opacity = 1;
+            }
+        });
+    });
 </script>

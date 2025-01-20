@@ -23,9 +23,11 @@ class InvestigationReportDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', 'investigationreport.action')
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->format('Y-m-d'); // Format to display only the date
+            })
             ->setRowId('id');
     }
-
     /**
      * Get the query source of dataTable.
      */
@@ -70,7 +72,6 @@ class InvestigationReportDataTable extends DataTable
             Column::make('id'),
             Column::make('patient_name')->title('Patient Name'),
             Column::make('created_at'),
-            Column::make('updated_at'),
         ];
     }
 

@@ -98,7 +98,7 @@ class StockDataTable extends DataTable
             Column::make('item_code')->title('Item Code'), // Custom title for clarity
             Column::make('item_price')->title('Price'), // Custom title for clarity
             Column::make('item.item_type')->title('Item Type'),
-            Column::make('total_stock')->data('total_stock')->title('Total Stock'),
+            // Column::make('total_stock')->data('total_stock')->title('Total Stock'),
             Column::make('expiry_date'),
         ];
     }

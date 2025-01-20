@@ -81,5 +81,13 @@ class Item extends Model
     {
         return $this->belongsTo(SourceCompany::class, 'source_company', 'id'); // Ensure 'source_company' is the foreign key in your `items` table
     }
+    public function uom()
+    {
+        return $this->belongsTo(UomType::class, 'uom_type', 'id'); // Ensure 'source_company' is the foreign key in your `items` table
+    }
 
+    public function stock()
+    {
+        return $this->hasMany(Stock::class, 'item_id');
+    }
 }

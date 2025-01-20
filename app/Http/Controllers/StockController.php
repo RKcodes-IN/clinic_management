@@ -13,7 +13,9 @@ use App\Models\SourceCompany;
 use App\Models\Stock;
 use App\Models\StockTransaction;
 use App\Models\UomType;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
 
@@ -432,6 +434,63 @@ class StockController extends Controller
     public function update(Request $request, Stock $stock)
     {
         //
+    }
+
+    public function updatePricing($type)
+    {
+        if ($type === "mis") {
+            $items = Item::where('item_type', Item::MISCELLANEOUS)->get();
+        } else {
+            $items = Item::where('item_type', Item::TYPE_LAB)->get();
+        }
+        return view('stock.update-pricing', compact('items'));
+    }
+
+
+    public function updatePrice(Request $request)
+    {
+        $validated = $request->validate([
+            'item_id' => 'required|exists:items,id', // Ensure the item_id exists in the items table
+            'price' => 'required|numeric|min:0',
+            'start_date' => 'required|date',
+        ]);
+
+        try {
+            $userId = Auth::id();
+            $currentDate = Carbon::today();
+
+            // Fetch the latest stock entry for the item
+            $stock = Stock::where('item_id', $request->item_id)
+                ->orderBy('start_date', 'DESC')
+                ->first();
+
+            if (!$stock) {
+                return redirect()->back()->withErrors(['error' => 'No existing stock found for the specified item.']);
+            }
+
+            // Add new stock entry
+            $addNewStock = new Stock();
+            $addNewStock->purchase_order_id = 0;
+            $addNewStock->purchase_order_item_id = 0;
+            $addNewStock->item_id = $request->item_id;
+            $addNewStock->item_price = $request->price;
+            $addNewStock->total_price = $request->price; // Assuming total_price is same as price for now
+            $addNewStock->order_date = $currentDate;
+            $addNewStock->received_date = $currentDate;
+            $addNewStock->expiry_date = null; // Adjust if needed
+            $addNewStock->batch_no = "";
+            $addNewStock->start_date = $request->start_date;
+            $addNewStock->status = Stock::IN_STOCK;
+            $addNewStock->created_by = $userId;
+            $addNewStock->save();
+            $stock->status = Stock::EXPIRED;
+            $stock->save();
+            return redirect()->back()->with('success', 'Price Updated Successfully.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->withErrors(['error' => 'Stock not found for the specified item.']);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'An unexpected error occurred: ' . $e->getMessage()]);
+        }
     }
 
     /**

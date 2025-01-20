@@ -13,6 +13,7 @@ use App\Models\StockTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use Mpdf\Mpdf;
 
 class PurchaseOrderController extends Controller
 {
@@ -92,6 +93,20 @@ class PurchaseOrderController extends Controller
         return view('purchase_order.edit_items', compact('purchaseOrder'));
     }
 
+    public function downloadPdf($id)
+    {
+        $purchaseOrder = PurchaseOrder::with(['purchaseOrderItems.item', 'purchaseOrderItems.item.uom'])->findOrFail($id);
+        $company = SourceCompany::findOrFail($purchaseOrder->source_company_id); // Assuming you have company details linked
+
+        $html = view('purchase_order/order_pdf', compact('purchaseOrder', 'company'))->render();
+
+        $mpdf = new Mpdf();
+        $mpdf->WriteHTML($html);
+
+        $fileName = 'Purchase_Order_' . $purchaseOrder->id . '.pdf';
+
+        return $mpdf->Output(name: $fileName, dest: 'D'); // Download the PDF
+    }
     public function updatePurchaseOrderItems(Request $request, $purchase_order_id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($purchase_order_id);
@@ -117,10 +132,9 @@ class PurchaseOrderController extends Controller
     {
         if (!empty($request->all())) {
             $requestData = $request->all();
-
             foreach ($requestData as $data) {
                 // Validate the data for each item
-                $validator = Validator::make($data, [
+                $validator = Validator::make($data, rules: [
                     'item_id' => 'required|integer',
                     'received_quantity' => 'required|numeric|min:1',
                     'unit_price' => 'required|numeric|min:0',
@@ -155,9 +169,12 @@ class PurchaseOrderController extends Controller
                 }
 
                 // Update the item's details
-                $purchaseOrderItem->update([
+                $purchaseOrderItem->update(attributes: [
                     'received_quantity' => $purchaseOrderItem->received_quantity + $data['received_quantity'],
                     'item_price' => $data['unit_price'],
+                    'gst_percentage' => $data['gst_percentage'],
+                    'gst_amount' => $data['gst_amount'],
+                    'purchase_price' => $data['purchase_price'],
                     'total_price' => $data['total_price'],
                     'expiry_date' => $data['expiry_date'],
                     'received_date' => $data['received_date'],
