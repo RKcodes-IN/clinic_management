@@ -235,6 +235,73 @@
 
         </div>
 
+        <div class="healthevalution-section">
+            <h4 class="mb-4">Pharmacy Prescriptons</h4>
+            <table class="table table-hover table-bordered">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Date</th>
+                        <th>Item</th>
+                        <th>quantity</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($pharmacyPrescriptions as $prescriptions)
+                        @if ($prescriptions)
+                            <tr>
+                                <td>{{ $prescriptions->date }}</td>
+
+                                <td>{{ $prescriptions->item->name }}</td>
+                                <td>{{ $prescriptions->quantity }}</td>
+
+
+                            </tr>
+                        @else
+                            <tr>
+                                <td colspan="5">Invalid health evaluation record.</td>
+                            </tr>
+                        @endif
+                    @endforeach
+
+                </tbody>
+
+            </table>
+        </div>
+
+        <div class="healthevalution-section">
+            <h4 class="mb-4">Lab Tests</h4>
+            <table class="table table-hover table-bordered">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Date</th>
+                        <th>Item</th>
+                        <th>quantity</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($labPrescriptions as $labprescriptions)
+                        @if ($prescriptions)
+                            <tr>
+                                <td>{{ $labprescriptions->date }}</td>
+
+                                <td>{{ $labprescriptions->item->name }}</td>
+                                <td>{{ $labprescriptions->quantity }}</td>
+
+
+                            </tr>
+                        @else
+                            <tr>
+                                <td colspan="5">Invalid health evaluation record.</td>
+                            </tr>
+                        @endif
+                    @endforeach
+
+                </tbody>
+
+            </table>
+        </div>
     </div>
 
 

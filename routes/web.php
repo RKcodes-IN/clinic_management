@@ -142,6 +142,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/appointments/{id}/reject', [AppointmentController::class, 'reject'])->name('appointments.reject');
     Route::get('/appointments/watsapp', [AppointmentController::class, 'AppointmentWa'])->name('appointments.wa');
     Route::get('/appointments/{id}/getpatientdetail', [AppointmentController::class, 'patientDetails'])->name('appointments.patientdetails');
+    Route::get('/appointment/import', [AppointmentController::class, 'importForm'])->name('appointment.importform');
+    Route::post('/appointment/import', [AppointmentController::class, 'import'])->name('appointment.import');
 
     Route::get('health-evalution/create', [HealthEvaluationController::class, 'create'])->name('healthevalution.create');
     Route::get('health-evalution', [HealthEvaluationController::class, 'index'])->name('healthevalution.index');

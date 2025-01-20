@@ -9,6 +9,7 @@ use App\Models\LabPrescription;
 use App\Models\PharmacyPrescription;
 use App\Models\Stock;
 use App\Models\StockTransaction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -83,6 +84,11 @@ class InvoiceDetailImport implements ToModel, WithHeadingRow
                 'transaction_date' => $row['created_at'] ?? now(),
             ]);
 
+
+            $formattedDate = isset($row['created_at'])
+                ? Carbon::parse($row['created_at'])->format('Y-m-d H:i:s')
+                : now()->toDateTimeString();
+
             if ($row['item_type'] == Item::TYPE_PHARMACY) {
                 PharmacyPrescription::create([
                     'stock_id' => $stock->id,
@@ -90,7 +96,7 @@ class InvoiceDetailImport implements ToModel, WithHeadingRow
                     'patient_id' => $patientId,
                     'quantity' => $row['quantitiy'],
                     'description' => "",
-                    "date" => $row['created_at']
+                    "date" => $formattedDate
                 ]);
             }
 
@@ -101,7 +107,7 @@ class InvoiceDetailImport implements ToModel, WithHeadingRow
                     'patient_id' => $patientId,
                     'quantity' => $row['quantitiy'],
                     'description' => "",
-                    "date" => $row['created_at']
+                    "date" => $formattedDate
                 ]);
             }
         });

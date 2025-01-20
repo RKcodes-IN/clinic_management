@@ -7,8 +7,10 @@ use App\Imports\PatientsImport;
 use App\Models\Appointment;
 use App\Models\HealthEvaluation;
 use App\Models\InvestigationReport;
+use App\Models\LabPrescription;
 use App\Models\patient_detail;
 use App\Models\PatientDetail;
+use App\Models\PharmacyPrescription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -106,8 +108,10 @@ class PatientDetailController extends Controller
             ->get();
 
         $appontmentCount = Appointment::where('patient_id', $id)->count();
+        $pharmacyPrescriptions = PharmacyPrescription::where('patient_id', $id)->get();
+        $labPrescriptions = LabPrescription::where('patient_id', $id)->get();
 
-        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport', 'appontmentCount'));
+        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport', 'appontmentCount', 'pharmacyPrescriptions', 'labPrescriptions'));
     }
 
 

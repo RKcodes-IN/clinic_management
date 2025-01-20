@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\AppointmentDataTable;
 use App\DataTables\AppointmentswaDataTable;
 use App\DataTables\DoctorDetailDataTable;
+use App\Imports\AppointmentImport;
 use App\Models\Appointment;
 use App\Models\DoctorDetail;
 use App\Models\HealthEvaluation;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 
 class AppointmentController extends Controller
@@ -335,5 +337,22 @@ class AppointmentController extends Controller
         $appointment->save();
 
         return response()->json(['success' => true, 'message' => 'Appointment rejected successfully']);
+    }
+
+    public function importForm(Request $request)
+    {
+        return view('appointment.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv', // Validate file type
+        ]);
+
+        // Import the Excel file
+        Excel::import(new AppointmentImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Import Form');
     }
 }
