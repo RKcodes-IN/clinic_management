@@ -35,6 +35,7 @@
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <input type="password" name="password" id="password" class="form-control" required>
+                                <p>The password must be at least 8 characters.</p>
                                 @error('password')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror

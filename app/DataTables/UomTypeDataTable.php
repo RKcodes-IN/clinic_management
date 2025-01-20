@@ -29,6 +29,18 @@ class UomTypeDataTable extends DataTable
             ->addColumn('formatted_updated_at', function ($row) {
                 return $row->updated_at ? $row->updated_at->format('Y-m-d') : '';
             })
+            ->editColumn('status', function ($row) {
+                switch ($row->status) {
+                    case 1:
+                        return 'Active';
+                    case 2:
+                        return 'Inactive';
+                    case 3:
+                        return 'Deleted';
+                    default:
+                        return 'Unknown';
+                }
+            })
             ->setRowId('id');
     }
 
@@ -76,10 +88,7 @@ class UomTypeDataTable extends DataTable
             Column::make('id'),
             Column::make('name'),
             Column::make('status'),
-            Column::computed('formatted_created_at')
-                ->title('Created At'),
-            Column::computed('formatted_updated_at')
-                ->title('Updated At'),
+
 
         ];
     }

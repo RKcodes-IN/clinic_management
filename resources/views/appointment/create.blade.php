@@ -30,15 +30,31 @@
                                         <!-- Patient Name / Existing Patient -->
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="patient">Patient</label>
-                                                <select id="patient" name="patient_id" class="form-control"
-                                                    style="width:100%"></select>
-                                                @error('patient_id')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
+                                                <label>Patient</label>
+                                                <div>
+                                                    <input type="radio" name="patient_type" id="old_patient"
+                                                        value="old" checked>
+                                                    <label for="old_patient">Old Patient</label>
+
+                                                    <input type="radio" name="patient_type" id="new_patient"
+                                                        value="new">
+                                                    <label for="new_patient">New Patient</label>
+                                                </div>
                                             </div>
-                                            <!-- Hidden field to capture new patient name -->
-                                            <input type="hidden" id="new_patient_name" name="new_patient_name">
+
+                                            <!-- Dropdown for old patient -->
+                                            <div class="form-group" id="old_patient_field">
+                                                <label for="patient">Select Patient</label>
+                                                <select id="patient" name="patient_id" class="form-control"
+                                                    style="width: 100%;"></select>
+                                            </div>
+
+                                            <!-- Text field for new patient -->
+                                            <div class="form-group" id="new_patient_field" style="display: none;">
+                                                <label for="new_patient_name">Patient Name</label>
+                                                <input type="text" id="new_patient_name" name="new_patient_name"
+                                                    class="form-control">
+                                            </div>
                                         </div>
 
                                         <div class="col-md-6">
@@ -125,14 +141,14 @@
 
                                             <div class="form-group">
                                                 <div class="form-check form-check-inline">
-                                                    <input type="radio" class="form-check-input" name="consultation_type"
-                                                        id="online" value="1"
+                                                    <input type="radio" class="form-check-input"
+                                                        name="consultation_type" id="online" value="1"
                                                         {{ old('consultation_type') == '1' ? 'checked' : '' }}>
                                                     <label class="form-check-label" for="online">Online</label>
                                                 </div>
                                                 <div class="form-check form-check-inline">
-                                                    <input type="radio" class="form-check-input" name="consultation_type"
-                                                        id="physical" value="2"
+                                                    <input type="radio" class="form-check-input"
+                                                        name="consultation_type" id="physical" value="2"
                                                         {{ old('consultation_type') == '2' ? 'checked' : '' }}>
                                                     <label class="form-check-label" for="physical">Physical</label>
                                                 </div>
@@ -388,71 +404,47 @@
 
         <script>
             $(document).ready(function() {
+                // Toggle between old and new patient fields
+                $('input[name="patient_type"]').change(function() {
+                    if ($(this).val() === 'old') {
+                        $('#old_patient_field').show();
+                        $('#new_patient_field').hide();
+                        $('#new_patient_name').val(''); // Clear new patient name
+                    } else if ($(this).val() === 'new') {
+                        $('#old_patient_field').hide();
+                        $('#new_patient_field').show();
+                        $('#patient').val(null).trigger('change'); // Clear dropdown selection
+                    }
+                });
+
+                // Initialize Select2 for the old patient dropdown
                 $('#patient').select2({
                     ajax: {
-                        url: '{{ route('patients.search') }}', // Make sure this route returns the patient data as JSON
+                        url: '{{ route('patients.search') }}', // Replace with your route
                         dataType: 'json',
-                        delay: 250, // Add delay for better performance on typing
+                        delay: 250,
                         data: function(params) {
                             return {
-                                query: params.term // Send the search query to the server
+                                query: params.term
                             };
                         },
-
                         processResults: function(data) {
                             return {
-
-
                                 results: data.map(function(item) {
-                                    console.log(item);
-
                                     return {
                                         id: item.id,
-                                        text: item
-                                            .name + " (" + item
-                                            .phone_number + ")" + " (" + item
-                                            .place +
-                                            ")" // Assuming 'name' is the patient name in your JSON response
+                                        text: item.name + " (" + item.phone_number + ")"
                                     };
                                 })
                             };
                         },
                         cache: true
-                    },
-                    tags: true, // Enable typing of new entries
-                    createTag: function(params) {
-                        // Create new patient entry if it doesn't exist
-                        return {
-                            id: params.term,
-                            text: params.term,
-                            newOption: true // Mark it as a new option
-                        };
-                    },
-                    templateResult: function(data) {
-                        // Highlight new options differently in the dropdown
-                        var $result = $("<span></span>");
-                        $result.text(data.text);
-
-                        if (data.newOption) {
-                            $result.append(" <em>(new)</em>");
-                        }
-                        return $result;
-                    }
-                });
-
-                // Handle selection of patient
-                $('#patient').on('select2:select', function(e) {
-                    var data = e.params.data;
-
-                    if (data.newOption) {
-                        // If the patient is new, set the hidden input field with the new patient's name
-                        $('#new_patient_name').val(data.text);
-                    } else {
-                        // If an existing patient is selected, clear the hidden input field
-                        $('#new_patient_name').val('');
                     }
                 });
             });
+
+
+
 
             $(document).ready(function() {
                 // Initially hide the container on page load

@@ -23,6 +23,18 @@ class SourceCompanyDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', 'source-company.action')
+            ->editColumn('status', function ($row) {
+                switch ($row->status) {
+                    case 1:
+                        return 'Active';
+                    case 2:
+                        return 'Inactive';
+                    case 3:
+                        return 'Deleted';
+                    default:
+                        return 'Unknown';
+                }
+            })
             ->setRowId('id');
     }
 

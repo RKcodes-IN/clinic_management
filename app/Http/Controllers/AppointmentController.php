@@ -92,6 +92,8 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
+
         // Validate the input data
         $request->validate([
             'patient_id' => 'nullable',
@@ -104,22 +106,17 @@ class AppointmentController extends Controller
             'available_date' => 'required|date',
             'time_from' => 'required',
             'time_to' => 'required',
+            'patient_type' => 'required|in:new,old', // Ensure patient type is selected
         ]);
 
         DB::beginTransaction();
 
         try {
+            $patientId = null;
 
-
-            if ($request->filled('patient_id')) {
-                $patientId = $request->input('patient_id');
-            } else {
-                $patientId = null;
-            }
-
-            // Check if new patient name is provided
-            if ($request->filled('new_patient_name')) {
-                // Create new patient
+            // Check if it's a new patient
+            if ($request->input('patient_type') === 'new' && $request->filled('new_patient_name')) {
+                // Create a new patient
                 $role = Role::where('name', 'patient')->firstOrFail();
                 $existingUser = User::where('email', $request->input('email'))->first();
 
@@ -127,10 +124,10 @@ class AppointmentController extends Controller
                     DB::rollBack();
                     return redirect()->route('appointments.create')
                         ->with('error', 'Email already taken.')
-                        ->with('toast', 'error');  // Added toast message
+                        ->with('toast', 'error');
                 }
 
-                // Create new user
+                // Create a new user
                 $user = new User();
                 $user->name = $request->input('new_patient_name');
                 $user->email = $request->input('email');
@@ -153,28 +150,27 @@ class AppointmentController extends Controller
                 $patient->save();
 
                 $patientId = $patient->id;
-            } elseif ($request->filled('patient_id')) {
-                // Use existing patient
+            } elseif ($request->input('patient_type') === 'old' && $request->filled('patient_id')) {
+                //
+                // dd($request->input('age'));
+
+                // Use existing patient if old patient is selected
+                $patientId = $request->input('patient_id');
 
                 if ($patientId < 1) {
                     return redirect()->back()
-                        ->with('error', 'Invalid patient ID provided.  ')
+                        ->with('error', 'Invalid patient ID provided.')
                         ->with('toast', 'error');
                 }
-                $patientId = $request->input('patient_id');
             }
 
-            // Ensure patient ID is not null
-            if (is_null($patientId) || !$patientId) {
+            // Ensure patient ID is valid
+            if (is_null($patientId) || empty($patientId) || $patientId < 1) {
                 return redirect()->route('appointments.create')
-                    ->with('error', 'missing patient id please retry again. Please Refresh and try again')
-                    ->with('toast', 'error');  // Added error toast
-            }
-            if (empty($patientId) || $patientId < 1) {
-                return redirect()->back()
-                    ->with('error', 'Valid patient ID is required. Please Refresh and try again')
+                    ->with('error', 'Missing or invalid patient ID. Please refresh and try again.')
                     ->with('toast', 'error');
             }
+
             // Create appointment
             $appointment = new Appointment();
             $appointment->patient_id = $patientId;
@@ -193,32 +189,23 @@ class AppointmentController extends Controller
             $appointment->confirmation_time = $request->input('time_from');
             $appointment->message = $request->input('message');
             $appointment->age = $request->input('age');
-            $appointment->age = $request->input('message');
             $appointment->status = $request->input('status', 'pending'); // Default status
             $appointment->type = $request->input('type'); // Default status
             $appointment->is_online = $request->input('is_online'); // Default status
             $appointment->save();
 
-            // Ensure patient object exists for evaluation
-
-
             DB::commit();
-            // flash()->success('Appointment created successfully.');
 
             return redirect()->route('appointments.index')
                 ->with('success', 'Appointment created successfully.')
-                ->with('toast', 'success');  // Added success toast
-
+                ->with('toast', 'success');
         } catch (\Exception $e) {
             DB::rollBack();
-            // flash()->error('Something went wrong');
-
             return redirect()->route('appointments.create')
                 ->with('error', 'Something went wrong: ' . $e->getMessage())
-                ->with('toast', 'error');  // Added error toast
+                ->with('toast', 'error');
         }
     }
-
 
     /**
      * Display the specified resource.
