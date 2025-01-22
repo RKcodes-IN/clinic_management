@@ -41,7 +41,7 @@
 
                                 <tr>
                                     <th>Discount</th>
-                                    <td>{{ number_format($invoice->discount, 2) }}%</td>
+                                    <td>₹{{ number_format($invoice->discount, 2) }}</td>
                                 </tr>
                                 <tr>
                                     <th>GST</th>
@@ -109,6 +109,7 @@
                                         <th>Item Name</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
+                                        <th>Discount</th>
                                         <th>Total</th>
                                     </tr>
                                 </thead>
@@ -119,6 +120,7 @@
                                             </td>
                                             <td>{{ $item->quantity }}</td>
                                             <td>{{ number_format($item->item_price, 2) }}</td>
+                                            <td>{{ number_format($item->add_dis_amount ?? 0, 2) }}</td>
                                             <td>{{ number_format($item->total_amount, 2) }}</td>
                                         </tr>
                                     @endforeach

@@ -82,7 +82,7 @@ class DoctorDetailController extends Controller
 
         $doctorDetail->save();
 
-        return redirect()->route('users.index')->with('success', 'User and Doctor Detail created successfully.');
+        return redirect()->route('doctorDetail.index')->with('success', 'User and Doctor Detail created successfully.');
     }
 
     /**

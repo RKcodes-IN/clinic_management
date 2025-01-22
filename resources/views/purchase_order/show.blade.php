@@ -25,48 +25,51 @@
         </div>
 
         <h4>Items</h4>
-        <div class="card  p-2">
-            <table class="table table-striped table-responsive">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Item Name</th>
-                        <th>Quantity</th>
-                        <th>Recieve Quantity</th>
-                        <th>MRP</th>
-                        <th>Purchase Price</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($purchaseOrder->purchaseOrderItems as $item)
+        <div class="card p-2">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->item->name ?? '' }}</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td>{{ $item->received_quantity }}</td>
-                            <td>₹{{ number_format($item->item_price, 2) }}</td>
-                            <td>₹{{ number_format($item->purchase_price, 2) }}</td>
-                            <td>₹{{ number_format($item->total_price, 2) }}</td>
-                            <td>{!! $item->getStatusLabel($item->status) !!}</td>
-                            <td>
-                                <button type="button" class="border-0 bg-none"
-                                    onclick="showMarkReceiveModal(
-                                    {{ $item->item->id ?? 0 }},
-                                    {{ $item->quantity ?? 0 }},
-                                    {{ $item->item_price ?? 0 }},
-                                    {{ $item->id ?? 0 }}
-                                )">
-                                    <i class="fa fa-arrows text-primary" aria-hidden="true"></i>
-                                </button>
-                            </td>
+                            <th>#</th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Receive Quantity</th>
+                            <th>MRP</th>
+                            <th>Purchase Price</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($purchaseOrder->purchaseOrderItems as $item)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $item->item->name ?? '' }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->received_quantity }}</td>
+                                <td>₹{{ number_format($item->item_price, 2) }}</td>
+                                <td>₹{{ number_format($item->purchase_price, 2) }}</td>
+                                <td>₹{{ number_format($item->total_price, 2) }}</td>
+                                <td>{!! $item->getStatusLabel($item->status) !!}</td>
+                                <td>
+                                    <button type="button" class="border-0 bg-none"
+                                        onclick="showMarkReceiveModal(
+                                        {{ $item->item->id ?? 0 }},
+                                        {{ $item->quantity ?? 0 }},
+                                        {{ $item->item_price ?? 0 }},
+                                        {{ $item->id ?? 0 }}
+                                    )">
+                                        <i class="fa fa-arrows text-primary" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </div>
 @endsection
 @push('scripts')

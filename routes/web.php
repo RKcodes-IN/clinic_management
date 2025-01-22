@@ -16,6 +16,7 @@ use App\Http\Controllers\InvestigationReportTypeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\LabPrescriptionController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PharmacyPrescriptionController;
@@ -111,7 +112,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
 
-
+    Route::get('/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
     Route::get('doctor/index', [DoctorDetailController::class, 'index'])->name('doctorDetail.index');
     Route::get('doctor/create', [DoctorDetailController::class, 'create'])->name('doctorDetail.create');
     Route::post('doctor/store', [DoctorDetailController::class, 'store'])->name('doctorDetail.store');
@@ -222,7 +224,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/purchase-order', [PurchaseOrderController::class, 'index'])->name('purchaseorder.index');
     Route::get('/purchase-orders/{id}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
     Route::post('/purchase-orders/items/{itemId}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.recieve');
-    Route::get('/purchase-orders/{id}/pdf', [PurchaseOrderController::class, 'downloadPdf'])->name('purchase_order.pdf');
+    Route::get('/purchase-orders/{id}/pdf', [PurchaseOrderItemController::class, 'downloadPdf'])->name('purchase_order.pdf');
 
     Route::get('purchase-order/import-form', [PurchaseorderController::class, 'importForm'])->name('purchaseorder.importForm');
     Route::post('purchase-orders/import', [PurchaseorderController::class, 'import'])->name('purchaseorder.import');
@@ -256,10 +258,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
     Route::get('/invoice/{id}/download', [InvoiceController::class, 'downloadInvoice'])->name('invoice.download');
     Route::patch('/invoice/{id}/update-payment', [InvoiceController::class, 'updatePayPayment'])->name('invoice.updatePayment');
+
+
+
     Route::get('/dashboard/stats', [DashboardController::class, 'dashboardStats'])->name('dashboard.counts');
     Route::get('/prescription/create', [PharmacyPrescriptionController::class, 'create'])->name('prescription.create');
     Route::post('/prescription/store', [PharmacyPrescriptionController::class, 'store'])->name('prescription.store');
     Route::get('/prescriptions/{patientId}', [InvoiceController::class, 'getPrescriptions']);
+
+    Route::get('/lab/investigation/create', [LabPrescriptionController::class, 'create'])->name('labprescription.create');
+
+    Route::post('/lab/investigation/store', [LabPrescriptionController::class, 'store'])->name('labprescription.store');
 });
 
 
@@ -276,6 +285,7 @@ Route::group(['middleware' => 'guest'], function () {
     Route::post('/reset-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
 });
 
+Route::get('/test-invoice', [InvoiceController::class, 'invoiceToAppointments']);
 
 
 

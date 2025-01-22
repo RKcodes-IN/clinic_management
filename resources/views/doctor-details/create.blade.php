@@ -16,6 +16,7 @@
 
                         <form action="{{ route('doctorDetail.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
+
                             <div class="form-group">
                                 <label for="name">Name</label>
                                 <input type="text" name="name" id="name" class="form-control" required>
@@ -33,12 +34,33 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="date_of_birth">Date of Birth</label>
+                                <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" required>
+                                @error('date_of_birth')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
                                 <label for="age">Age</label>
-                                <input type="number" name="age" id="age" class="form-control" required>
+                                <input type="number" name="age" id="age" class="form-control" readonly>
                                 @error('age')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
+
+                            <script>
+                                document.getElementById('date_of_birth').addEventListener('change', function () {
+                                    const dob = new Date(this.value);
+                                    const today = new Date();
+                                    let age = today.getFullYear() - dob.getFullYear();
+                                    const m = today.getMonth() - dob.getMonth();
+                                    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                                        age--;
+                                    }
+                                    document.getElementById('age').value = age;
+                                });
+                            </script>
 
                             <div class="form-group">
                                 <label for="gender">Gender</label>
@@ -93,7 +115,7 @@
                                 @enderror
                             </div>
 
-                            <button type="submit" class="btn btn-primary">Create User</button>
+                            <button type="submit" class="btn btn-primary">Create Doctor</button>
                         </form>
                     </div>
                 </div>

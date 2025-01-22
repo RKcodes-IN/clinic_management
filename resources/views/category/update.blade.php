@@ -28,6 +28,19 @@
                                 @enderror
                             </div>
 
+                            <div class="form-group">
+                                <label for="status">Status</label>
+                                <select name="status" id="status" class="form-control" required>
+                                    <option value="active" {{ old('status', $category->status) == 1 ? 'selected' : '' }}>
+                                        Active</option>
+                                    <option value="inactive" {{ old('status', $category->status) == 0 ? 'selected' : '' }}>
+                                        Inactive</option>
+                                </select>
+                                @error('status')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
                             <button type="submit" class="btn btn-primary">Update</button>
                         </form>
                     </div>

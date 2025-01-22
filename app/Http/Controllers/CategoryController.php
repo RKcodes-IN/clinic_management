@@ -72,6 +72,8 @@ class CategoryController extends Controller
 
         // Update the category details
         $category->name = $request->input('name');
+        $category->status = $request->input('status');
+
         $category->save();
 
         // Redirect to the category index page with a success message

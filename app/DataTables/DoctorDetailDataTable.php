@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\DoctorDetail;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -25,8 +26,16 @@ class DoctorDetailDataTable extends DataTable
             ->addColumn('action', 'doctor-details.action')
             ->editColumn('profile_image', function ($row) {
                 // Assuming the image path is stored in the 'profile_image' field
-                $imageUrl = asset('storage/' . $row->profile_image); // Adjust the path based on your setup
-                return '<img src="' . $imageUrl . '" alt="Profile Image" width="50" height="50" class="img-thumbnail">';
+                if (!empty($row->profile_image)) {
+                    $imageUrl = asset('storage/' . $row->profile_image); // Adjust the path based on your setup
+                    return '<img src="' . $imageUrl . '" alt="Profile Image" width="50" height="50" class="img-thumbnail">';
+                } else {
+                    return '<img src="https://i.pinimg.com/280x280_RS/e1/08/21/e10821c74b533d465ba888ea66daa30f.jpg" alt="Profile Image" width="50" height="50" class="img-thumbnail">';
+                }
+            })
+            ->editColumn('created_at', function ($row) {
+                // Format the created_at column to show only the date
+                return Carbon::parse($row->created_at)->format('Y-m-d');
             })
             ->rawColumns(['profile_image', 'action']) // Mark these columns as raw to render HTML
             ->setRowId('id');
@@ -84,6 +93,8 @@ class DoctorDetailDataTable extends DataTable
             Column::make('specialty'),
             Column::make('phone'),
             Column::make('profile_image'),
+            Column::make('created_at')
+                ->title('Created At'),
 
         ];
     }

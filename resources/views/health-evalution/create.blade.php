@@ -516,7 +516,7 @@
 
                                         <!-- resources/views/health-evalution/create.blade.php -->
 
-                                        <legend>Addications</legend>
+                                        <legend>Addictions</legend>
 
                                         <table class="table table-bordered">
                                             <thead>

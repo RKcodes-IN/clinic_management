@@ -53,6 +53,7 @@ class StockController extends Controller
         $items = Item::where('item_type', 1)
             ->whereNotNull('name') // Exclude items with null names
             ->where('name', '!=', '') // Exclude items with empty names
+            ->where('status', '=', Item::TYPE_PHARMACY) // Exclude items with empty names
             ->get(); // Fetch all items to populate the dropdown
         return view('stock.stockreport', compact('items'));
     }
@@ -215,7 +216,9 @@ class StockController extends Controller
 
     public function stockFilterView()
     {
-        $items = Item::all(); // Fetch all items to populate the dropdown
+        $items = Item::where('status', '=', Item::TYPE_PHARMACY)-> // Exclude items with empty names
+
+            get(); // Fetch all items to populate the dropdown
         return view('stock.stocktransaction', compact('items'));
     }
 
@@ -385,7 +388,7 @@ class StockController extends Controller
             'purchase_invoice_date' => $request->purchase_invoice_date,
             'source_name' => $request->source_name,
             'brand' => $request->brand,
-            'category' => $request->category,
+            'category' => $request->category_id,
             'batch' => $request->batch,
             'expiry_date' => $request->expiry_date,
             'hsn_code' => $request->hsn_code,

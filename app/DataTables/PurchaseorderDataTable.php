@@ -27,7 +27,10 @@ class purchaseOrderDataTable extends DataTable
             })
 
             ->addColumn('status', function ($row) {
-                return (new PurchaseOrder())->getStatusLabel($row->status);
+                return [
+                    'status_label' => (new PurchaseOrder())->getStatusLabel($row->status),
+                    'raw_status' => $row->status, // Add raw status value for sorting
+                ];
             })
             ->addColumn('action', 'purchase_order.action')
             ->rawColumns(['status', 'action'])
@@ -74,17 +77,24 @@ class purchaseOrderDataTable extends DataTable
                 ->exportable(false)
                 ->printable(false)
                 ->width(60)
-                ->addClass('text-center'),
-            Column::make('id'),
+                ->addClass('text-center')
+                ->orderable(false), // Disable sorting for action column
+
+            Column::make('id')
+                ->orderable(true), // Enable sorting for the id column
+
             Column::make('source_company')
-                ->title('Source Company'),
-            Column::make('creation_date'),
+                ->title('Source Company')
+                ->orderable(true), // Enable sorting for source_company column
+
+            Column::make('creation_date')
+                ->orderable(true), // Enable sorting for creation_date column
 
             Column::make('status')
-                ->title('Status'),
-
-
-
+                ->title('Status')
+                ->orderable(true)
+                ->data('status_label') // Display the formatted status
+                ->sortColumn('raw_status'), // Sort by raw status for proper sorting
         ];
     }
 

@@ -16,28 +16,68 @@ class ItemExport implements FromCollection, WithHeadings
         $this->items = $items;
     }
 
+
     public function collection(): Collection
     {
-        // Get IDs for brands and categories from items
-        $brandIds = $this->items->pluck('brand')->unique();
-        $categoryIds = $this->items->pluck('category')->unique();
+        // Extract and clean category IDs
+        $categoryIds = $this->items->pluck('category_id')
+            ->reject(function ($value) {
+                return is_null($value) || empty($value);
+            })
+            ->map(function ($item) {
+                // Handle both string/integer IDs and potential arrays
+                if (is_array($item)) {
+                    return (int) head($item);
+                }
+                return (int) $item;
+            })
+            ->filter()  // Remove any zero values after casting
+            ->unique()
+            ->values()
+            ->toArray();
 
-        // Fetch related names from the database
-        $brands = DB::table('brands')->whereIn('id', $brandIds)->pluck('name', 'id');
-        $categories = DB::table('categories')->whereIn('id', $categoryIds)->pluck('name', 'id');
-        // Map the items collection to include resolved brand and category names
+        // Extract and clean brand IDs using the same logic
+        $brandIds = $this->items->pluck('brand')
+            ->reject(function ($value) {
+                return is_null($value) || empty($value);
+            })
+            ->map(function ($item) {
+                if (is_array($item)) {
+                    return (int) head($item);
+                }
+                return (int) $item;
+            })
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        // Fetch related data only if we have valid IDs
+        $categories = !empty($categoryIds)
+            ? DB::table('categories')->whereIn('id', $categoryIds)->pluck('name', 'id')->toArray()
+            : [];
+
+        $brands = !empty($brandIds)
+            ? DB::table('brands')->whereIn('id', $brandIds)->pluck('name', 'id')->toArray()
+            : [];
+
+        // Map items to final export format
         return $this->items->map(function ($item) use ($brands, $categories) {
+            // Ensure category and brand keys are valid types
+            $categoryKey = is_scalar($item->category) ? (string) $item->category : "";
+            $brandKey = is_scalar($item->brand) ? (string) $item->brand : "";
 
             return [
                 'ID' => $item->id,
                 'Item Code' => $item->item_code,
                 'Name' => $item->name,
-                'Category' => $categories[$item->category]??"", // Lookup category name
-                'Source Company' => $item->company->name??"",
-                'Brand' => $brands[$item->brand]??"", // Lookup brand name
+                'Category' => $categories[$categoryKey] ?? "",
+                'Source Company' => $item->company->name ?? "",
+                'Brand' => $brands[$brandKey] ?? "",
             ];
         });
     }
+
 
     public function headings(): array
     {

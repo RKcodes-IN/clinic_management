@@ -1,57 +1,36 @@
 <style>
-    /* .dropdown:not(.dropdown-hover) .dropdown-menu {
-        margin-top: 0 !important;
-        position: absolute;
+    /* Consolidated dropdown styles */
+    .sidenav .dropdown-menu {
+        --transition-duration: 0.3s;
+        --transition-easing: ease;
 
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        margin: -41px 0 28px 30px;
+        transition: all var(--transition-duration) var(--transition-easing);
+    }
 
-    /* Adjust margin/padding to reduce space between menu sections */
+    @media (max-width: 767.98px) {
+        .sidenav .dropdown-menu {
+            margin: -8px 0 8px 30px;
+        }
+    }
+
+    .sidenav .dropdown-menu.active {
+        max-height: 500px;
+        opacity: 1;
+    }
+
+    /* Simplified header styles */
     .navbar-nav .nav-item {
         margin-bottom: 0.5rem;
     }
 
-    /* Adjust padding for section headers */
     .navbar-nav h6 {
-        margin-top: 1rem;
-        margin-bottom: 0.5rem;
+        margin: 1rem 0 0.5rem;
     }
-
-    /* Ensure submenus are aligned correctly */
-    .sidenav .dropdown-menu {
-        max-height: 0;
-        /* Initially hidden */
-        opacity: 0;
-        /* Initially transparent */
-        overflow: hidden;
-        /* Prevent content overflow */
-        margin-top: -41px;
-        margin-bottom: 28px;
-        margin-left: 30px !important;
-        transition: max-height 0.3s ease, opacity 0.3s ease;
-        /* Smooth transition */
-    }
-
-
-    @media (max-width: 767.98px) {
-        .sidenav .dropdown-menu {
-            margin-top: -8px;
-            margin-bottom: 8px;
-        }
-    }
-
-    /* Style for visible submenus */
-    .sidenav .dropdown-menu.active {
-
-        max-height: 500px;
-        /* Adjust as needed to fit your submenu's max height */
-        opacity: 1;
-        /* Fully visible */
-    }
-
-
-
-    /* Additional custom styles if needed */
 </style>
-
 <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3"
     id="sidenav-main">
     <div class="sidenav-header">
@@ -205,9 +184,12 @@
                 <ul class="dropdown-menu" id="lab">
                     <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 3]) }}">Items List</a>
                     </li>
-                    <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
-                    <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'lab']) }}">Update
-                            Pricing</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'lab']) }}">Add Items</a>
+                    </li>
+                    @can('edit stock')
+                        <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'lab']) }}">Update
+                                Pricing</a></li>
+                    @endcan
                     {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li> --}}
                     {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
             </li>
@@ -232,11 +214,13 @@
             <ul class="dropdown-menu" id="miscellaneous">
                 <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 2]) }}">Items List</a>
                 </li>
-                <li><a class="dropdown-item" href="{{ Route('items.create') }}">Add Items</a></li>
+                <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'miss']) }}">Add Items</a>
+                </li>
                 {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 2]) }}">Stock</a></li> --}}
-                <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'mis']) }}">Update
-                        Pricing</a></li>
-
+                @can('edit stock')
+                    <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'mis']) }}">Update
+                            Pricing</a></li>
+                @endcan
                 {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
                 <!-- Add more submenu items as needed -->
@@ -256,8 +240,9 @@
                 <span class="nav-link-text ms-1">Invoice</span>
             </a>
             <ul class="dropdown-menu" id="invoicedropdown">
-                <li><a class="dropdown-item" href="{{ Route('invoice.create') }}">Create Invoice</a></li>
-                <li><a class="dropdown-item" href="{{ Route('invoice.index') }}">Invoice List</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('invoice.create') }}">Create Invoice</a></li>
+                    <li><a class="dropdown-item" href="{{ Route('invoice.index') }}">Invoice List</a></li>
+
                 {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
                 <!-- Add more submenu items as needed -->

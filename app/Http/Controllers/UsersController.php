@@ -76,17 +76,47 @@ class UsersController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
-    }
+        $user = User::findOrFail($id);
+        $roles = Role::all();
 
+        return view('users.edit', compact('user', 'roles'));
+    }
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        // Validate request data
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8',
+            'role' => 'required',
+        ]);
+
+        // Find the user
+        $user = User::findOrFail($id);
+
+        // Update user details
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+
+        // Update password if provided
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        $user->save();
+
+        // Update role
+        $role = Role::where('name', $request->input('role'))->firstOrFail();
+        $user->syncRoles([$role->name]);
+        $user->syncPermissions($role->permissions->pluck('name'));
+
+        // Redirect with success message
+        return redirect()->route('users.edit', $id)->with('success', 'User updated successfully.');
     }
 
     /**

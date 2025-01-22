@@ -122,60 +122,80 @@ class AppointmentDataTable extends DataTable
      * Get the dataTable columns definition.
      */
     public function getColumns(): array
-    {
-        return [
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(60)
-                ->addClass('text-center'),
-            Column::computed('approve')
-                ->exportable(false)
-                ->printable(false)
-                ->width(60)
-                ->addClass('text-center'),
-            // Column::make('id'),
-            Column::make('status')
-                ->defaultContent('Unknown'),
-            Column::make('type')
-                ->title('Type')
-                ->defaultContent('Unknown'),
-            Column::make('is_online')
-                ->title('Online/Visit')
-                ->defaultContent('Unknown'),
-            Column::make('patient_name')
-                ->defaultContent('N/A'),
-            Column::make('main_complaint')
-                ->defaultContent('No Complaint'),
-            Column::make('confirmation_date')
-                ->title('Conf. Date')
+{
+    return [
+        Column::computed('action')
+            ->exportable(false)
+            ->printable(false)
+            ->width(60)
+            ->addClass('text-center')
+            ->orderable(false), // Actions column is not sortable
 
-                ->defaultContent('Not Set'),
+        Column::computed('approve')
+            ->exportable(false)
+            ->printable(false)
+            ->width(60)
+            ->addClass('text-center')
+            ->orderable(false), // Approve column is not sortable
 
+        Column::make('status')
+            ->defaultContent('Unknown')
+            ->orderable(true), // Enable sorting
 
-            Column::make('confirmation_time')
-                ->title('Conf. Time')
-                ->defaultContent('Not Set'),
-            Column::make('available_date')
-                ->defaultContent('Not Set'),
-            Column::make('time_from')
-                ->defaultContent('Not Set'),
-            Column::make('time_to')
-                ->defaultContent('Not Set'),
+        Column::make('type')
+            ->title('Type')
+            ->defaultContent('Unknown')
+            ->orderable(true),
 
+        Column::make('is_online')
+            ->title('Online/Visit')
+            ->defaultContent('Unknown')
+            ->orderable(true),
 
-            Column::make('doctor_name')
-                ->title('Doctor Name')
-                ->defaultContent('N/A'),
-            Column::make('email')
-                ->defaultContent('No Email'),
-            Column::make('phone_number')
-                ->defaultContent('No Phone Number'),
+        Column::make('patient_name')
+            ->defaultContent('N/A')
+            ->orderable(true),
 
+        Column::make('main_complaint')
+            ->defaultContent('No Complaint')
+            ->orderable(true),
 
+        Column::make('confirmation_date')
+            ->title('Conf. Date')
+            ->defaultContent('Not Set')
+            ->orderable(true),
 
-        ];
-    }
+        Column::make('confirmation_time')
+            ->title('Conf. Time')
+            ->defaultContent('Not Set')
+            ->orderable(true),
+
+        Column::make('available_date')
+            ->defaultContent('Not Set')
+            ->orderable(true),
+
+        Column::make('time_from')
+            ->defaultContent('Not Set')
+            ->orderable(true),
+
+        Column::make('time_to')
+            ->defaultContent('Not Set')
+            ->orderable(true),
+
+        Column::make('doctor_name')
+            ->title('Doctor Name')
+            ->defaultContent('N/A')
+            ->orderable(true),
+
+        Column::make('email')
+            ->defaultContent('No Email')
+            ->orderable(true),
+
+        Column::make('phone_number')
+            ->defaultContent('No Phone Number')
+            ->orderable(true),
+    ];
+}
 
     /**
      * Get the filename for export.

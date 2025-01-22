@@ -21,8 +21,17 @@
                     <!-- Export Button -->
                 </div>
                 <div class="col-2">
+                    @php
+                        $urlType = request('item_type');
+                    @endphp
 
-                    <a href="{{ route('items.create') }}" class="btn btn-primary">Create Items</a>
+                    @if ($urlType == 1)
+                        <a href="{{ route('items.create') }}" class="btn btn-primary">Create Items</a>
+                    @elseif($urlType == 2)
+                        <a href="{{ Route('items.create', ['type' => 'miss']) }}" class="btn btn-primary">Create Items</a>
+                    @else
+                        <a href="{{ Route('items.create', ['type' => 'lab']) }}" class="btn btn-primary">Create Items</a>
+                    @endif
                 </div>
             </div>
             <div class="table-responsive">

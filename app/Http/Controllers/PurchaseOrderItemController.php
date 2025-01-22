@@ -6,8 +6,9 @@ use App\Models\PurchaseOrderItem;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PurchaseOrderItemsImport;
-
-
+use App\Models\PurchaseOrder;
+use App\Models\SourceCompany;
+use Mpdf\Mpdf;
 
 class PurchaseOrderItemController extends Controller
 {
@@ -18,7 +19,20 @@ class PurchaseOrderItemController extends Controller
     {
         //
     }
+    public function downloadPdf($id)
+    {
+        $purchaseOrder = PurchaseOrder::with(['purchaseOrderItems.item', 'purchaseOrderItems.item.uom'])->findOrFail($id);
+        $company = SourceCompany::findOrFail($purchaseOrder->source_company_id); // Assuming you have company details linked
 
+        $html = view('purchase_order/order_pdf', compact('purchaseOrder', 'company'))->render();
+
+        $mpdf = new Mpdf();
+        $mpdf->WriteHTML($html);
+
+        $fileName = 'Purchase_Order_' . $purchaseOrder->id . '.pdf';
+
+        return $mpdf->Output(name: $fileName, dest: 'D'); // Download the PDF
+    }
     /**
      * Show the form for creating a new resource.
      */

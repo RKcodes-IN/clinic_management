@@ -37,7 +37,7 @@ class ItemDataTable extends DataTable
                 }
             })
             ->addColumn('created_at', function ($item) {
-                return \Carbon\Carbon::parse($item->created_at)->format('d M Y, h:i A');
+                return \Carbon\Carbon::parse($item->created_at)->format('d M Y');
             })
             ->addColumn('action', 'items.action')
             ->setRowId('id')
@@ -93,21 +93,69 @@ class ItemDataTable extends DataTable
      */
     public function getColumns(): array
     {
-        return [
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(60)
-                ->addClass('text-center'),
-            Column::make('id'),
-            Column::make('item_code'),
-            Column::make('name')->title('Item Name'),
-            Column::make('category.name')->title('Category')->data('category.name'), // Correct relationship path
-            Column::make('brand.name')->title('Brand')->data('brand.name'),         // Correct relationship path
-            Column::make('company.name')->title('Source Company')->data('company.name'), // Correct relationship path
-            Column::make('status')->title('Status'),
-            Column::make('created_at')->title('Created At')
-        ];
+
+        if ($this->request()->has('item_type')) {
+            $itemType = $this->request()->get('item_type');
+            if ($itemType == Item::TYPE_PHARMACY) {
+                return [
+                    Column::computed('action')
+                        ->exportable(false)
+                        ->printable(false)
+                        ->width(60)
+                        ->addClass('text-center'),
+                    Column::make('id'),
+                    Column::make('item_code'),
+                    Column::make('name')->title('Item Name'),
+                    Column::make('category.name')->title('Category')->data('category.name'), // Correct relationship path
+                    Column::make('brand.name')->title('Brand')->data('brand.name'),         // Correct relationship path
+                    Column::make('company.name')->title('Source Company')->data('company.name'), // Correct relationship path
+                    Column::make('status')->title('Status'),
+                    Column::make('created_at')->title('Created At')
+                ];
+            } else if ($itemType == Item::TYPE_LAB || $itemType == Item::MISCELLANEOUS) {
+                return [
+                    Column::computed('action')
+                        ->exportable(false)
+                        ->printable(false)
+                        ->width(60)
+                        ->addClass('text-center'),
+                    Column::make('id'),
+                    Column::make('item_code'),
+                    Column::make('name')->title('Item Name'),
+                    Column::make('status')->title('Status'),
+                    Column::make('created_at')->title('Created At')
+                ];
+            } else {
+                return [
+                    Column::computed('action')
+                        ->exportable(false)
+                        ->printable(false)
+                        ->width(60)
+                        ->addClass('text-center'),
+                    Column::make('id'),
+                    Column::make('item_code'),
+                    Column::make('name')->title('Item Name'),
+                    Column::make('status')->title('Status'),
+                    Column::make('created_at')->title('Created At')
+                ];
+            }
+        } else {
+            return [
+                Column::computed('action')
+                    ->exportable(false)
+                    ->printable(false)
+                    ->width(60)
+                    ->addClass('text-center'),
+                Column::make('id'),
+                Column::make('item_code'),
+                Column::make('name')->title('Item Name'),
+                Column::make('category.name')->title('Category')->data('category.name'), // Correct relationship path
+                Column::make('brand.name')->title('Brand')->data('brand.name'),         // Correct relationship path
+                Column::make('company.name')->title('Source Company')->data('company.name'), // Correct relationship path
+                Column::make('status')->title('Status'),
+                Column::make('created_at')->title('Created At')
+            ];
+        }
     }
 
 

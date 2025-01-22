@@ -35,6 +35,9 @@ class StockDataTable extends DataTable
             ->addColumn('total_stock', function (Stock $stock) {
                 return $stock->getTotalStock($stock->item_id); // Call method in Stock model
             })
+            ->addColumn('expiry_date', function ($item) {
+                return \Carbon\Carbon::parse($item->created_at)->format('d M Y');
+            })
             ->addColumn('action', 'stock.action')
             ->setRowId('id');
     }
@@ -92,16 +95,31 @@ class StockDataTable extends DataTable
                 ->printable(false)
                 ->width(60)
                 ->addClass('text-center'),
-            Column::make('id'),
-
-            Column::make('item_name')->title('Item Name'), // Custom title for clarity
-            Column::make('item_code')->title('Item Code'), // Custom title for clarity
-            Column::make('item_price')->title('Price'), // Custom title for clarity
-            Column::make('item.item_type')->title('Item Type'),
-            // Column::make('total_stock')->data('total_stock')->title('Total Stock'),
-            Column::make('expiry_date'),
+            Column::make('id')
+                ->title('ID'),
+            Column::make('item_name')
+                ->title('Item Name')
+                ->data('item_name') // Data alias used in the query
+                ->orderable(true), // Allow sorting
+            Column::make('item_code')
+                ->title('Item Code')
+                ->data('item_code')
+                ->orderable(flag: true),
+            Column::make('item_price')
+                ->title('Price')
+                ->data('item_price')
+                ->orderable(true),
+            Column::make('item.item_type')
+                ->title('Item Type')
+                ->data('item.item_type') // Make sure this matches your query alias
+                ->orderable(true),
+            Column::make('expiry_date')
+                ->title('Expiry Date')
+                ->data('expiry_date')
+                ->orderable(true),
         ];
     }
+
 
     /**
      * Get the filename for export.

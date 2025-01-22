@@ -15,6 +15,7 @@ class LabPrescription extends Model
         'item_id',
         'quantity',
         'stock_id',
+        'date',
         'message',
     ];
 

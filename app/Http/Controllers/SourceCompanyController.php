@@ -33,19 +33,28 @@ class SourceCompanyController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'email' => 'required|email|max:100',
+            'phone_one' => 'required|string|max:50',
+            'phone_two' => 'nullable|string|max:50',
+            'gst_no' => 'required|string|max:30',
+            'contact_person' => 'required|string|max:50',
+            'status' => 'required|in:1,2'
         ]);
 
+        $sourceCompany = new SourceCompany();
+        $sourceCompany->name = $request->input('name');
+        $sourceCompany->address = $request->input('address');
+        $sourceCompany->email = $request->input('email');
+        $sourceCompany->phone_one = $request->input('phone_one');
+        $sourceCompany->phone_two = $request->input('phone_two');
+        $sourceCompany->gst_no = $request->input('gst_no');
+        $sourceCompany->contact_person = $request->input('contact_person');
+        $sourceCompany->status = $request->input('status');
+        $sourceCompany->save();
 
-
-
-        // Create DoctorDetail
-        $doctorDetail = new SourceCompany();
-        $doctorDetail->name = $request->input('name');
-        $doctorDetail->save();
-
-        return redirect()->route('source-company.index')->with('success', 'Category Created Successfully');
+        return redirect()->route('source-company.index')->with('success', 'Source Company Created Successfully');
     }
-
     /**
      * Display the specified resource.
      */
@@ -67,15 +76,6 @@ class SourceCompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string',
-            'email' => 'required|email|max:100',
-            'phone_one' => 'required|string|max:50',
-            'phone_two' => 'nullable|string|max:50',
-            'gst_no' => 'required|string|max:30',
-            'contact_person' => 'required|string|max:50',
-        ]);
 
         $sourceCompany = SourceCompany::findOrFail($id);
         $sourceCompany->name = $request->input('name');
@@ -85,6 +85,8 @@ class SourceCompanyController extends Controller
         $sourceCompany->phone_two = $request->input('phone_two');
         $sourceCompany->gst_no = $request->input('gst_no');
         $sourceCompany->contact_person = $request->input('contact_person');
+        $sourceCompany->status = $request->input('status');
+
         $sourceCompany->save();
 
         return redirect()->route('source-company.index')->with('success', 'Source Company Updated Successfully');

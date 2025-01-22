@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\InvoiceDataTable;
 use App\Imports\InvoiceImport;
+use App\Models\Appointment;
 use App\Models\DoctorDetail;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
@@ -46,6 +47,64 @@ class InvoiceController extends Controller
 
         return redirect()->back()->with('success', 'Import Form');
     }
+
+
+    public function invoiceToAppointments()
+    {
+        try {
+            // Fetch invoices that have items with id 615 or 481
+            $invoices = Invoice::whereHas('details', function ($query) {
+                $query->whereNotIn('item_id', [615, 481]);
+            })->get();
+
+            foreach ($invoices as $invoice) {
+                try {
+                    // Use 'paitent_id' instead of 'patient_id'
+
+
+                    // Find an existing appointment based on paitent_id and confirmation_date
+                    $appointment = Appointment::where('patient_id', $invoice->paitent_id)
+                        ->whereDate('confirmation_date', '=', $invoice->created_at->toDateString())
+                        ->first();
+
+                    // Create an appointment if it doesn't exist
+                    if (!$appointment) {
+                        $patientDetails = PatientDetail::find($invoice->paitent_id);
+
+                        // Check if patientDetails exists
+                        if (!empty($patientDetails)) {
+                            Appointment::create([
+                                'patient_id' => $invoice->paitent_id,
+                                'confirmation_date' => $invoice->created_at,
+                                'doctor_id' => $invoice->doctor_id,
+                                'email' => $patientDetails->user->email ?? "",
+                                'phone_number' => $patientDetails->user->phone ?? "",
+                                'address' => $patientDetails->address ?? "",
+                                'gender' => $patientDetails->gender ?? "",
+                                'city' => $patientDetails->city ?? "",
+                                'state' => $patientDetails->state ?? "",
+                                'country' => $patientDetails->country ?? "",
+                                'whatsapp_no' => $patientDetails->user->phone ?? "",
+                                'age' => $patientDetails->age ?? "",
+                                'pincode' => "",
+                                'status' => Appointment::STATUS_COMPLETED,
+                                'created_at' => $invoice->created_at,
+                            ]);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // If any exception occurs for a specific invoice, continue to the next one
+                    continue;
+                }
+            }
+
+            return "done";
+        } catch (\Exception $e) {
+            // Return a generic error message if something goes wrong in fetching invoices
+            return "something went wrong: " . $e->getMessage();
+        }
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -110,12 +169,11 @@ class InvoiceController extends Controller
 
         // ]);
         // Start database transaction
-        // dd($request);
         DB::beginTransaction();
         // Create the invoice
         $invoiceNumber = $this->generateInvoiceNumber();
         $invoice = new Invoice();
-        $createdAt = Carbon::createFromFormat('Y-m-d H:i', $request->invoice_date . ' ' . $request->invoice_time);
+        // $createdAt = Carbon::createFromFormat('Y-m-d H:i', $request->invoice_date . ' ' . $request->invoice_time);
 
         // Handle file upload if attachment is provided
         if ($request->hasFile('attachment')) {
@@ -124,11 +182,12 @@ class InvoiceController extends Controller
             $invoice->attachment = '/storage/' . $filePath;
         }
         // $invoice->sub_total = $request->sub;
-        $invoice->created_at = $createdAt;
         $invoice->sub_total = $request->subtotal;
         $invoice->sub_total = $request->subtotal;
         $invoice->total = $request->total;
+        $invoice->doctor_id = $request->doctor_id;
         $invoice->gst = $request->gst;
+        $invoice->discount = $request->discount;
         $invoice->invoice_number = $invoiceNumber;
         $invoice->paitent_id = $request->patient_id;
         $invoice->payment_status = $request->payment_status;
@@ -150,8 +209,14 @@ class InvoiceController extends Controller
         // Get the last invoice number from the invoices table
         $lastInvoice = Invoice::orderBy('invoice_number', 'desc')->first();
 
-        // Extract and increment the invoice number
-        $nextInvoiceNumber = $lastInvoice->invoice_number + 1;
+        // Check if there are any invoices, and if not, set the invoice number to 1
+        if ($lastInvoice) {
+            // Extract and increment the invoice number
+            $nextInvoiceNumber = $lastInvoice->invoice_number + 1;
+        } else {
+            // If no invoices exist, start from 1
+            $nextInvoiceNumber = 0001;
+        }
 
         // Format the invoice number (e.g., INV00001)
         return str_pad($nextInvoiceNumber, 5, '0', STR_PAD_LEFT);
@@ -184,6 +249,8 @@ class InvoiceController extends Controller
                     'item_type' => $itemType,
                     'item_id' => $stock->item_id,
                     'quantity' => $item["quantity"],
+                    'add_dis_percent' => $item["add_dis_percent"],
+                    'add_dis_amount' => $item["discount_amount"],
                     'item_price' => $item['price'],
                     'total_amount' => $item['total'],
                     'description' => $item['description'] ?? null,

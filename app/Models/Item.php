@@ -18,8 +18,8 @@ class Item extends Model
         'name',
         'item_type',
         'uom_type',
-        'brand',
-        'category',
+        'brand_id',
+        'category_id',
         'max_discount_percentage',
         'source_company',
         'alert_quantity',
@@ -69,12 +69,12 @@ class Item extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category', 'id'); // Ensure 'category' is the foreign key in your `items` table
+        return $this->belongsTo(Category::class);
     }
 
     public function brand()
     {
-        return $this->belongsTo(Brand::class, 'brand', 'id'); // Ensure 'brand' is the foreign key in your `items` table
+        return $this->belongsTo(Brand::class, 'brand_id', 'id');
     }
 
     public function company()

@@ -1,126 +1,131 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            <div class="row mb-5">
-                <!-- First Card -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">Patient & Invoice Details</div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="invoice_date">Invoice Date</label>
-                                <input type="date" name="invoice_date" value="{{ date('Y-m-d') }}" id="invoice_date"
-                                    class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="invoice_time">Invoice Time</label>
-                                <input type="time" name="invoice_time" value="{{ date('H:i') }}" id="invoice_time"
-                                    class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="patient_id">Patient Name</label>
-                                <select name="patient_id" id="patient_id" class="form-control" required>
-                                    <option value="">Select Patient</option>
-                                    @if ($patients instanceof \Illuminate\Database\Eloquent\Collection)
-                                        <!-- If $patients is a collection, iterate over it -->
-                                        @foreach ($patients as $patient)
-                                            <option value="{{ $patient->id }}"
-                                                {{ request()->query('patient_id') == $patient->id ? 'selected' : '' }}>
-                                                {{ $patient->name }}
-                                            </option>
-                                        @endforeach
-                                    @elseif ($patients)
-                                        <!-- If $patients is a single instance -->
-                                        <option value="{{ $patients->id }}" selected>{{ $patients->name }}</option>
-                                    @endif
-                                </select>
-                            </div>
+    <div class="row justify-content-center">
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        <form action="{{ route('invoice.store') }}" method="POST">
 
-                            <div class="form-group">
-                                <label for="bill_type">Bill Type</label>
-                                <select name="bill_type" id="bill_type" class="form-control" required>
-                                    <option value="individual">Individual</option>
-                                    <option value="business">Business</option>
-                                </select>
-                            </div>
-                            {{-- <div class="form-group">
+            <div class="container">
+
+
+                <div class="row mb-5">
+                    <!-- First Card -->
+                    @csrf
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">Patient & Invoice Details</div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="invoice_date">Invoice Date</label>
+                                    <input type="date" name="invoice_date" value="{{ date('Y-m-d') }}" id="invoice_date"
+                                        class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="invoice_time">Invoice Time</label>
+                                    <input type="time" name="invoice_time" value="{{ date('H:i') }}" id="invoice_time"
+                                        class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patient_id">Patient Name</label>
+                                    <select name="patient_id" id="patient_id" class="form-control" required>
+                                        <option value="">Select Patient</option>
+                                        @if ($patients instanceof \Illuminate\Database\Eloquent\Collection)
+                                            <!-- If $patients is a collection, iterate over it -->
+                                            @foreach ($patients as $patient)
+                                                <option value="{{ $patient->id }}"
+                                                    {{ request()->query('patient_id') == $patient->id ? 'selected' : '' }}>
+                                                    {{ $patient->name }}
+                                                </option>
+                                            @endforeach
+                                        @elseif ($patients)
+                                            <!-- If $patients is a single instance -->
+                                            <option value="{{ $patients->id }}" selected>{{ $patients->name }}</option>
+                                        @endif
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="bill_type">Bill Type</label>
+                                    <select name="bill_type" id="bill_type" class="form-control" required>
+                                        <option value="individual">Individual</option>
+                                        <option value="business">Business</option>
+                                    </select>
+                                </div>
+                                {{-- <div class="form-group">
                                 <label for="attachment">Attachment</label>
                                 <input type="file" name="attachment" id="attachment" class="form-control">
                             </div> --}}
 
-                            <div class="form-group">
-                                <label for="doctor_id">Select Doctor</label>
-                                <select name="doctor_id" id="doctor_id" class="form-control" required>
-                                    <option value="">Select Doctor</option>
-                                    @foreach ($doctors as $doctor)
-                                        <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="form-group">
+                                    <label for="doctor_id">Select Doctor</label>
+                                    <select name="doctor_id" id="doctor_id" class="form-control" required>
+                                        <option value="">Select Doctor</option>
+                                        @foreach ($doctors as $doctor)
+                                            <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Second Card -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">Invoice Summary</div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="subtotal">Subtotal</label>
+                                    <input type="number" step="0.01" name="subtotal" id="subtotal" class="form-control"
+                                        readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="discount">Total Discount Amount</label>
+                                    <input type="number" step="0.01" name="discount" id="discount"
+                                        class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="gst">GST (%)</label>
+                                    <input type="number" step="0.01" name="gst" id="gst" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="total">Total</label>
+                                    <input type="number" step="0.01" name="total" id="total" class="form-control"
+                                        readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="payment_status">Payment Status</label>
+                                    <select name="payment_status" id="payment_status" class="form-control">
+                                        @foreach (\App\Models\Invoice::getPaymentStatusDropdown() as $key => $value)
+                                            <option value="{{ $key }}">{{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Second Card -->
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header bg-primary text-white">Invoice Summary</div>
+                        <div class="card-header">Create Invoice</div>
+
+
                         <div class="card-body">
-                            <div class="form-group">
-                                <label for="subtotal">Subtotal</label>
-                                <input type="number" step="0.01" name="subtotal" id="subtotal" class="form-control"
-                                    readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="discount">Total Discount Amount</label>
-                                <input type="number" step="0.01" name="discount" id="discount" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="gst">GST (%)</label>
-                                <input type="number" step="0.01" name="gst" id="gst" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="total">Total</label>
-                                <input type="number" step="0.01" name="total" id="total" class="form-control"
-                                    readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="payment_status">Payment Status</label>
-                                <select name="payment_status" id="payment_status" class="form-control">
-                                    @foreach (\App\Models\Invoice::getPaymentStatusDropdown() as $key => $value)
-                                        <option value="{{ $key }}">{{ $value }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">Create Invoice</div>
 
 
-                    <div class="card-body">
+                            <!-- Pharmacy Items -->
+                            <h5>Pharmacy Items</h5>
 
-
-                        <!-- Pharmacy Items -->
-                        <h5>Pharmacy Items</h5>
-                        <form action="{{ route('invoice.store') }}" method="POST">
-                            @csrf
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="pharmacy-items-table">
                                     <thead>
                                         <tr>
                                             <th>Item</th>
-                                            <th>Avl. Qty.</th>
+                                            <th>Avl.<br> Qty.</th>
                                             <th>Qty.</th>
-                                            <th>Batch no.</th>
+                                            <th>Batch <br> no.</th>
                                             <th>Exp. Date</th>
                                             <th>Price</th>
                                             <th>Discount(%)</th>
@@ -147,7 +152,10 @@
                                             </td>
                                             <td class="available-quantity">-</td>
                                             <td><input type="number" name="pharmacy[0][quantity]" class="form-control"
-                                                    required></td>
+                                                    required>
+                                                <span class="quantity-error"></span>
+                                            </td>
+
                                             <td><input type="text" name="pharmacy[0][batch_number]"
                                                     class="form-control" required></td>
                                             <td><input type="date" name="pharmacy[0][expiry_date]"
@@ -182,6 +190,8 @@
                                             <th>Test</th>
                                             <th>Quantity</th>
                                             <th>Price</th>
+                                            <th>Discount(%)</th>
+                                            <th>Dis. Amt.</th>
                                             <th>Total</th>
                                             <th>Description</th>
                                             <th>Actions</th>
@@ -205,6 +215,12 @@
                                                     required></td>
                                             <td><input type="number" step="0.01" name="labtests[0][price]"
                                                     class="form-control" required></td>
+                                            <td><input type="number" step="0.01" name="labtests[0][add_dis_percent]"
+                                                    class="form-control">
+                                                <span class="text-danger" id="diserr_0"></span>
+                                            </td>
+                                            <td><input type="number" step="0.01" name="labtests[0][discount_amount]"
+                                                    class="form-control"></td>
                                             <td><input type="number" step="0.01" name="labtests[0][total]"
                                                     class="form-control" readonly></td>
                                             <td><input type="text" name="labtests[0][description]"
@@ -226,6 +242,8 @@
                                             <th>Item</th>
                                             <th>Quantity</th>
                                             <th>Price</th>
+                                            <th>Discount(%)</th>
+                                            <th>Dis. Amt.</th>
                                             <th>Total</th>
                                             <th>Description</th>
                                             <th>Actions</th>
@@ -246,9 +264,16 @@
                                                 </select>
                                             </td>
                                             <td><input type="number" name="misc[0][quantity]" class="form-control"
-                                                    required></td>
+                                                    required>
+                                            </td>
                                             <td><input type="number" step="0.01" name="misc[0][price]"
                                                     class="form-control" required></td>
+                                            <td><input type="number" step="0.01" name="misc[0][add_dis_percent]"
+                                                    class="form-control">
+                                                <span class="text-danger" id="diserr_0"></span>
+                                            </td>
+                                            <td><input type="number" step="0.01" name="misc[0][discount_amount]"
+                                                    class="form-control"></td>
                                             <td><input type="number" step="0.01" name="misc[0][total]"
                                                     class="form-control" readonly></td>
                                             <td><input type="text" name="misc[0][description]" class="form-control">
@@ -261,14 +286,15 @@
                                 <button type="button" id="add-misc-row" class="btn btn-secondary">Add More</button>
                             </div>
 
+                        </div>
                     </div>
+
+
+                    <button type="submit" class="btn btn-primary mt-3">Create Invoice</button>
                 </div>
-
-
-                <button type="submit" class="btn btn-primary mt-3">Create Invoice</button>
-                </form>
             </div>
-        </div>
+        </form>
+
     </div>
     </div>
     </div>
@@ -505,6 +531,7 @@
 
             $(document).on('input', 'input[name$="[quantity]"], input[name$="[price]"]', function() {
                 const $row = $(this).closest('tr');
+                validateQuantity($row);
                 calculateRowTotal($row);
                 calculateTotalDisAmount() // Recalculate row total
 
@@ -536,7 +563,10 @@
                     </td>
                                             <td class="available-quantity">-</td>
 
-                    <td><input type="number" name="pharmacy[${pharmacyIndex}][quantity]" class="form-control" required></td>
+                    <td><input type="number" name="pharmacy[${pharmacyIndex}][quantity]" class="form-control" required>
+                                                <span class="quantity-error"></span>
+
+                        </td>
                     <td><input type="text" name="pharmacy[${pharmacyIndex}][batch_number]" class="form-control" required></td>
                     <td><input type="date" name="pharmacy[${pharmacyIndex}][expiry_date]" class="form-control" required></td>
                     <td><input type="number" step="0.01" name="pharmacy[${pharmacyIndex}][price]" class="form-control" required></td>
@@ -573,6 +603,11 @@
                     </td>
                     <td><input type="number" name="labtests[${labTestIndex}][quantity]" class="form-control" required></td>
                     <td><input type="number" step="0.01" name="labtests[${labTestIndex}][price]" class="form-control" required></td>
+                     <td><input type="number" step="0.01" name="labtests[${pharmacyIndex}][add_dis_percent]" class="form-control" >
+                    <span class="text-danger" id="diserr_${pharmacyIndex}"></span>
+
+                        </td>
+                    <td><input type="number" step="0.01" name="labtests[${pharmacyIndex}][discount_amount]" class="form-control" readonly></td>
                     <td><input type="number" step="0.01" name="labtests[${labTestIndex}][total]" class="form-control" readonly></td>
                     <td><input type="text" name="labtests[${labTestIndex}][description]" class="form-control"></td>
                     <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
@@ -601,6 +636,11 @@
                     </td>
                     <td><input type="number" name="misc[${miscIndex}][quantity]" class="form-control" required></td>
                     <td><input type="number" step="0.01" name="misc[${miscIndex}][price]" class="form-control" required></td>
+ <td><input type="number" step="0.01" name="misc[${pharmacyIndex}][add_dis_percent]" class="form-control" >
+                    <span class="text-danger" id="diserr_${pharmacyIndex}"></span>
+
+                        </td>
+                    <td><input type="number" step="0.01" name="misc[${pharmacyIndex}][discount_amount]" class="form-control" readonly></td>
                     <td><input type="number" step="0.01" name="misc[${miscIndex}][total]" class="form-control" readonly></td>
                     <td><input type="text" name="misc[${miscIndex}][description]" class="form-control"></td>
                     <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
@@ -625,5 +665,16 @@
                 });
             }
         });
+
+        function validateQuantity($row) {
+            const availableQty = parseInt($row.find('.available-quantity').text()) || 0;
+            const enteredQty = parseInt($row.find('input[name$="[quantity]"]').val()) || 0;
+
+            if (enteredQty > availableQty) {
+                $row.find('.quantity-error').text('Entered quantity exceeds available stock.');
+            } else {
+                $row.find('.quantity-error').text('');
+            }
+        }
     </script>
 @endsection

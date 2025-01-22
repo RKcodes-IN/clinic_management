@@ -6,6 +6,7 @@ use App\DataTables\ItemDataTable;
 use App\DataTables\StockReportDataTable;
 use App\Imports\ItemsImport;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Item;
 use App\Models\SourceCompany;
 use App\Models\Stock;
@@ -44,8 +45,9 @@ class ItemController extends Controller
         $uomTypes = UomType::all();
         $brands = Brand::all();
         $companies = SourceCompany::all();
+        $categories = Category::all();
 
-        return view('items.create', compact('uomTypes', 'brands', 'companies'));
+        return view('items.create', compact('uomTypes', 'brands', 'companies', 'categories'));
     }
 
     /**
@@ -56,15 +58,21 @@ class ItemController extends Controller
         $request->validate([
             'item_code' => 'required|unique:items,item_code',
             'name' => 'required|string',
-            'uom_type' => 'required|exists:uom_types,id',
             'brand' => 'required|exists:brands,id',
             'source_company' => 'required|exists:source_companies,id',
         ]);
+        // Merge status = 1 into request data
+        $data = $request->all();
+        $data['status'] = 1;
+        $data['category_id'] = $request->category_id;
+        $data['brand_id'] = $request->brand;
 
-        Item::create($request->all());
+        // Create the item
+        Item::create($data);
 
         return redirect()->route('items.create')->with('success', 'Item created successfully.');
     }
+
 
     public function exportExcel(ItemDataTable $dataTable)
     {
@@ -147,7 +155,7 @@ class ItemController extends Controller
         $request->validate([
             'item_code' => "required|unique:items,item_code,{$id}|string|max:255",
             'name' => 'required|string|max:255',
-            'item_type' => 'required|in:'.implode(',', array_keys(Item::getItemTypes())),
+            'item_type' => 'required|in:' . implode(',', array_keys(Item::getItemTypes())),
             'uom_type' => 'required|exists:uom_types,id',
             'brand' => 'required|exists:brands,id',
             'source_company' => 'required|exists:source_companies,id',
