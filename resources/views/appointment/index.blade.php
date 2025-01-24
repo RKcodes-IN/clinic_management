@@ -5,6 +5,15 @@
         .select2-container {
             width: 100% !important;
         }
+
+        .word-wrap {
+            white-space: normal;
+            /* Allow text to wrap */
+            word-wrap: break-word;
+            /* Break words if needed */
+            max-width: 200px;
+            /* Set a max width for the column (adjust as necessary) */
+        }
     </style>
 
     <div class="container">
@@ -40,6 +49,4 @@
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.js"></script>
-
-
 @endpush

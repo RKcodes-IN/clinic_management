@@ -201,7 +201,7 @@ class PurchaseOrderController extends Controller
                     $stockTransaction->item_id = $stock->item_id;
                     $stockTransaction->invoice_id = 0;
                     $stockTransaction->purchase_order_id = $purchaseOrderItem->purchase_order_id;
-                    $stockTransaction->quantity = $stock->order_quantity;
+                    $stockTransaction->quantity = $stock->order_quantity * ($stock->item->unit_conversion_ratio ?: 1);
                     $stockTransaction->item_price = $stock->item_price;
                     $stockTransaction->status = StockTransaction::STATUS_INCOMING_STOCK;
                     $stockTransaction->transaction_date = date('Y-m-d');

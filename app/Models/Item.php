@@ -19,6 +19,9 @@ class Item extends Model
         'item_type',
         'uom_type',
         'brand_id',
+        'poitem_name',
+        'ordering_uom_type',
+        'unit_conversion_ratio',
         'category_id',
         'max_discount_percentage',
         'source_company',
@@ -86,6 +89,10 @@ class Item extends Model
         return $this->belongsTo(UomType::class, 'uom_type', 'id'); // Ensure 'source_company' is the foreign key in your `items` table
     }
 
+    public function pouom()
+    {
+        return $this->belongsTo(UomType::class, 'ordering_uom_type', 'id'); // Ensure 'source_company' is the foreign key in your `items` table
+    }
     public function stock()
     {
         return $this->hasMany(Stock::class, 'item_id');

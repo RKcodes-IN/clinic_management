@@ -279,21 +279,55 @@ class AppointmentController extends Controller
         // Get the authenticated doctor
         $doctor = Auth::user();
         $doctorDetail = DoctorDetail::where('user_id', $doctor->id)->firstOrFail();
+        // dd($doctorDetail);
 
-        // Get appointments for the authenticated doctor
+        // Get all appointments for the authenticated doctor grouped by type and date
         $appointments = Appointment::where('doctor_id', $doctorDetail->id)
-            ->with('patient')  // Ensure patient details are loaded
+            ->with('patient') // Ensure patient details are loaded
             ->get()
-            ->map(function ($appointment) {
+            ->groupBy('confirmation_date') // Group by the appointment date
+            ->map(function ($appointmentsOnDate, $date) {
+                // Separate appointments into categories
+                $newAppointments = $appointmentsOnDate->where('type', 1);
+                $reviewAppointments = $appointmentsOnDate->where('type', 2);
+                $revisitAppointments = $appointmentsOnDate->where('type', 3);
+
                 return [
-                    'title' => 'Appointment with ' . ($appointment->patient->name ?? 'Unknown Patient'),
-                    'start' => $appointment->available_date . 'T' . $appointment->time_from,
-                    'end' => $appointment->available_date . 'T' . $appointment->time_to,
-                    'extendedProps' => [
-                        'email' => $appointment->patient->email ?? 'N/A',
-                        'phone_number' => $appointment->patient->phone_number ?? 'N/A',
-                        'message' => $appointment->message ?? 'No message',
-                    ],
+                    'date' => $date,
+                    'new' => $newAppointments->map(function ($appointment) {
+                        return [
+                            'patient_name' => $appointment->patient->name ?? 'Unknown Patient',
+                            'main_complaint' => $appointment->main_complaint ?? 'No complaint provided',
+                            'gender' => $appointment->patient->gender ?? 'NA',
+                            'age' => $appointment->age ?? 'N/A',
+                            'phone_number' => $appointment->phone_number ?? 'N/A',
+                            'conf_date' => $appointment->confirmation_date ?? "",
+                            'conf_time' => $appointment->confirmation_time ?? "",
+
+                        ];
+                    }),
+                    'review' => $reviewAppointments->map(function ($appointment) {
+                        return [
+                            'patient_name' => $appointment->patient->name ?? 'Unknown Patient',
+                            'main_complaint' => $appointment->main_complaint ?? 'No complaint provided',
+                            'gender' => $appointment->patient->gender ?? 'NA',
+                            'age' => $appointment->age ?? 'N/A',
+                            'phone_number' => $appointment->phone_number ?? 'N/A',
+                            'conf_date' => $appointment->confirmation_date ?? "",
+                            'conf_time' => $appointment->confirmation_time ?? "",
+                        ];
+                    }),
+                    'revisit' => $revisitAppointments->map(function ($appointment) {
+                        return [
+                            'patient_name' => $appointment->patient->name ?? 'Unknown Patient',
+                            'main_complaint' => $appointment->main_complaint ?? 'No complaint provided',
+                            'gender' => $appointment->patient->gender ?? 'NA',
+                            'age' => $appointment->age ?? 'N/A',
+                            'phone_number' => $appointment->phone_number ?? 'N/A',
+                            'conf_date' => $appointment->confirmation_date ?? "",
+                            'conf_time' => $appointment->confirmation_time ?? "",
+                        ];
+                    }),
                 ];
             });
 

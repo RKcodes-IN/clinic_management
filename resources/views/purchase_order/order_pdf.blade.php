@@ -54,7 +54,8 @@
             <tr>
                 <!-- Logo -->
                 <td style="width: 30%; text-align: left; vertical-align: middle;">
-                    <img src="https://indiaseva.net/assets/img/logo-ct.png" alt="S.I.V.A.S Logo" style="max-width: 100px; height: auto;">
+                    <img src="https://indiaseva.net/assets/img/logo-ct.png" alt="S.I.V.A.S Logo"
+                        style="max-width: 100px; height: auto;">
                 </td>
                 <!-- Header Text -->
                 <td style="width: 70%; text-align: center; vertical-align: middle;">
@@ -94,6 +95,7 @@
                     <th>UOM</th> <!-- UOM Column -->
 
                     <th>Quantity</th>
+                    <th>Total Quantity</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,10 +103,10 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->item->item_code ?? '' }}</td>
-                        <td>{{ $item->item->name ?? '' }}</td>
-                        <td>{{ $item->item->uom->name ?? '' }}</td> <!-- Display UOM Name -->
-
-                        <td>{{ $item->quantity }}</td>
+                        <td>{{ $item->item->poitem_name ?? '' }}</td>
+                        <td>{{ $item->item->pouom->name ?? '' }}</td> <!-- Display UOM Name -->
+                        <td>{{ $item->quantity ?? '' }}</td> <!-- Display UOM Name -->
+                        <td>{{ $item->quantity *($item->unit_conversion_ratio ?: 1) }}</td>
                     </tr>
                 @endforeach
             </tbody>

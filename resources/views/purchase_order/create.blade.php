@@ -28,24 +28,45 @@
                         </form>
 
                         <!-- Display items after selecting source company -->
-                        @if(isset($items) && $items->isNotEmpty())
+                        @if (isset($items) && $items->isNotEmpty())
                             <form action="{{ route('purchase_order.createPurchaseOrder') }}" method="POST">
                                 @csrf
                                 <!-- Hidden input to pass selected company ID -->
-                                <input type="hidden" name="source_company_id" value="{{ old('source_company_id', request('source_company_id')) }}">
-                                
+                                <input type="hidden" name="source_company_id"
+                                    value="{{ old('source_company_id', request('source_company_id')) }}">
+
                                 <div class="form-group mt-4">
                                     <label>Items</label><br>
-                                    <input type="checkbox" id="selectAll" /> Select All
-                                    <div class="form-check">
-                                        @foreach ($items as $item)
-                                            <input type="checkbox" class="form-check-input item-checkbox" name="items[]" value="{{ $item->id }}">
-                                            <label class="form-check-label">{{ $item->name }}</label><br>
-                                        @endforeach
-                                    </div>
+                                    <input type="checkbox" id="selectAll" /> <strong>Select All</strong>
+                                    <table class="table table-bordered mt-2">
+                                        <thead>
+                                            <tr>
+                                                <th>Select</th>
+                                                <th>Item Name</th>
+                                                <th>Available Quantity</th>
+                                                <th>Reorder Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($items as $item)
+                                                <tr>
+                                                    <td>
+                                                        <!-- Ensure the checkbox input is rendered correctly -->
+                                                        <input type="checkbox" class="form form-check-input item-checkbox border-2 bg-light"
+                                                            name="items[]" value="{{ $item->id }}">
+                                                    </td>
+                                                    <td>{{ $item->name }}</td>
+                                                    <td>{{ $item->getTotalStockByItem($item->id) }}</td>
+                                                    <td>{{ $item->reorder_quantity }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <button type="submit" class="btn btn-success">Create Purchase Order</button>
+                                <button type="submit" class="btn btn-success ">Create Purchase Order</button>
                             </form>
+                        @else
+                            <p>No items found for the selected company.</p>
                         @endif
                     </div>
                 </div>

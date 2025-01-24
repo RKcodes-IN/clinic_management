@@ -16,7 +16,12 @@ class LabPrescription extends Model
         'quantity',
         'stock_id',
         'date',
-        'message',
+        'description',
+        'sample_type_id',
+        'sample_taken',
+        'report_available',
+        'report_url',
+        'out_of_range',
     ];
 
     public function item()
@@ -27,5 +32,14 @@ class LabPrescription extends Model
     public function stock()
     {
         return $this->hasOne(Stock::class, 'id', 'stock_id');
+    }
+
+    public function patient()
+    {
+        return $this->hasOne(PatientDetail::class, 'id', 'patient_id');
+    }
+    public function sampleType()
+    {
+        return $this->hasOne(SampleType::class, 'id', 'sample_type_id');
     }
 }

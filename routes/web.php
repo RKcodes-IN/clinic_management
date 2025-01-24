@@ -25,6 +25,7 @@ use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SampleTypeController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SourceCompanyController;
 use App\Http\Controllers\StockController;
@@ -267,8 +268,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/prescriptions/{patientId}', [InvoiceController::class, 'getPrescriptions']);
 
     Route::get('/lab/investigation/create', [LabPrescriptionController::class, 'create'])->name('labprescription.create');
+    Route::get('/lab/investigation/index', [LabPrescriptionController::class, 'index'])->name('labprescription.index');
 
     Route::post('/lab/investigation/store', [LabPrescriptionController::class, 'store'])->name('labprescription.store');
+
+    Route::get('/lab/investigation/edit/{id}', [LabPrescriptionController::class, 'edit'])->name('labprescription.edit');
+
+    Route::put('/lab/investigation/update', [LabPrescriptionController::class, 'update'])->name('labprescription.update');
+
+    Route::resource('sample-types', SampleTypeController::class);
 });
 
 

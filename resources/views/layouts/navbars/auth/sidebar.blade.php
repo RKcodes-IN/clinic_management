@@ -190,6 +190,10 @@
                         <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'lab']) }}">Update
                                 Pricing</a></li>
                     @endcan
+
+                    <li><a class="dropdown-item"
+                            href="{{ Route('labprescription.index') }}">Investigations</a>
+                    </li>
                     {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li> --}}
                     {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
             </li>
@@ -240,8 +244,8 @@
                 <span class="nav-link-text ms-1">Invoice</span>
             </a>
             <ul class="dropdown-menu" id="invoicedropdown">
-                    <li><a class="dropdown-item" href="{{ Route('invoice.create') }}">Create Invoice</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('invoice.index') }}">Invoice List</a></li>
+                <li><a class="dropdown-item" href="{{ Route('invoice.create') }}">Create Invoice</a></li>
+                <li><a class="dropdown-item" href="{{ Route('invoice.index') }}">Invoice List</a></li>
 
                 {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
         </li> --}}
@@ -315,6 +319,10 @@
                     <li><a class="dropdown-item" href="{{ Route('investigationreporttype.index') }}">Investigation
                             Report Type</a>
                     </li>
+
+                    <li><a class="dropdown-item" href="{{ Route('sample-types.index') }}">Sample Type</a>
+                    </li>
+
 
                     <!-- Add more submenu items as needed -->
                 </ul>

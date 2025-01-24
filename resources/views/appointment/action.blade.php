@@ -21,7 +21,7 @@
 @endcan
 
 @can('edit appointment')
-    <a href="{{ route('labprescription.create', ['appointmentId' => $id, 'patientId' => '']) }}" class="mx-3"
+    <a href="{{ route('labprescription.create', ['appointmentId' => $id, 'patientId' => $patient_id]) }}" class="mx-3"
         data-bs-toggle="tooltip" data-bs-original-title="Add Prescriptions">
         <i class="fa-solid fa-flask-vial text-secondary"></i>
     </a>

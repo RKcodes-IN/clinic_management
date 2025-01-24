@@ -1,6 +1,12 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
+
+    <style>
+.select2{
+    width: 200.5px !important;
+}
+    </style>
     <div class="row justify-content-center">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -126,10 +132,10 @@
                                             <th>Avl.<br> Qty.</th>
                                             <th>Qty.</th>
                                             <th>Batch <br> no.</th>
-                                            <th>Exp. Date</th>
+                                            <th>Exp.<br> Date</th>
                                             <th>Price</th>
                                             <th>Discount(%)</th>
-                                            <th>Dis. Amt.</th>
+                                            <th>Dis.<br> Amt.</th>
                                             <th>Total</th>
                                             <th>Desc.</th>
                                             <th>Actions</th>
@@ -162,11 +168,11 @@
                                                     class="form-control" required></td>
                                             <td><input type="number" step="0.01" name="pharmacy[0][price]"
                                                     class="form-control" required></td>
-                                            <td><input type="number" step="0.01" name="pharmacy[0][add_dis_percent]"
+                                            <td><input type="number" name="pharmacy[0][add_dis_percent]"
                                                     class="form-control">
                                                 <span class="text-danger" id="diserr_0"></span>
                                             </td>
-                                            <td><input type="number" step="0.01" name="pharmacy[0][discount_amount]"
+                                            <td><input type="number" step="1" name="pharmacy[0][discount_amount]"
                                                     class="form-control"></td>
                                             <td><input type="number" step="0.01" name="pharmacy[0][total]"
                                                     class="form-control" readonly></td>
@@ -215,11 +221,11 @@
                                                     required></td>
                                             <td><input type="number" step="0.01" name="labtests[0][price]"
                                                     class="form-control" required></td>
-                                            <td><input type="number" step="0.01" name="labtests[0][add_dis_percent]"
+                                            <td><input type="number" name="labtests[0][add_dis_percent]"
                                                     class="form-control">
                                                 <span class="text-danger" id="diserr_0"></span>
                                             </td>
-                                            <td><input type="number" step="0.01" name="labtests[0][discount_amount]"
+                                            <td><input type="number" step="1" name="labtests[0][discount_amount]"
                                                     class="form-control"></td>
                                             <td><input type="number" step="0.01" name="labtests[0][total]"
                                                     class="form-control" readonly></td>
@@ -268,11 +274,11 @@
                                             </td>
                                             <td><input type="number" step="0.01" name="misc[0][price]"
                                                     class="form-control" required></td>
-                                            <td><input type="number" step="0.01" name="misc[0][add_dis_percent]"
+                                            <td><input type="number"  name="misc[0][add_dis_percent]"
                                                     class="form-control">
                                                 <span class="text-danger" id="diserr_0"></span>
                                             </td>
-                                            <td><input type="number" step="0.01" name="misc[0][discount_amount]"
+                                            <td><input type="number" step="1" name="misc[0][discount_amount]"
                                                     class="form-control"></td>
                                             <td><input type="number" step="0.01" name="misc[0][total]"
                                                     class="form-control" readonly></td>
@@ -570,7 +576,7 @@
                     <td><input type="text" name="pharmacy[${pharmacyIndex}][batch_number]" class="form-control" required></td>
                     <td><input type="date" name="pharmacy[${pharmacyIndex}][expiry_date]" class="form-control" required></td>
                     <td><input type="number" step="0.01" name="pharmacy[${pharmacyIndex}][price]" class="form-control" required></td>
-                    <td><input type="number" step="0.01" name="pharmacy[${pharmacyIndex}][add_dis_percent]" class="form-control" >
+                    <td><input type="number" name="pharmacy[${pharmacyIndex}][add_dis_percent]" class="form-control" >
                     <span class="text-danger" id="diserr_${pharmacyIndex}"></span>
 
                         </td>
@@ -603,7 +609,7 @@
                     </td>
                     <td><input type="number" name="labtests[${labTestIndex}][quantity]" class="form-control" required></td>
                     <td><input type="number" step="0.01" name="labtests[${labTestIndex}][price]" class="form-control" required></td>
-                     <td><input type="number" step="0.01" name="labtests[${pharmacyIndex}][add_dis_percent]" class="form-control" >
+                     <td><input type="number" name="labtests[${pharmacyIndex}][add_dis_percent]" class="form-control" >
                     <span class="text-danger" id="diserr_${pharmacyIndex}"></span>
 
                         </td>
@@ -636,7 +642,7 @@
                     </td>
                     <td><input type="number" name="misc[${miscIndex}][quantity]" class="form-control" required></td>
                     <td><input type="number" step="0.01" name="misc[${miscIndex}][price]" class="form-control" required></td>
- <td><input type="number" step="0.01" name="misc[${pharmacyIndex}][add_dis_percent]" class="form-control" >
+ <td><input type="number"  name="misc[${pharmacyIndex}][add_dis_percent]" class="form-control" >
                     <span class="text-danger" id="diserr_${pharmacyIndex}"></span>
 
                         </td>

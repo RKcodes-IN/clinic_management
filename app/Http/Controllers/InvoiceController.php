@@ -109,11 +109,9 @@ class InvoiceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create(Request $request, $patient_id = "")
     {
         // Retrieve patient_id from query string
-        $patient_id = $request->query('patient_id');
-
         // Fetch stocks for pharmacy, lab tests, and miscellaneous
         $pharmacyStocks = Stock::with(['item'])
             ->whereHas('item', function ($query) {

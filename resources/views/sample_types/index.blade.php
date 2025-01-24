@@ -8,6 +8,8 @@
     <div class="container">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Sample Type</span>
+                <a href="{{ route('sample-types.create') }}" class="btn btn-primary">Create Sample Type</a>
             </div>
             <div class="table-responsive">
                 <div class="card-body">

@@ -2,15 +2,17 @@
 
 namespace App\DataTables;
 
-use App\Models\PatientDetail;
+use App\Models\SampleType;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
+use Yajra\DataTables\Html\Editor\Editor;
+use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class PaitentDetailDataTable extends DataTable
+class SampleTypeDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -20,21 +22,14 @@ class PaitentDetailDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('name', function ($row) {
-                return strtoupper($row->name);
-            })
-            ->filterColumn('name', function ($query, $keyword) {
-                // Debug search keyword
-                $query->where('name', 'like', "%{$keyword}%");
-            })
-            ->addColumn('action', 'paitentdetail.action')
+            ->addColumn('action', 'sample_types.action')
             ->setRowId('id');
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(PatientDetail $model): QueryBuilder
+    public function query(SampleType $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -45,7 +40,7 @@ class PaitentDetailDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('paitentdetail-table')
+            ->setTableId('sampletype-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             //->dom('Bfrtip')
@@ -73,11 +68,8 @@ class PaitentDetailDataTable extends DataTable
                 ->width(60)
                 ->addClass('text-center'),
             Column::make('id'),
-            Column::make('name')->data('name')->defaultContent('N/A')->searchable(true),
-            Column::make('phone_number')->data('phone_number')->defaultContent('N/A'),
-            Column::make(data: 'gender')->data('gender')->defaultContent('Unknown'),
-            Column::make('age')->data('age')->defaultContent('0'),
-            Column::make('address')->data('address')->defaultContent('Not Provided'),
+            Column::make('name'),
+
         ];
     }
 
@@ -86,6 +78,6 @@ class PaitentDetailDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'PaitentDetail_' . date('YmdHis');
+        return 'SampleType_' . date('YmdHis');
     }
 }

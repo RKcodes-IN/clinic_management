@@ -31,11 +31,12 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Item Name</th>
-                            <th>Quantity</th>
-                            <th>Receive Quantity</th>
+                            <th>Item <br>code</th>
+                            <th>Item<br> Name</th>
+                            <th>Qty.</th>
+                            <th>Receive <br> Qty.</th>
                             <th>MRP</th>
-                            <th>Purchase Price</th>
+                            <th>Purchase<br> Price</th>
                             <th>Total</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -45,7 +46,8 @@
                         @foreach ($purchaseOrder->purchaseOrderItems as $item)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->item->name ?? '' }}</td>
+                                <td>{{ $item->item->item_code ?? '' }}</td>
+                                <td>{{ $item->item->poitem_name ?? '' }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->received_quantity }}</td>
                                 <td>₹{{ number_format($item->item_price, 2) }}</td>
