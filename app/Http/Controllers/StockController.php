@@ -145,7 +145,7 @@ class StockController extends Controller
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        // Validate the filter values (same as for the export)
+        // Validate the filter values
         if (!is_array($itemIds)) {
             $itemIds = json_decode($itemIds, true) ?? [];
         }
@@ -153,10 +153,12 @@ class StockController extends Controller
         // Query the filtered transactions
         $query = Stock::query();
 
+        // Filter by item IDs (if not "all")
         if (!empty($itemIds) && !in_array('all', $itemIds)) {
             $query->whereIn('item_id', $itemIds);
         }
 
+        // Date filters
         if ($fromDate && $toDate) {
             $query->whereBetween('created_at', [$fromDate, $toDate]);
         } elseif ($fromDate) {
@@ -165,22 +167,34 @@ class StockController extends Controller
             $query->where('created_at', '<=', $toDate);
         }
 
-        // Fetch the filtered transactions with the related data
-        $transactions = $query->with('item')->orderBy('id', 'asc')->get();
+        // Filter transactions with pharmacy items and order by item name
+        $transactions = $query
+            ->whereHas('item', function ($q) {
+                // Constrain to pharmacy items
+                $q->where('item_type', Item::TYPE_PHARMACY);
+            })
+            ->join('items', 'stocks.item_id', '=', 'items.id') // Join for ordering
+            ->orderBy('items.name', 'asc') // Order by item name
+            ->select('stocks.*') // Avoid column conflicts
+            ->with('item') // Eager load the relationship
+            ->get();
 
-        // Generate the HTML content for the PDF
+        // Generate HTML for PDF
         $html = view('stock.pdf.stock_report_export', compact('transactions', 'fromDate', 'toDate'))->render();
 
         // Initialize mPDF
         $mpdf = new Mpdf();
+        ini_set('pcre.backtrack_limit', '10000000'); // Fix for large HTML
 
-        // Write HTML to PDF
-        $mpdf->WriteHTML($html);
+        // Write HTML in chunks
+        $htmlChunks = str_split($html, 50000);
+        foreach ($htmlChunks as $chunk) {
+            $mpdf->WriteHTML($chunk);
+        }
 
-        // Output PDF (download the file)
+        // Download the PDF
         return $mpdf->Output('stock_report_export.pdf', 'D');
     }
-
 
     public function getAvailableStock($stockId)
     {

@@ -10,6 +10,7 @@ class UomType extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'old_id',
         'created_by',
         'created_at',
         'updated_at',

@@ -102,7 +102,7 @@
                     <td>{{ $transaction->item->name }}</td>
 
                     @php
-                        $brand = \App\Models\Brand::where('id', $transaction->item->brand)->first();
+                        $brand = \App\Models\Brand::where('id', $transaction->item->brand_id)->first();
                     @endphp
                     <td>{{ Str::limit($brand->name ?? 'N/A', 5, '') }}</td>
 
@@ -115,6 +115,7 @@
                         {{ $parts[0] }}-{{ $parts[1] }}-<strong>{{ $parts[2] }}</strong>
                     </td>
                     <td>{{ $transaction->item_price ?? '' }}</td>
+
 
                     <td><b>{{ \App\Models\Stock::getTotalStock($transaction->id) }}</b></td>
                     <td>&nbsp;</td>

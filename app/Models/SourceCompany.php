@@ -10,6 +10,7 @@ class SourceCompany extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'old_id',
         'address',
         'email',
         'phone_one',

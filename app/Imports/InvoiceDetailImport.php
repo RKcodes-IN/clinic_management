@@ -19,97 +19,155 @@ class InvoiceDetailImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         DB::transaction(function () use ($row) {
-            // 1. Retrieve Invoice
+            // Validate required fields
+            $this->validateRequiredFields($row);
+
+            // Retrieve Invoice
             $invoice = Invoice::where('old_invoice_id', $row['old_invoice_id'])->first();
-            if (!$invoice) {
-                return null;
-            }
+            if (!$invoice) return null;
 
-            $patientId = $invoice->paitent_id ?? 0;
+            // Parse dates using strtotime()
+            $parsedDates = [
+                'created_at' => $this->parseDate($row['created_at'] ?? null),
+                'expiry_date' => $this->parseDate($row['expiry_date'] ?? null)
+            ];
 
-            // 2. Retrieve/Create Item
-            $item = Item::firstOrCreate(
-                ['item_code' => $row['item_code']],
-                ['item_type' => $row['item_type'], 'name' => $row['item_name']]
-            );
+            // Item management
+            $item = $this->handleItem($row);
 
-            // 3. Ensure Stock Exists or Update Stock Quantity
-            $stock = Stock::where('item_id', $item->id)
-                ->where('expiry_date', $row['expiry_date'] ?? null)
-                ->first();
+            // Stock management
+            $stock = $this->handleStock($item, $row, $parsedDates['expiry_date']);
 
-            if ($stock) {
-                // Update existing stock quantity
-                $stock->order_quantity += $row['quantitiy'];
-                $stock->save();
-            } else {
-                // Create new stock entry
-                $stock = Stock::create([
-                    'item_id' => $item->id,
-                    'order_quantity' => $row['quantitiy'],
-                    'item_price' => $row['mrp'], // Optional
-                    'total_price' => $row['mrp'] * $row['quantitiy'], // Optional
-                    'status' => 1, // Default to 'In Stock'
-                    'expiry_date' => $row['expiry_date'] ?? null,
-                    'batch_no' => $row['batch'] ?? "",
-                ]);
-            }
+            // Create invoice detail
+            $invoiceDetail = $this->createInvoiceDetail($invoice, $item, $stock, $row, $parsedDates['created_at']);
 
-            // 4. Create Invoice Detail
-            $invoiceDetail = InvoiceDetail::create([
-                'invoice_id' => $invoice->id,
-                'old_invoice_id' => $row['old_invoice_id'],
-                'old_invoice_detail_id' => $row['old_invoice_detail_id'],
-                'paitent_id' => $patientId,
-                'item_id' => $item->id,
-                'stock_id' => $stock->id, // Attach the stock id
-                'item_type' => $row['item_type'],
-                'item_price' => $row['mrp'],
-                'discount_amount' => $row['discount_amount'] ?? 0,
-                'add_dis_amount' => $row['add_dis_amount'] ?? 0,
-                'add_dis_percent' => $row['add_dis_percent'] ?? 0,
-                'total_amount' => $row['amount'],
-                'created_at' => $row['created_at'] ?? now(),
-            ]);
+            // Handle stock transaction
+            $this->createStockTransaction($stock, $item, $invoiceDetail, $row, $parsedDates['created_at']);
 
-            // 5. Create Stock Transaction
-            StockTransaction::create([
-                'stock_id' => $stock->id,
-                'item_id' => $item->id,
-                'invoice_id' => $invoiceDetail->id,
-                'quantity' => $row['quantitiy'],
-                'item_price' => $row['mrp'],
-                'total_price' => $row['quantitiy'] * $row['mrp'],
-                'status' => 2, // Outgoing transaction
-                'transaction_date' => $row['created_at'] ?? now(),
-            ]);
-
-
-            $formattedDate = isset($row['created_at'])
-                ? Carbon::parse($row['created_at'])->format('Y-m-d H:i:s')
-                : now()->toDateTimeString();
-
-            if ($row['item_type'] == Item::TYPE_PHARMACY) {
-                PharmacyPrescription::create([
-                    'stock_id' => $stock->id,
-                    'item_id' => $item->id,
-                    'patient_id' => $patientId,
-                    'quantity' => $row['quantitiy'],
-                    'description' => "",
-                    "date" => $formattedDate
-                ]);
-            }
-
-            if ($row['item_type'] == Item::TYPE_LAB) {
-                LabPrescription::create([
-                    'stock_id' => $stock->id,
-                    'item_id' => $item->id,
-                    'patient_id' => $patientId,
-                    'quantity' => $row['quantitiy'],
-                    'description' => "",
-                    "date" => $formattedDate
-                ]);
-            }
+            // Handle prescriptions
+            // $this->handlePrescriptions($row, $stock, $item, $invoice->paitent_id, $parsedDates['created_at']);
         });
     }
+
+    private function validateRequiredFields(array $row)
+    {
+        $required = ['old_invoice_id', 'item_code', 'quantity', 'mrp'];
+        foreach ($required as $field) {
+            if (!isset($row[$field])) {
+                throw new \Exception("Missing required field: {$field}");
+            }
+        }
+    }
+
+    private function parseDate($excelDate)
+    {
+        if (empty($excelDate)) return now();
+
+        try {
+            // Handle Excel numeric date format
+            if (is_numeric($excelDate)) {
+                $unixTimestamp = ($excelDate - 25569) * 86400; // Convert Excel to Unix
+                return Carbon::createFromTimestamp($unixTimestamp);
+            }
+
+            // Parse using strtotime
+            $timestamp = strtotime($excelDate);
+            if ($timestamp === false) throw new \Exception("Invalid date format");
+
+            return Carbon::createFromTimestamp($timestamp);
+        } catch (\Exception $e) {
+            report($e);
+            return now();
+        }
+    }
+
+    private function handleItem(array $row)
+    {
+        return Item::firstOrCreate(
+            ['item_code' => $row['item_code']],
+            [
+                'name' => $row['item_name'] ?? 'New Item ' . time(),
+                'description' => $row['item_description'] ?? null
+            ]
+        );
+    }
+
+    private function handleStock(Item $item, array $row, Carbon $expiryDate)
+    {
+        $quantity = (float)$row['quantity'];
+        $mrp = (float)$row['mrp'];
+
+        $stock = Stock::where('item_id', $item->id)
+            ->where('expiry_date', $expiryDate)
+            ->first();
+
+        if ($stock) {
+            $stock->update([
+                'order_quantity' => $stock->order_quantity + $quantity,
+                'total_price' => $stock->total_price + ($quantity * $mrp)
+            ]);
+            return $stock;
+        }
+
+        return Stock::create([
+            'item_id' => $item->id,
+            'order_quantity' => $quantity,
+            'item_price' => $mrp,
+            'total_price' => $quantity * $mrp,
+            'status' => 1,
+            'expiry_date' => $expiryDate,
+            'batch_no' => $row['batch'] ?? 'BATCH-' . time(),
+        ]);
+    }
+
+    private function createInvoiceDetail(Invoice $invoice, Item $item, Stock $stock, array $row, Carbon $createdAt)
+    {
+        return InvoiceDetail::create([
+            'invoice_id' => $invoice->id,
+            'old_invoice_id' => $row['old_invoice_id'],
+            'old_invoice_detail_id' => $row['old_invoice_detail_id'] ?? null,
+            'paitent_id' => $invoice->paitent_id ?? 0,
+            'item_id' => $item->id,
+            'stock_id' => $stock->id,
+            'item_type' => 0,
+            'item_price' => (float)$row['mrp'],
+            'discount_amount' => (float)($row['discount_amount'] ?? 0),
+            'add_dis_amount' => (float)($row['add_dis_amount'] ?? 0),
+            'add_dis_percent' => (float)($row['add_dis_percent'] ?? 0),
+            'total_amount' => (float)$row['amount'],
+            'created_at' => $createdAt,
+        ]);
+    }
+
+    private function createStockTransaction(Stock $stock, Item $item, InvoiceDetail $invoiceDetail, array $row, Carbon $transactionDate)
+    {
+        StockTransaction::create([
+            'stock_id' => $stock->id,
+            'item_id' => $item->id,
+            'invoice_id' => $invoiceDetail->id,
+            'quantity' => (float)$row['quantity'],
+            'item_price' => (float)$row['mrp'],
+            'total_price' => (float)$row['quantity'] * (float)$row['mrp'],
+            'status' => 2,
+            'transaction_date' => $transactionDate,
+        ]);
+    }
+
+    // private function handlePrescriptions(array $row, Stock $stock, Item $item, $patientId, Carbon $date)
+    // {
+    //     $prescriptionData = [
+    //         'stock_id' => $stock->id,
+    //         'item_id' => $item->id,
+    //         'patient_id' => $patientId,
+    //         'quantity' => (float)$row['quantity'],
+    //         'description' => $row['description'] ?? '',
+    //         'date' => $date
+    //     ];
+
+    //     match ($row['item_type']) {
+    //         Item::TYPE_PHARMACY => PharmacyPrescription::create($prescriptionData),
+    //         Item::TYPE_LAB => LabPrescription::create($prescriptionData),
+    //         default => null
+    //     };
+    // }
 }

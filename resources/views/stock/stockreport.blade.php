@@ -154,12 +154,12 @@
                                 <div class="form-group">
                                     <label for="from_date" class="sr-only">From Date</label>
                                     <input type="date" name="from_date" id="from_date" class="form-control"
-                                        placeholder="From Date" value="{{ isset($fromDate) ? $fromDate : date('Y-m-d') }}">
+                                        placeholder="From Date" value="">
                                 </div>
                                 <div class="form-group">
                                     <label for="to_date" class="sr-only">To Date</label>
                                     <input type="date" name="to_date" id="to_date" class="form-control"
-                                        placeholder="To Date" value="{{ isset($toDate) ? $toDate : date('Y-m-d') }}">
+                                        placeholder="To Date" value="">
                                 </div>
 
                                 <div class="form-group">
@@ -195,7 +195,7 @@
                                             @php
                                                 $brand = \App\Models\Brand::where(
                                                     'id',
-                                                    $transaction->item->brand,
+                                                    $transaction->item->brand_id,
                                                 )->first();
                                             @endphp
                                             <td>{{ Str::limit($brand->name ?? 'N/A', 5, '') }}</td>

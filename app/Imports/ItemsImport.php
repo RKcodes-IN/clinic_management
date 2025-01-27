@@ -21,95 +21,61 @@ class ItemsImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         DB::beginTransaction();
-
         try {
-            // Parse and validate receive_date
-            $receiveDate = $this->parseDate($row['receive_date'] ?? null, 'd-m-Y', 'Y-m-d H:i:s');
+            $company = SourceCompany::where(
+                'old_id',
+                $row['company_name']
+            )->first();
 
-
-            // Parse expiry_date
-            $expiryDate = $this->parseDate($row['expiry_date'] ?? null, 'd-m-Y', 'Y-m-d H:i:s');
-
-            // Handle Company
-            $company = SourceCompany::firstOrCreate(
-                ['name' => $row['company_name']],
-                ['created_at' => $receiveDate, 'updated_at' => now()]
-            );
+            if ($company) {
+                $compant_id = $company->id;
+            } else {
+                $compant_id = 0;
+            }
 
             // Handle Brand
-            $brand = Brand::firstOrCreate(
-                ['name' => $row['brand']],
-                ['created_at' => $receiveDate, 'updated_at' => now()]
-            );
+            $brand = Brand::where(
+                'old_id',
+                $row['brand'],
+            )->first();
 
+            if ($brand) {
+                $brand_id = $brand->id;
+            } else {
+                $brand_id = 0;
+            }
             // Handle Category
-            $category = Category::firstOrCreate(
-                ['name' => $row['category']],
-                ['created_at' => $receiveDate, 'updated_at' => now()]
-            );
+
 
             // Handle UOM
-            $uom = UomType::firstOrCreate(
-                ['name' => $row['uom'] ?? "na"],
-                ['created_at' => $receiveDate, 'updated_at' => now()]
-            );
-
+            $uom = UomType::where(
+                'old_id',
+                $row['uom'],
+            )->first();
+            if ($brand) {
+                $uom_id = $uom->id;
+            } else {
+                $uom_id = 0;
+            }
             // Create or find the Item
             $item = Item::firstOrCreate(
                 ['item_code' => $row['item_code']],
                 [
-                    'item_type' => 1,
-                    'uom_type' => $uom->id,
+                    'item_type' => $row['item_type'],
+                    'uom_type' => $uom_id,
+                    'item_code' => $row['item_code'],
                     'name' => $row['name'],
-                    'source_company' => $company->id,
-                    'brand' => $brand->id,
-                    'category' => $category->id,
+                    'source_company' => $compant_id,
                     'ideal_quantity' => $row['ideal_stock_alerts'],
-                    'created_at' => $receiveDate,
+                    'alert_quantity' => $row['alert_quantity'],
+                    'brand_id' => $brand_id,
+                    'category_id' => 0,
                     'status' => 1
                 ]
             );
 
-            // Handle Stock
-            $stock = new Stock([
-                'purchase_order_id' => 0,
-                'purchase_order_item_id' => 0,
-                'item_id' => $item->id,
-                'order_quantity' => $row['quantity'],
-                'item_price' => $row['item_price'],
-                'total_price' => $row['quantity'] * $row['item_price'],
-                'order_date' => null,
-                'received_date' => $receiveDate,
-                'expiry_date' => $expiryDate,
-                'batch_no' => $row['batch_no'],
-                'status' => 1,
-                'created_by' => auth()->id() ?? 1,
-                'updated_by' => auth()->id() ?? 1
-            ]);
 
-            // Disable automatic timestamps and set created_at
-            $stock->timestamps = false;
-            $stock->created_at = $receiveDate;
-            $stock->save();
 
-            // Handle Stock Transaction
-            $stockTransaction = new StockTransaction([
-                'stock_id' => $stock->id,
-                'item_id' => $item->id,
-                'purchase_order_id' => 0,
-                'quantity' => $row['quantity'],
-                'item_price' => $row['item_price'],
-                'total_price' => $row['quantity'] * $row['item_price'],
-                'transaction_date' => $receiveDate,
-                'status' => 1,
-                'created_by' => auth()->id() ?? 1,
-                'updated_by' => auth()->id() ?? 1
-            ]);
-
-            // Disable automatic timestamps and set created_at
-            $stockTransaction->timestamps = false;
-            $stockTransaction->created_at = $receiveDate;
-            $stockTransaction->save();
 
             DB::commit();
 
@@ -137,7 +103,6 @@ class ItemsImport implements ToModel, WithHeadingRow
         try {
             return Carbon::createFromFormat($inputFormat, $date)->format($outputFormat);
         } catch (\Exception $e) {
-            \Log::warning('Invalid date format', ['date' => $date, 'expected_format' => $inputFormat]);
             return null;
         }
     }

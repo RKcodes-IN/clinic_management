@@ -119,7 +119,10 @@ class LabPrescriptionController extends Controller
     public function edit(LabPrescription $labPrescription)
     {
         $sampleTypes = SampleType::all();
-        return view('lab-prescription.update', compact('labPrescription', 'sampleTypes'));
+        $labpres = LabPrescription::find($labPrescription->id);
+
+        $labPrescriptions = LabPrescription::where('date', $labpres->date)->all();
+        return view('lab-prescription.update', compact('labPrescription', 'sampleTypes', 'labPrescriptions'));
     }
 
     public function update(Request $request, LabPrescription $labPrescription)
