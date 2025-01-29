@@ -154,21 +154,12 @@ class AppointmentswaDataTable extends DataTable
                 ->title('Conf. Date')
 
                 ->defaultContent('Not Set'),
-
-
             Column::make('confirmation_time')
                 ->title('Conf. Time')
                 ->defaultContent('Not Set'),
             Column::make('is_online')
                 ->title('Online/Visit')
                 ->defaultContent('Not Set'),
-
-
-
-
-
-
-
         ];
     }
 

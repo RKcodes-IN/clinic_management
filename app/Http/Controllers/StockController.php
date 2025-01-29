@@ -110,14 +110,13 @@ class StockController extends Controller
             $itemIds = [];
         }
 
-        // dd($itemIds);
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
         // Build the query
         $query = Stock::query();
 
-        // Apply filters
+        // Apply item and date filters
         if (!empty($itemIds) && !in_array('all', $itemIds)) {
             $query->whereIn('item_id', $itemIds);
         }
@@ -130,8 +129,17 @@ class StockController extends Controller
             $query->where('created_at', '<=', $toDate);
         }
 
-        // Fetch filtered transactions
-        $transactions = $query->with(['item'])->orderBy('id', 'asc')->get();
+        // Fetch filtered transactions with pharmacy items and order by item name
+        $transactions = $query
+            ->whereHas('item', function ($q) {
+                // Constrain to pharmacy items
+                $q->where('item_type', Item::TYPE_PHARMACY);
+            })
+            ->join('items', 'stocks.item_id', '=', 'items.id') // Join for ordering
+            ->orderBy('items.name', 'asc') // Order by item name
+            ->select('stocks.*') // Avoid column conflicts
+            ->with('item') // Eager load the relationship
+            ->get();
 
         // Use Maatwebsite Excel to create and download the export
         return Excel::download(new StockExport($transactions), 'stock_transactions.xlsx');

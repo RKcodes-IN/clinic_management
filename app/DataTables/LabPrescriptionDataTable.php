@@ -40,9 +40,9 @@ class LabPrescriptionDataTable extends DataTable
                 GROUP_CONCAT(lab_prescriptions.report_url SEPARATOR ", ") as report_urls,
                 GROUP_CONCAT(lab_prescriptions.out_of_range SEPARATOR ", ") as out_of_range_statuses
             ')
-            ->groupBy('lab_prescriptions.patient_id', 'lab_prescriptions.date', 'patient_details.name');
+            ->groupBy('lab_prescriptions.patient_id', 'lab_prescriptions.date', 'patient_details.name')
+            ->orderBy('lab_prescriptions.date','desc'); // Add this line to order by date
     }
-
     public function html(): HtmlBuilder
     {
         return $this->builder()
@@ -73,9 +73,7 @@ class LabPrescriptionDataTable extends DataTable
             Column::make('date')
                 ->title('Date')
                 ->type('date'),
-            Column::computed('report_available')
-                ->title('Report Available')
-                ->orderable(false),
+
         ];
     }
 

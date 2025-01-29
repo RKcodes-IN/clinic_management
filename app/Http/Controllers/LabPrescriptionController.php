@@ -119,41 +119,51 @@ class LabPrescriptionController extends Controller
     public function edit(LabPrescription $labPrescription)
     {
         $sampleTypes = SampleType::all();
-        $labpres = LabPrescription::find($labPrescription->id);
+        $labPrescriptions = LabPrescription::where('date', $labPrescription->date)
+            ->where('patient_id', $labPrescription->patient_id)
+            ->with('item', 'sampleType', 'patient') // Ensure patient relationship is loaded
+            ->get();
 
-        $labPrescriptions = LabPrescription::where('date', $labpres->date)->all();
-        return view('lab-prescription.update', compact('labPrescription', 'sampleTypes', 'labPrescriptions'));
+        return view('lab-prescription.update', compact('sampleTypes', 'labPrescriptions', 'labPrescription'));
     }
 
     public function update(Request $request, LabPrescription $labPrescription)
     {
-        $request->validate([
-            'sample_type_id' => 'required|exists:sample_types,id',
-            'sample_taken' => 'sometimes|boolean',
-            'report_available' => 'sometimes|boolean',
-            'report' => 'nullable|file|mimes:pdf,jpeg,png|max:2048',
+        $validatedData = $request->validate([
+            'lab_prescriptions.*.sample_type_id' => 'required|exists:sample_types,id',
+            'lab_prescriptions.*.sample_taken' => 'sometimes|boolean',
+            'lab_prescriptions.*.report_available' => 'sometimes|boolean',
+            'lab_prescriptions.*.value' => 'sometimes|string', // New field
+            'lab_prescriptions.*.out_of_range' => 'sometimes|boolean', // New field
+            'lab_prescriptions.*.report' => 'nullable|file|mimes:pdf,jpeg,png|max:2048',
         ]);
 
-        $data = [
-            'sample_type_id' => $request->sample_type_id,
-            'sample_taken' => $request->has('sample_taken'),
-            'report_available' => $request->has('report_available'),
-        ];
+        foreach ($request->lab_prescriptions as $id => $data) {
+            $labPrescription = LabPrescription::findOrFail($id);
 
-        if ($request->hasFile('report')) {
-            // Delete old report if exists
-            if ($labPrescription->report_path) {
-                Storage::delete($labPrescription->report_path);
+            $updateData = [
+                'sample_type_id' => $data['sample_type_id'],
+                'sample_taken' => isset($data['sample_taken']),
+                'report_available' => isset($data['report_available']),
+                'value' => isset($data['value']), // New field
+                'out_of_range' => isset($data['out_of_range']), // New field
+            ];
+
+
+            if ($request->hasFile("lab_prescriptions.{$id}.report")) {
+                $file = $request->file("lab_prescriptions.{$id}.report");
+                if ($labPrescription->report_path) {
+                    Storage::delete($labPrescription->report_path);
+                }
+                $path = $file->store('reports');
+                $updateData['report_path'] = $path;
             }
 
-            $path = $request->file('report')->store('reports');
-            $data['report_path'] = $path;
+            $labPrescription->update($updateData);
         }
 
-        $labPrescription->update($data);
-
-        return redirect()->route('lab-prescription.index')
-            ->with('success', 'Lab prescription updated successfully');
+        return redirect()->route('labprescription.index')
+            ->with('success', 'All lab prescriptions updated successfully.');
     }
 
     /**

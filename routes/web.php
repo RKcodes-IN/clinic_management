@@ -272,7 +272,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('/lab/investigation/store', [LabPrescriptionController::class, 'store'])->name('labprescription.store');
 
-    Route::get('/lab/investigation/edit/{id}', [LabPrescriptionController::class, 'edit'])->name('labprescription.edit');
+    Route::get('/lab/investigation/edit/{labPrescription}', [LabPrescriptionController::class, 'edit'])->name('labprescription.edit');
 
     Route::put('/lab/investigation/update', [LabPrescriptionController::class, 'update'])->name('labprescription.update');
 
