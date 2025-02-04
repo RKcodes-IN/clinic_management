@@ -238,4 +238,55 @@ if (!function_exists('invoiceCount')) {
 
         return $data;
     }
+
+    if (!function_exists('sendInteraktMessageUsingTemplates')) {
+        function sendInteraktMessageUsingTemplates($data)
+        {
+            $decodeData = json_decode($data, true);
+
+            // Prepare payload dynamically
+            $payload = [
+                "countryCode" => "+91",
+                "phoneNumber" => "",
+                "fullPhoneNumber" => $decodeData['phone_number'] ?? "",
+                "campaignId" => "",
+                "callbackData" => "some data",
+                "type" => "Template",
+                "template" => [
+                    "name" => "appointment_booked",
+                    "languageCode" => "en",
+                    "bodyValues" => [
+                        $decodeData['name'] ?? "Patient",
+                        $decodeData['doctor_name'] ?? "Doctor",
+                        $decodeData['date'] ?? "Date",
+                        $decodeData['time'] ?? "Time"
+                    ]
+                ]
+            ];
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.interakt.ai/v1/public/message/',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => json_encode($payload),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: Basic ' . env('INTERAKT_API_KEY'),
+                    'Content-Type: application/json'
+                ),
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+            // dd($response);
+            return $response;
+        }
+    }
 }

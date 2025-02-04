@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\PurchaseOrder;
+use App\Models\HabitVariable;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -12,32 +12,24 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class purchaseOrderDataTable extends DataTable
+class HabitVariableDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
      *
      * @param QueryBuilder $query Results from query() method.
      */
-
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('source_company', function ($row) {
-                return $row->sourceCompany ? $row->sourceCompany->name : 'N/A';
-            })
-            ->addColumn('status', function ($row) {
-                return (new PurchaseOrder())->getStatusLabel($row->status); // Return formatted string directly
-            })
-            ->addColumn('action', 'purchase_order.action')
-            ->rawColumns(['status', 'action'])
+            ->addColumn('action', 'habit_variables.action')
             ->setRowId('id');
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(purchaseOrder $model): QueryBuilder
+    public function query(HabitVariable $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -48,7 +40,7 @@ class purchaseOrderDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('purchaseorder-table')
+            ->setTableId('habitvariable-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             //->dom('Bfrtip')
@@ -74,23 +66,10 @@ class purchaseOrderDataTable extends DataTable
                 ->exportable(false)
                 ->printable(false)
                 ->width(60)
-                ->addClass('text-center')
-                ->orderable(false),
+                ->addClass('text-center'),
+            Column::make('id'),
+            Column::make('name'),
 
-            Column::make('id')
-                ->orderable(true),
-
-            Column::make('source_company')
-                ->title('Source Company')
-                ->orderable(true),
-
-            Column::make('creation_date')
-                ->orderable(true),
-
-            Column::make('status')
-                ->title('Status')
-                ->orderable(true)
-                ->sortColumn('status'), // Sort by the database column 'status'
         ];
     }
 
@@ -99,6 +78,6 @@ class purchaseOrderDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'purchase_order_' . date('YmdHis');
+        return 'HabitVariable_' . date('YmdHis');
     }
 }

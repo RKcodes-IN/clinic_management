@@ -30,6 +30,8 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>Actions</th>
+
                             <th>#</th>
                             <th>Item <br>code</th>
                             <th>Item<br> Name</th>
@@ -39,21 +41,11 @@
                             <th>Purchase<br> Price</th>
                             <th>Total</th>
                             <th>Status</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($purchaseOrder->purchaseOrderItems as $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->item->item_code ?? '' }}</td>
-                                <td>{{ $item->item->poitem_name ?? '' }}</td>
-                                <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->received_quantity }}</td>
-                                <td>₹{{ number_format($item->item_price, 2) }}</td>
-                                <td>₹{{ number_format($item->purchase_price, 2) }}</td>
-                                <td>₹{{ number_format($item->total_price, 2) }}</td>
-                                <td>{!! $item->getStatusLabel($item->status) !!}</td>
                                 <td>
                                     <button type="button" class="border-0 bg-none"
                                         onclick="showMarkReceiveModal(
@@ -65,6 +57,16 @@
                                         <i class="fa fa-arrows text-primary" aria-hidden="true"></i>
                                     </button>
                                 </td>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $item->item->item_code ?? '' }}</td>
+                                <td>{{ $item->item->poitem_name ?? '' }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->received_quantity }}</td>
+                                <td>₹{{ number_format($item->item_price, 2) }}</td>
+                                <td>₹{{ number_format($item->purchase_price, 2) }}</td>
+                                <td>₹{{ number_format($item->total_price, 2) }}</td>
+                                <td>{!! $item->getStatusLabel($item->status) !!}</td>
+
                             </tr>
                         @endforeach
                     </tbody>
@@ -79,32 +81,48 @@
     <script>
         function showMarkReceiveModal(itemId, maxQuantity, initialUnitPrice, $purchaseOrderItemId) {
             Swal.fire({
-                title: 'Mark Receive',
+                title: 'Mark Received',
                 html: `
         <div class="table-responsive">
             <table class="table" id="markReceiveTable">
                 <thead>
                     <tr>
-                        <th>Received Quantity</th>
-                        <th>Purchase Price</th>
+                        <th>Batch</th>
+                        <th>Expiry <br> Date</th>
+
+                        <th>Received <br> Quantity</th>
+                        <th>Purchase <br> Price</th>
                         <th>MRP</th>
-                        <th>GST Percentage</th>
-                        <th>GST Amount</th>
-                        <th>Total Price</th>
-                        <th>Expiry Date</th>
-                        <th>Received Date</th>
+                        <th>Gross</th>
+
+                        <th>Discount <br> Amount</th>
+                        <th>Addl. Disc <br> Amount</th>
+                        <th>Taxable <br> Amount</th>
+                        <th>GST %</th>
+                        <th>GST Amt.</th>
+                        <th>Net Amount</th>
+
+                        <th>Received <br> Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
+                        <td><input type="text" name="batch[]" class="form-control gst-percentage" placeholder="Enter batch" required></td>
+                        <td><input type="date" name="expiry_date[]" class="form-control" required></td>
+
                         <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
                         <td><input type="number" name="purchase_price[]" class="form-control purchase-price" placeholder="Enter purchase price" required></td>
                         <td><input type="number" name="unit_price[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Enter unit price" required></td>
+                        <td><input type="number" name="gross_amount[]" class="form-control total-price" readonly></td>
+
+                        <td><input type="number" name="discount_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="additional_discount_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="taxable_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
                         <td><input type="number" name="gst_percentage[]" class="form-control gst-percentage" placeholder="Enter GST percentage" required></td>
                         <td><input type="number" name="gst_amount[]" class="form-control gst-amount" readonly></td>
                         <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
-                        <td><input type="date" name="expiry_date[]" class="form-control" required></td>
+
                         <td><input type="date" name="received_date[]" class="form-control" value="${new Date().toISOString().split('T')[0]}" required></td>
                         <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-minus"></i></button></td>
                     </tr>
@@ -223,15 +241,23 @@
             document.getElementById("addRow").addEventListener("click", () => {
                 const newRow = document.createElement("tr");
                 newRow.innerHTML = `
-        <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
-        <td><input type="number" name="purchase_price[]" class="form-control purchase-price" placeholder="Enter purchase price" required></td>
-        <td><input type="number" name="unit_price[]" class="form-control unit-price" placeholder="Enter unit price" required></td>
-        <td><input type="number" name="gst_percentage[]" class="form-control gst-percentage" placeholder="Enter GST percentage" required></td>
-        <td><input type="number" name="gst_amount[]" class="form-control gst-amount" readonly></td>
-        <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
-        <td><input type="date" name="expiry_date[]" class="form-control" required></td>
-        <td><input type="date" name="received_date[]" class="form-control" value="${new Date().toISOString().split('T')[0]}" required></td>
-        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-minus"></i></button></td>
+         <td><input type="text" name="batch[]" class="form-control gst-percentage" placeholder="Enter batch" required></td>
+                        <td><input type="date" name="expiry_date[]" class="form-control" required></td>
+
+                        <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
+                        <td><input type="number" name="purchase_price[]" class="form-control purchase-price" placeholder="Enter purchase price" required></td>
+                        <td><input type="number" name="unit_price[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Enter unit price" required></td>
+                        <td><input type="number" name="gross_amount[]" class="form-control total-price" readonly></td>
+
+                        <td><input type="number" name="discount_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="additional_discount_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="taxable_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="gst_percentage[]" class="form-control gst-percentage" placeholder="Enter GST percentage" required></td>
+                        <td><input type="number" name="gst_amount[]" class="form-control gst-amount" readonly></td>
+                        <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
+
+                        <td><input type="date" name="received_date[]" class="form-control" value="${new Date().toISOString().split('T')[0]}" required></td>
+                        <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-minus"></i></button></td>
     `;
                 tableBody.appendChild(newRow);
                 attachEventListeners(newRow);

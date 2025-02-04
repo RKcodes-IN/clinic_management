@@ -191,8 +191,7 @@
                                 Pricing</a></li>
                     @endcan
 
-                    <li><a class="dropdown-item"
-                            href="{{ Route('labprescription.index') }}">Investigations</a>
+                    <li><a class="dropdown-item" href="{{ Route('labprescription.index') }}">Investigations</a>
                     </li>
                     {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li> --}}
                     {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
@@ -322,7 +321,11 @@
 
                     <li><a class="dropdown-item" href="{{ Route('sample-types.index') }}">Sample Type</a>
                     </li>
+                    <li><a class="dropdown-item" href="{{ Route('surgical-variables.index') }}">Surgical</a>
+                    </li>
 
+                    <li><a class="dropdown-item" href="{{ Route('habit-variables.index') }}">Habits</a>
+                    </li>
 
                     <!-- Add more submenu items as needed -->
                 </ul>

@@ -32,19 +32,19 @@
         }
 
         /* #msform input,
-                                                                                                                                                                                                                                                                        #msform textarea {
-                                                                                                                                                                                                                                                                            padding: 0px 8px 4px 8px;
-                                                                                                                                                                                                                                                                            border: none;
-                                                                                                                                                                                                                                                                            border-bottom: 1px solid #ccc;
-                                                                                                                                                                                                                                                                            border-radius: 0px;
-                                                                                                                                                                                                                                                                            margin-bottom: 25px;
-                                                                                                                                                                                                                                                                            margin-top: 2px;
-                                                                                                                                                                                                                                                                            width: 100%;
-                                                                                                                                                                                                                                                                            box-sizing: border-box;
-                                                                                                                                                                                                                                                                            color: #2C3E50;
-                                                                                                                                                                                                                                                                            font-size: 16px;
-                                                                                                                                                                                                                                                                            letter-spacing: 1px;
-                                                                                                                                                                                                                                                                        } */
+                                                                                                                                                                                    #msform textarea {
+                                                                                                                                                                                        padding: 0px 8px 4px 8px;
+                                                                                                                                                                                        border: none;
+                                                                                                                                                                                        border-bottom: 1px solid #ccc;
+                                                                                                                                                                                        border-radius: 0px;
+                                                                                                                                                                                        margin-bottom: 25px;
+                                                                                                                                                                                        margin-top: 2px;
+                                                                                                                                                                                        width: 100%;
+                                                                                                                                                                                        box-sizing: border-box;
+                                                                                                                                                                                        color: #2C3E50;
+                                                                                                                                                                                        font-size: 16px;
+                                                                                                                                                                                        letter-spacing: 1px;
+                                                                                                                                                                                    } */
 
         #msform input:focus,
         #msform textarea:focus {
@@ -52,9 +52,8 @@
             -webkit-box-shadow: none !important;
             box-shadow: none !important;
             border: none;
-            http: //127.0.0.1:8000/dashboard
-                /* font-weight: bold; */
-                border-bottom: 2px solid skyblue;
+            /* font-weight: bold; */
+            border-bottom: 2px solid skyblue;
             outline-width: 0;
         }
 
@@ -228,17 +227,6 @@
             object-fit: cover;
         }
     </style>
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
     <!-- MultiStep Form -->
     <div class="container-fluid" id="grad1">
         <div class="row justify-content-center mt-0">
@@ -248,8 +236,7 @@
                     <p>Fill all form field to go to next step</p>
                     <div class="row">
                         <div class="col-md-12 mx-0">
-                            <form id="msform" method="POST" action="{{ route('healthevalution.store') }}">
-                                @csrf
+                            <form id="msform">
                                 <!-- progressbar -->
                                 <ul id="progressbar">
                                     <li class="active" id="account"><strong>Basic Details</strong></li>
@@ -265,7 +252,8 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="patient_id">Patient Name</label>
-                                                    <select name="patient_id" id="patient_id" class="form-control select2">
+                                                    <select name="patient_id" id="patient_id" class="form-control select2"
+                                                        required>
                                                         <option value="">Select Patient</option>
                                                         @if ($patients instanceof \Illuminate\Database\Eloquent\Collection)
                                                             @foreach ($patients as $patient)
@@ -424,6 +412,7 @@
                                         </div>
 
                                         <legend>Past History</legend>
+
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
@@ -437,56 +426,53 @@
                                                     <th>Dose/Freq</th>
                                                 </tr>
                                             </thead>
+
                                             <tbody>
                                                 @foreach ($pastHistory as $index => $history)
                                                     <tr>
                                                         <td>{{ $index + 1 }}</td>
                                                         <td>{{ $history->name }}</td>
-                                                        <td>
-                                                            <input type="radio"
-                                                                name="past_histories[{{ $index }}][yes_no]"
+                                                        <td><input type="radio"
+                                                                name="history[{{ $history->id }}][yes_no]"
                                                                 value="yes"
-                                                                {{ old("past_histories.{$index}.yes_no") == 'yes' ? 'checked' : '' }}>
+                                                                {{ old("history.{$history->id}.yes_no") == 'yes' ? 'checked' : '' }}>
                                                         </td>
-                                                        <td>
-                                                            <input type="radio"
-                                                                name="past_histories[{{ $index }}][yes_no]"
+                                                        <td><input type="radio"
+                                                                name="history[{{ $history->id }}][yes_no]"
                                                                 value="no"
-                                                                {{ old("past_histories.{$index}.yes_no") == 'no' ? 'checked' : '' }}>
+                                                                {{ old("history.{$history->id}.yes_no") == 'no' ? 'checked' : '' }}>
                                                         </td>
                                                         <td>
                                                             <input type="text"
-                                                                name="past_histories[{{ $index }}][since]"
+                                                                name="history[{{ $history->id }}][since]"
                                                                 class="form-control"
-                                                                value="{{ old("past_histories.{$index}.since") }}">
+                                                                value="{{ old("history.{$history->id}.since") }}">
                                                         </td>
                                                         <td>
                                                             <input type="text"
-                                                                name="past_histories[{{ $index }}][trade_name]"
+                                                                name="history[{{ $history->id }}][trade_name]"
                                                                 class="form-control"
-                                                                value="{{ old("past_histories.{$index}.trade_name") }}">
+                                                                value="{{ old("history.{$history->id}.trade_name") }}">
                                                         </td>
                                                         <td>
                                                             <input type="text"
-                                                                name="past_histories[{{ $index }}][chemical]"
+                                                                name="history[{{ $history->id }}][chemical]"
                                                                 class="form-control"
-                                                                value="{{ old("past_histories.{$index}.chemical") }}">
+                                                                value="{{ old("history.{$history->id}.chemical") }}">
                                                         </td>
                                                         <td>
                                                             <input type="text"
-                                                                name="past_histories[{{ $index }}][dose_freq]"
+                                                                name="history[{{ $history->id }}][dose_freq]"
                                                                 class="form-control"
-                                                                value="{{ old("past_histories.{$index}.dose_freq") }}">
+                                                                value="{{ old("history.{$history->id}.dose_freq") }}">
                                                         </td>
-                                                        <input type="hidden"
-                                                            name="past_histories[{{ $index }}][history_id]"
-                                                            value="{{ $history->id }}">
                                                     </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
 
                                         <legend>Surgical History</legend>
+
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
@@ -497,31 +483,41 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($surgicalVariable as $index => $surgical)
+                                                @php
+                                                    $surgeries = [
+                                                        'CABG' => 'CABG (By Pass)',
+                                                        'PTCA' => 'PTCA (Stenting)',
+                                                        'Appendix' => 'Appendix',
+                                                        'GallBladder' => 'Gall Bladder',
+                                                        'Hystectomy' => 'Hystectomy',
+                                                        'Caesarean' => 'Caesarean',
+                                                        'AnyOther' => 'Any Other',
+                                                    ];
+                                                @endphp
+
+                                                @foreach ($surgeries as $key => $surgery)
                                                     <tr>
-                                                        <td>{{ $index + 1 }}</td>
-                                                        <td>{{ $surgical->name }}</td>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ $surgery }}</td>
                                                         <td>
-                                                            <input type="radio"
-                                                                name="surgical_histories[{{ $index }}][yes_no]"
+                                                            <input type="radio" name="surgery[{{ $key }}]"
                                                                 value="yes"
-                                                                {{ old("surgical_histories.{$index}.yes_no") == 'yes' ? 'checked' : '' }}>
+                                                                {{ old("habit.{$key}") == 'yes' ? 'checked' : '' }}>
                                                         </td>
                                                         <td>
-                                                            <input type="radio"
-                                                                name="surgical_histories[{{ $index }}][yes_no]"
+                                                            <input type="radio" name="surgery[{{ $key }}]"
                                                                 value="no"
-                                                                {{ old("surgical_histories.{$index}.yes_no") == 'no' ? 'checked' : '' }}>
+                                                                {{ old("habit.{$key}") == 'no' ? 'checked' : '' }}>
                                                         </td>
-                                                        <input type="hidden"
-                                                            name="surgical_histories[{{ $index }}][surgical_id]"
-                                                            value="{{ $surgical->id }}">
                                                     </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
 
+                                        <!-- resources/views/health-evalution/create.blade.php -->
+
                                         <legend>Addictions</legend>
+
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
@@ -532,23 +528,31 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($habits as $index => $habit)
+                                                @php
+                                                    $habits = [
+                                                        'smoking' => 'Smoking',
+                                                        'alcohol' => 'Alcohol',
+                                                        'gutka' => 'Gutka',
+                                                        'tea' => 'Tea',
+                                                        'coffee' => 'Coffee',
+                                                        'anyother' => 'Any Other',
+                                                    ];
+                                                @endphp
+
+                                                @foreach ($habits as $key => $habit)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $habit->name }}</td>
+                                                        <td>{{ $habit }}</td>
                                                         <td>
-                                                            <input type="radio"
-                                                                name="habits[{{ $index }}][value]" value="yes"
-                                                                {{ old("habits.{$index}.value") == 'yes' ? 'checked' : '' }}>
+                                                            <input type="radio" name="habit[{{ $key }}]"
+                                                                value="yes"
+                                                                {{ old("surgery.{$key}") == 'yes' ? 'checked' : '' }}>
                                                         </td>
                                                         <td>
-                                                            <input type="radio"
-                                                                name="habits[{{ $index }}][value]" value="no"
-                                                                {{ old("habits.{$index}.value") == 'no' ? 'checked' : '' }}>
+                                                            <input type="radio" name="habit[{{ $key }}]"
+                                                                value="no"
+                                                                {{ old("surgery.{$key}") == 'no' ? 'checked' : '' }}>
                                                         </td>
-                                                        <input type="hidden"
-                                                            name="habits[{{ $index }}][habit_id]"
-                                                            value="{{ $habit->id }}">
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -626,8 +630,10 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="lmp">Last Menstrual Period (LMP)</label>
-                                                    <input type="text" name="lmp" id="lmp"
-                                                        placeholder="LMP" class="form-control">
+                                                    <select name="lmp" id="lmp" class="form-control">
+                                                        <option value="yes">Yes</option>
+                                                        <option value="no">No</option>
+                                                    </select>
                                                     @error('lmp')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
@@ -645,12 +651,12 @@
                                             <label>Diet Preference:</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="diet_preference"
-                                                    value="1">
+                                                    value="vegetarian" required>
                                                 <label class="form-check-label">Vegan / Vegetarian</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="diet_preference"
-                                                    value="2">
+                                                    value="non_vegetarian">
                                                 <label class="form-check-label">Non-Vegetarian</label>
                                             </div>
                                         </div>
@@ -659,12 +665,12 @@
                                             <label>Do you have irregular meal timing?</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="meal_timing"
-                                                    value="1">
+                                                    value="yes" required>
                                                 <label class="form-check-label">Yes</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="meal_timing"
-                                                    value="0">
+                                                    value="no">
                                                 <label class="form-check-label">No</label>
                                             </div>
                                         </div>
@@ -673,17 +679,17 @@
                                             <label>If Yes:</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="meal_timing_desc"
-                                                    value="1">
+                                                    value="Less than 2 times a week" required>
                                                 <label class="form-check-label">Less than 2 times a week</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="meal_timing_desc"
-                                                    value="2">
+                                                    value="2 to 4 times a week">
                                                 <label class="form-check-label">2 to 4 times a week</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="meal_timing_desc"
-                                                    value="3">
+                                                    value="More than 4 times a week">
                                                 <label class="form-check-label">More than 4 times a week</label>
                                             </div>
                                         </div>
@@ -732,13 +738,13 @@
 
                                         <h4 class="fs-title">Physical Fitness</h4>
                                         <div class="form-group form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="exercise"
-                                                value="1">
+                                            <input class="form-check-input" type="checkbox" name="fitness_option"
+                                                value="exercise">
                                             <label class="form-check-label">Exercise</label>
                                         </div>
                                         <div class="form-group form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="yoga"
-                                                value="1">
+                                            <input class="form-check-input" type="checkbox" name="fitness_option"
+                                                value="yoga">
                                             <label class="form-check-label">Yoga</label>
                                         </div>
                                         <div class="form-group">
@@ -759,17 +765,17 @@
                                             <label>Appetite:</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="appetite"
-                                                    value="1">
+                                                    value="poor" required>
                                                 <label class="form-check-label">Poor</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="appetite"
-                                                    value="2">
+                                                    value="good">
                                                 <label class="form-check-label">Good</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="appetite"
-                                                    value="3">
+                                                    value="very_good">
                                                 <label class="form-check-label">Very Good</label>
                                             </div>
                                         </div>
@@ -781,17 +787,17 @@
                                             <label>Digestion:</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="digestion"
-                                                    value="1">
+                                                    value="poor" required>
                                                 <label class="form-check-label">Poor</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="digestion"
-                                                    value="2">
+                                                    value="good">
                                                 <label class="form-check-label">Good</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="digestion"
-                                                    value="3">
+                                                    value="very_good">
                                                 <label class="form-check-label">Very Good</label>
                                             </div>
                                         </div>
@@ -800,12 +806,12 @@
                                             <label>Past history of Hyper Acidity (Burning Pain):</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="hyper_acidity"
-                                                    value="1">
+                                                    value="yes" required>
                                                 <label class="form-check-label">Yes</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="hyper_acidity"
-                                                    value="0">
+                                                    value="no">
                                                 <label class="form-check-label">No</label>
                                             </div>
                                         </div>
@@ -814,12 +820,12 @@
                                             <label>Gas Problems / Flatulence Bloating-Heavy (Burning Pain):</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="gas_problem"
-                                                    value="1">
+                                                    value="yes" required>
                                                 <label class="form-check-label">Yes</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="gas_problem"
-                                                    value="0">
+                                                    value="no">
                                                 <label class="form-check-label">No</label>
                                             </div>
                                         </div>
@@ -925,12 +931,12 @@
                                             <label>Do you sleep during the day?</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="sleep_daytime"
-                                                    value="1">
+                                                    value="yes">
                                                 <label class="form-check-label">Yes</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="sleep_daytime"
-                                                    value="0">
+                                                    value="no">
                                                 <label class="form-check-label">No</label>
                                             </div>
                                         </div>
@@ -956,12 +962,12 @@
                                             <label>Any difficulty in Initiation and Maintenance:</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="checkbox"
-                                                    name="sleep_difficulty_initiation" value="1">
+                                                    name="sleep_difficulty_initiation">
                                                 <label class="form-check-label">Initiation</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="checkbox"
-                                                    name="sleep_difficulty_maintenance" value="1">
+                                                    name="sleep_difficulty_maintenance">
                                                 <label class="form-check-label">Maintenance</label>
                                             </div>
                                         </div>
@@ -974,12 +980,12 @@
                                             <label>Do you feel stressed?</label>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="stress"
-                                                    value="1">
+                                                    value="yes">
                                                 <label class="form-check-label">Yes</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="stress"
-                                                    value="0">
+                                                    value="no">
                                                 <label class="form-check-label">No</label>
                                             </div>
                                         </div>
@@ -1038,18 +1044,15 @@
                                         <div class="form-group">
                                             <label>Dosha:</label>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="dosha"
-                                                    value="work_related">
+                                                <input class="form-check-input" type="checkbox" name="dosha" value="work_related">
                                                 <label class="form-check-label">V(+/-)</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="dosha"
-                                                    value="financial">
+                                                <input class="form-check-input" type="checkbox" name="dosha" value="financial">
                                                 <label class="form-check-label">P(+/-)</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="dosha"
-                                                    value="inter_personal">
+                                                <input class="form-check-input" type="checkbox" name="dosha" value="inter_personal">
                                                 <label class="form-check-label">K(+/-)</label>
                                             </div>
                                         </div>
@@ -1061,25 +1064,21 @@
 
                                         <div class="form-group">
                                             <label for="sama_nirama">Sama/Nirama:</label>
-                                            <input type="text" class="form-control" id="sama_nirama"
-                                                name="sama_nirama">
+                                            <input type="text" class="form-control" id="sama_nirama" name="sama_nirama">
                                         </div>
 
                                         <div class="form-group">
                                             <label>Marga:</label>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="marga"
-                                                    value="Abyabatara">
+                                                <input class="form-check-input" type="checkbox" name="marga" value="Abyabatara">
                                                 <label class="form-check-label">Abyabatara</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="marga"
-                                                    value="Madhyama">
+                                                <input class="form-check-input" type="checkbox" name="marga" value="Madhyama">
                                                 <label class="form-check-label">Madhyama</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="marga"
-                                                    value="Bahya">
+                                                <input class="form-check-input" type="checkbox" name="marga" value="Bahya">
                                                 <label class="form-check-label">Bahya</label>
                                             </div>
                                         </div>
@@ -1087,23 +1086,19 @@
                                         <div class="form-group">
                                             <label>Agni:</label>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="agni"
-                                                    value="Maadha">
+                                                <input class="form-check-input" type="checkbox" name="agni" value="Maadha">
                                                 <label class="form-check-label">Maadha</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="agni"
-                                                    value="Teeksha">
+                                                <input class="form-check-input" type="checkbox" name="agni" value="Teeksha">
                                                 <label class="form-check-label">Teeksha</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="agni"
-                                                    value="Vishma">
+                                                <input class="form-check-input" type="checkbox" name="agni" value="Vishma">
                                                 <label class="form-check-label">Vishma</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="agni"
-                                                    value="Sama">
+                                                <input class="form-check-input" type="checkbox" name="agni" value="Sama">
                                                 <label class="form-check-label">Sama</label>
                                             </div>
                                         </div>
@@ -1111,33 +1106,27 @@
                                         <div class="form-group">
                                             <label>Prakriti:</label>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="prakriti"
-                                                    value="V">
+                                                <input class="form-check-input" type="checkbox" name="prakriti" value="V">
                                                 <label class="form-check-label">V</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="prakriti"
-                                                    value="P">
+                                                <input class="form-check-input" type="checkbox" name="prakriti" value="P">
                                                 <label class="form-check-label">P</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="prakriti"
-                                                    value="VP">
+                                                <input class="form-check-input" type="checkbox" name="prakriti" value="VP">
                                                 <label class="form-check-label">VP</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="prakriti"
-                                                    value="Vk">
+                                                <input class="form-check-input" type="checkbox" name="prakriti" value="Vk">
                                                 <label class="form-check-label">Vk</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="prakriti"
-                                                    value="KP">
+                                                <input class="form-check-input" type="checkbox" name="prakriti" value="KP">
                                                 <label class="form-check-label">KP</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="prakriti"
-                                                    value="VPK">
+                                                <input class="form-check-input" type="checkbox" name="prakriti" value="VPK">
                                                 <label class="form-check-label">VPK</label>
                                             </div>
                                         </div>
@@ -1145,23 +1134,19 @@
                                         <div class="form-group">
                                             <label>Vayas:</label>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="vayas"
-                                                    value="Bala">
+                                                <input class="form-check-input" type="checkbox" name="vayas" value="Bala">
                                                 <label class="form-check-label">Bala</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="vayas"
-                                                    value="Poorva">
+                                                <input class="form-check-input" type="checkbox" name="vayas" value="Poorva">
                                                 <label class="form-check-label">Poorva</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="vayas"
-                                                    value="Madhyama">
+                                                <input class="form-check-input" type="checkbox" name="vayas" value="Madhyama">
                                                 <label class="form-check-label">Madhyama</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="vayas"
-                                                    value="Vruddha">
+                                                <input class="form-check-input" type="checkbox" name="vayas" value="Vruddha">
                                                 <label class="form-check-label">Vruddha</label>
                                             </div>
                                         </div>
@@ -1169,18 +1154,15 @@
                                         <div class="form-group">
                                             <label>Balam:</label>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="balam"
-                                                    value="L">
+                                                <input class="form-check-input" type="checkbox" name="balam" value="L">
                                                 <label class="form-check-label">L</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="balam"
-                                                    value="H">
+                                                <input class="form-check-input" type="checkbox" name="balam" value="H">
                                                 <label class="form-check-label">H</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="balam"
-                                                    value="M">
+                                                <input class="form-check-input" type="checkbox" name="balam" value="M">
                                                 <label class="form-check-label">M</label>
                                             </div>
                                         </div>
@@ -1188,26 +1170,22 @@
                                         <div class="form-group">
                                             <label>Satmyam:</label>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="satmyam"
-                                                    value="Alpa">
+                                                <input class="form-check-input" type="checkbox" name="satmyam" value="Alpa">
                                                 <label class="form-check-label">Alpa</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="satmyam"
-                                                    value="Madhyama">
+                                                <input class="form-check-input" type="checkbox" name="satmyam" value="Madhyama">
                                                 <label class="form-check-label">Madhyama</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" name="satmyam"
-                                                    value="Avara">
+                                                <input class="form-check-input" type="checkbox" name="satmyam" value="Avara">
                                                 <label class="form-check-label">Avara</label>
                                             </div>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="roga_vinichaya">Roga Vinichaya:</label>
-                                            <input type="text" class="form-control" id="roga_vinichaya"
-                                                name="roga_vinichaya">
+                                            <input type="text" class="form-control" id="roga_vinichaya" name="roga_vinichaya">
                                         </div>
 
                                         <div class="form-group">
@@ -1218,7 +1196,7 @@
                                     </div>
                                     <input type="button" name="previous" class="previous action-button-previous"
                                         value="Previous" />
-                                    <input type="submit" name="make_payment" class="next action-button"
+                                    <input type="button" name="make_payment" class="next action-button"
                                         value="Confirm" />
                                 </fieldset>
                                 <fieldset>
@@ -1261,10 +1239,7 @@
             var opacity;
 
             $(".next").click(function() {
-                if ($(this).attr('type') === 'submit') {
-                    return true; // Allow form submission
-                }
-                // Existing step navigation logic
+
                 current_fs = $(this).parent();
                 next_fs = $(this).parent().next();
 

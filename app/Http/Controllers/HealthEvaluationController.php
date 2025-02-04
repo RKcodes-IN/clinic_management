@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\DataTables\HealthEvaluationDataTable;
 use App\Models\DoctorDetail;
+use App\Models\HabitVariable;
 use App\Models\HealthEvaluation;
 use App\Models\PastHistory;
 use App\Models\PatientAddication;
 use App\Models\PatientDetail;
 use App\Models\PatientPastHistory;
 use App\Models\PatientSurgicalHistory;
+use App\Models\SurgicalVariable;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,12 +28,15 @@ class HealthEvaluationController extends Controller
         $patients = PatientDetail::all();
         $doctors = DoctorDetail::all();
         $pastHistory = PastHistory::all();
+        $surgicalVariable = SurgicalVariable::all();
+        $habits = HabitVariable::all();
         // Fetch all doctors for dropdown
-        return view('health-evalution.create', compact('patients', 'doctors', 'pastHistory'));
+        return view('health-evalution.create', compact('patients', 'doctors', 'pastHistory', 'surgicalVariable', 'habits'));
     }
 
     public function store(Request $request)
     {
+
         // Validate the input data
         $request->validate([
             'patient_id' => 'nullable',
@@ -113,51 +118,76 @@ class HealthEvaluationController extends Controller
             $evaluation->food_allergies = $request->input('food_allergies');
             $evaluation->lactose_tolerance = $request->input('tolerance_to_lactose');
             $evaluation->lmp = $request->input('lmp');
+            $evaluation->diet_preference = $request->input('diet_preference');
+            $evaluation->irregular_mealtime = $request->input('meal_timing');
+            $evaluation->irregular_mealtime_if_yes = $request->input('meal_timing_desc');
+            $evaluation->exercise = $request->input('exercise');
+            $evaluation->yoga = $request->input('yoga');
+            $evaluation->duration = $request->input('fitness_duration');
+            $evaluation->distance = $request->input('fitness_distance');
+            $evaluation->appetite = $request->input('appetite');
+            $evaluation->digestion = $request->input('digestion');
+            $evaluation->hyper_acidity = $request->input('hyper_acidity');
+            $evaluation->urine_times_day = $request->input('urine_day');
+            $evaluation->urine_times_night = $request->input('urine_night');
+            $evaluation->any_difficulty_urine = $request->input('urine_difficulty');
+            $evaluation->sleep_time_from = $request->input('sleep_time_from');
+            $evaluation->sleep_time_to = $request->input('sleep_time_to');
+            $evaluation->day_sleeping = $request->input('sleep_daytime');
+            $evaluation->day_sleep_time_from = $request->input('sleep_daytime_time_from');
+            $evaluation->day_sleep_time_to = $request->input('sleep_daytime_time_to');
+            $evaluation->diff_in_initation = $request->input('sleep_difficulty_initiation');
+            $evaluation->feel_stress = $request->input('stress');
+            $evaluation->reason_for_stress = $request->input('stress_reason');
+            $evaluation->worry_most = $request->input('stress_worries');
+
             $evaluation->save();
 
             // Save patient past history
-            foreach ($request["history"] as $id => $value) {
+
+            foreach ($request["past_histories"] as $history) {
+
                 $paitentPastHistroty = new PatientPastHistory();
                 $paitentPastHistroty->patient_id = $patientId;
                 $paitentPastHistroty->appointment_id = 0;
                 $paitentPastHistroty->evalution_id = $evaluation->id;
-                $paitentPastHistroty->past_histroy_id = $id;
-                $paitentPastHistroty->yes_no = $value['yes_no'] ?? null;
-                $paitentPastHistroty->no_of_years = $value['since'] ?? null;
-                $paitentPastHistroty->trade_name = $value['trade_name'] ?? null;
-                $paitentPastHistroty->chemical = $value['chemical'] ?? null;
-                $paitentPastHistroty->dose_freq = $value['dose_freq'] ?? null;
+                $paitentPastHistroty->past_histroy_id = $history['history_id'];
+                $paitentPastHistroty->yes_no = $history['yes_no'] ?? "no";
+                $paitentPastHistroty->no_of_years = $history['since'] ?? null;
+                $paitentPastHistroty->trade_name = $history['trade_name'] ?? null;
+                $paitentPastHistroty->chemical = $history['chemical'] ?? null;
+                $paitentPastHistroty->dose_freq = $history['dose_freq'] ?? null;
                 $paitentPastHistroty->date = date('Y-m-d');
                 $paitentPastHistroty->save();
             }
 
             // Save surgical history
-            foreach ($request["surgery"] as $name => $valueEvalution) {
+            foreach ($request["surgical_histories"] as $surgicalHistory) {
                 $surgicalHostory = new PatientSurgicalHistory();
                 $surgicalHostory->patient_id = $patientId;
                 $surgicalHostory->evalution_id = $evaluation->id;
-                $surgicalHostory->name = $name;
-                $surgicalHostory->yes_no = $valueEvalution ?? null;
+                $surgicalHostory->surgical_variable_id = $surgicalHistory['surgical_id'];
+                $surgicalHostory->yes_no = $valueEvalution['yes_no'] ?? "no";
                 $surgicalHostory->date = date('Y-m-d');
                 $surgicalHostory->save();
             }
 
             // Save habits/addictions
-            foreach ($request["habit"] as $habitName => $valueHabit) {
+            foreach ($request["habits"] as $valueHabit) {
+
                 $habit = new PatientAddication();
                 $habit->patient_id = $patientId;
                 $habit->evalution_id = $evaluation->id;
-                $habit->name = $habitName;
-                $habit->yes_no = $valueHabit ?? null;
+                $habit->habit_id = $valueHabit['habit_id'];
+                $habit->yes_no = $valueHabit['value'] ?? "no";
                 $habit->save();
             }
 
             DB::commit();
             return redirect()->route('healthevalution.index')->with('success', 'Health Evalution Created Successfully');
-
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('appointments.create')
+            return redirect()->route('healthevalution.create')
                 ->with('error', 'Something went wrong: ' . $e->getMessage())
                 ->with('toast', 'error');
         }

@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorDetailController;
+use App\Http\Controllers\HabitVariableController;
 use App\Http\Controllers\HealthEvaluationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InfoUserController;
@@ -29,6 +30,7 @@ use App\Http\Controllers\SampleTypeController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SourceCompanyController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\SurgicalVariableController;
 use App\Http\Controllers\UomTypeController;
 use App\Http\Controllers\UsersController;
 use App\Models\HealthEvaluation;
@@ -273,10 +275,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/lab/investigation/store', [LabPrescriptionController::class, 'store'])->name('labprescription.store');
 
     Route::get('/lab/investigation/edit/{labPrescription}', [LabPrescriptionController::class, 'edit'])->name('labprescription.edit');
+    Route::get('/test-whatsapp', [AppointmentController::class, 'testWhatsApp']);
 
     Route::put('/lab/investigation/update', [LabPrescriptionController::class, 'update'])->name('labprescription.update');
 
     Route::resource('sample-types', SampleTypeController::class);
+    Route::resource('surgical-variables', SurgicalVariableController::class);
+    Route::resource('habit-variables', HabitVariableController::class);
 });
 
 

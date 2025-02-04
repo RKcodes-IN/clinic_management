@@ -136,7 +136,7 @@ class PurchaseOrderController extends Controller
                 // Validate the data for each item
                 $validator = Validator::make($data, rules: [
                     'item_id' => 'required|integer',
-                    'received_quantity' => 'required|numeric|min:1',
+                    'received_quantity' => 'required|min:1',
                     'unit_price' => 'required|numeric|min:0',
                     'total_price' => 'required|numeric|min:0',
                     'expiry_date' => 'required|date',

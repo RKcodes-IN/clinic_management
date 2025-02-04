@@ -12,6 +12,7 @@ use App\Models\HealthEvaluation;
 use App\Models\Item;
 use App\Models\PatientDetail;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,12 @@ class AppointmentController extends Controller
     public function AppointmentWa(AppointmentswaDataTable $dataTable)
     {
         return $dataTable->render('appointment.appointmentwa');
+    }
+
+    public function testWhatsApp()
+    {
+        $test = sendInteraktMessageUsingTemplates();
+        dd($test);
     }
 
     public function patientDetails($id = '')
@@ -196,6 +203,22 @@ class AppointmentController extends Controller
             $appointment->is_online = $request->input('is_online'); // Default status
             $appointment->save();
 
+            // sendding interakt messages
+
+            try {
+                $interaktData = [
+                    'appointment_id' => $appointment->id,
+                    'patient_id' => $patientId,
+                    'phone_number' => $appointment->phone_number,
+                    'name' => $appointment->patient->name ?? "",
+                    'date' => Carbon::parse($request->input('available_date'))->format('d-m-Y'),
+                    'time' => $request->input('time_from'),
+                    'doctor_name' => $appointment->doctor->name ?? ""
+                ];
+                $encodeData = json_encode($interaktData);
+                $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
+            } catch (\Exception $e) {
+            }
             DB::commit();
 
             return redirect()->route('appointments.index')

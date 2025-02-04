@@ -1,6 +1,11 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
+    <style>
+        input.form.form-check-input.item-checkbox.border-2.bg-light {
+            border: solid 1px #504f4f !important;
+        }
+    </style>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
@@ -37,14 +42,20 @@
 
                                 <div class="form-group mt-4">
                                     <label>Items</label><br>
+
                                     <input type="checkbox" id="selectAll" /> <strong>Select All</strong>
+                                    <button type="submit" class="btn btn-success ">Next</button>
+
                                     <table class="table table-bordered mt-2">
                                         <thead>
                                             <tr>
                                                 <th>Select</th>
                                                 <th>Item Name</th>
-                                                <th>Available Quantity</th>
-                                                <th>Reorder Quantity</th>
+                                                <th>ideal.Q</th>
+                                                <th>Avl.Q</th>
+                                                <th>Alert Q.</th>
+
+                                                <th>Reorder Q.</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -52,18 +63,27 @@
                                                 <tr>
                                                     <td>
                                                         <!-- Ensure the checkbox input is rendered correctly -->
-                                                        <input type="checkbox" class="form form-check-input item-checkbox border-2 bg-light"
+                                                        <input type="checkbox"
+                                                            class="form form-check-input item-checkbox border-2 bg-light"
                                                             name="items[]" value="{{ $item->id }}">
                                                     </td>
-                                                    <td>{{ $item->name }}</td>
+                                                    @if ($item->getTotalStockByItem($item->id) <= $item->alert_quantity)
+                                                        <td style="text-wrap: auto !important; color: red;">
+                                                            {{ $item->name }}</td>
+                                                    @else
+                                                        <td style="text-wrap: auto !important;">{{ $item->name }}</td>
+                                                    @endif
+                                                    <td>{{ $item->ideal_quantity }}</td>
                                                     <td>{{ $item->getTotalStockByItem($item->id) }}</td>
+                                                    <td>{{ $item->alert_quantity }}</td>
+
                                                     <td>{{ $item->reorder_quantity }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
-                                <button type="submit" class="btn btn-success ">Create Purchase Order</button>
+                                <button type="submit" class="btn btn-success ">Next</button>
                             </form>
                         @else
                             <p>No items found for the selected company.</p>
