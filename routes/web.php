@@ -105,7 +105,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('permissions', [PermissionController::class, 'store'])->name('permissions.store');
 
     Route::get('roles/create', [RoleController::class, 'create'])->name('roles.create');
-    Route::post('roles/store', [RoleController::class, 'store   '])->name('roles.store');
+    Route::post('roles/store', [RoleController::class, 'store'])->name('roles.store');
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
     Route::put('roles/{role}', [RoleController::class, 'update'])->name('roles.update');

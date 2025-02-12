@@ -151,10 +151,10 @@
                                     </select>
 
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group d-none">
                                     <label for="from_date" class="sr-only">From Date</label>
                                     <input type="date" name="from_date" id="from_date" class="form-control"
-                                        placeholder="From Date" value="">
+                                        placeholder="From Date" value="2022-01-01">
                                 </div>
                                 <div class="form-group">
                                     <label for="to_date" class="sr-only">To Date</label>

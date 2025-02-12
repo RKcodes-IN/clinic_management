@@ -62,7 +62,7 @@
             <div class="row">
                 <div class="col-6">
                     <h3 class="mb-0">{{ $paitent->name ?? 'Unknown' }}</h3>
-                    <p class="text-muted">Patient ID: {{ $paitent->id }}</p>
+                    <p class="text-muted">Patient ID: {{ $paitent->id??"" }}</p>
                     <!-- Optional button to edit profile -->
                     {{-- <button class="btn btn-primary btn-sm">Edit Profile</button> --}}
                 </div>
@@ -88,7 +88,7 @@
                 <div class="col-md-6">
                     <p><strong>Contact:</strong> {{ $paitent->phone_number ?? 'N/A' }}</p>
                     <p><strong>Address:</strong> {{ $paitent->address ?? 'No address provided' }}</p>
-                    <p><strong>Total Visits:</strong> {{ $appontmentCount }}</p>
+                    <p><strong>Total Visits:</strong> {{ $appontmentCount??0 }}</p>
                 </div>
             </div>
         </div>
@@ -149,10 +149,10 @@
                             <tr>
                                 <td>{{ \Carbon\Carbon::parse($healthEvalution->created_at)->format('F j, Y') }}</td>
 
-                                <td>{{ $healthEvalution->weight }}</td>
-                                <td>{{ $healthEvalution->height }}</td>
-                                <td>{{ $healthEvalution->allergic_to_drugs }}</td>
-                                <td>{{ $healthEvalution->food_allergies }}</td>
+                                <td>{{ $healthEvalution->weight??"" }}</td>
+                                <td>{{ $healthEvalution->height??"" }}</td>
+                                <td>{{ $healthEvalution->allergic_to_drugs??"" }}</td>
+                                <td>{{ $healthEvalution->food_allergies??"" }}</td>
                                 <td>
                                     <a href="{{ route('healthevalution.show', ['id' => $healthEvalution->id]) }}">
                                         <i class="fas fa-eye action-icon"></i>
@@ -204,7 +204,7 @@
                                             @foreach ($report->reportTypeValues as $value)
                                                 <tr class="{{ $value->out_of_range == 'yes' ? 'text-danger' : '' }}">
                                                     <td>{{ $value->reportType->name ?? 'N/A' }}</td>
-                                                    <td>{{ $value->value }}</td>
+                                                    <td>{{ $value->value??"" }}</td>
                                                     <td>
                                                         @if ($value->out_of_range == 'yes')
                                                             <span class="text-danger">Out of Range</span>
@@ -250,10 +250,10 @@
                     @foreach ($pharmacyPrescriptions as $prescriptions)
                         @if ($prescriptions)
                             <tr>
-                                <td>{{ $prescriptions->date }}</td>
+                                <td>{{ $prescriptions->date??"" }}</td>
 
-                                <td>{{ $prescriptions->item->name }}</td>
-                                <td>{{ $prescriptions->quantity }}</td>
+                                <td>{{ $prescriptions->item->name??"" }}</td>
+                                <td>{{ $prescriptions->quantity??"" }}</td>
 
 
                             </tr>
@@ -282,7 +282,7 @@
                 </thead>
                 <tbody>
                     @foreach ($labPrescriptions as $labprescriptions)
-                        @if ($prescriptions)
+                        @if ($labPrescriptions)
                             <tr>
                                 <td>{{ $labprescriptions->date }}</td>
 

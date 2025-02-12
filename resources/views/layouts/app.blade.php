@@ -102,9 +102,6 @@
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
 
-        .fixed - plugin.ps {
-            display: none!important;
-        }
     </script>
 
     <!-- Github buttons -->

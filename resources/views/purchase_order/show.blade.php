@@ -108,17 +108,17 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" name="batch[]" class="form-control gst-percentage" placeholder="Enter batch" required></td>
+                        <td><input type="text" name="batch[]" class="form-control" placeholder="Enter batch" required></td>
                         <td><input type="date" name="expiry_date[]" class="form-control" required></td>
 
                         <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
                         <td><input type="number" name="purchase_price[]" class="form-control purchase-price" placeholder="Enter purchase price" required></td>
                         <td><input type="number" name="unit_price[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Enter unit price" required></td>
-                        <td><input type="number" name="gross_amount[]" class="form-control total-price" readonly></td>
+                        <td><input type="number" name="gross_amount[]" class="form-control" readonly></td>
 
-                        <td><input type="number" name="discount_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
-                        <td><input type="number" name="additional_discount_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
-                        <td><input type="number" name="taxable_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="discount_amount[]" class="form-control" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="additional_discount_amount[]" class="form-control" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="taxable_amount[]" class="form-control" readonly></td>
                         <td><input type="number" name="gst_percentage[]" class="form-control gst-percentage" placeholder="Enter GST percentage" required></td>
                         <td><input type="number" name="gst_amount[]" class="form-control gst-amount" readonly></td>
                         <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
@@ -142,10 +142,15 @@
                     let isValid = true;
 
                     rows.forEach((row) => {
-                        const receivedQuantity = row.querySelector(".received-quantity").value;
-                        const purchasePrice = row.querySelector(".purchase-price").value;
-                        const unitPrice = row.querySelector(".unit-price").value;
-                        const gstPercentage = row.querySelector(".gst-percentage").value;
+                        const receivedQuantity = parseFloat(row.querySelector(".received-quantity")
+                            .value);
+                        const purchasePrice = parseFloat(row.querySelector(".purchase-price").value);
+                        const unitPrice = parseFloat(row.querySelector(".unit-price").value);
+                        const discountAmount = parseFloat(row.querySelector(
+                            '[name="discount_amount[]"]').value) || 0;
+                        const additionalDiscountAmount = parseFloat(row.querySelector(
+                            '[name="additional_discount_amount[]"]').value) || 0;
+                        const gstPercentage = parseFloat(row.querySelector(".gst-percentage").value);
                         const expiryDate = row.querySelector('[name="expiry_date[]"]').value;
                         const receivedDate = row.querySelector('[name="received_date[]"]').value;
 
@@ -168,7 +173,7 @@
                             return;
                         }
 
-                        if (!gstPercentage || gstPercentage < 0) {
+                        if (isNaN(gstPercentage) || gstPercentage < 0) {
                             isValid = false;
                             Swal.showValidationMessage('Please enter a valid GST percentage.');
                             return;
@@ -186,8 +191,11 @@
                             return;
                         }
 
-                        const gstAmount = (receivedQuantity * purchasePrice * gstPercentage) / 100;
-                        const totalPrice = (receivedQuantity * purchasePrice) + gstAmount;
+                        // Calculate as per new logic:
+                        const gross = receivedQuantity * purchasePrice;
+                        const taxable = gross - (discountAmount + additionalDiscountAmount);
+                        const gstAmount = taxable * gstPercentage / 100;
+                        const netAmount = taxable + gstAmount;
 
                         data.push({
                             item_id: itemId,
@@ -195,9 +203,12 @@
                             received_quantity: receivedQuantity,
                             purchase_price: purchasePrice,
                             unit_price: unitPrice,
+                            discount_amount: discountAmount,
+                            additional_discount_amount: additionalDiscountAmount,
+                            taxable_amount: taxable,
                             gst_percentage: gstPercentage,
                             gst_amount: gstAmount,
-                            total_price: totalPrice,
+                            total_price: netAmount,
                             expiry_date: expiryDate,
                             received_date: receivedDate
                         });
@@ -241,17 +252,17 @@
             document.getElementById("addRow").addEventListener("click", () => {
                 const newRow = document.createElement("tr");
                 newRow.innerHTML = `
-         <td><input type="text" name="batch[]" class="form-control gst-percentage" placeholder="Enter batch" required></td>
+         <td><input type="text" name="batch[]" class="form-control" placeholder="Enter batch" required></td>
                         <td><input type="date" name="expiry_date[]" class="form-control" required></td>
 
                         <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
                         <td><input type="number" name="purchase_price[]" class="form-control purchase-price" placeholder="Enter purchase price" required></td>
                         <td><input type="number" name="unit_price[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Enter unit price" required></td>
-                        <td><input type="number" name="gross_amount[]" class="form-control total-price" readonly></td>
+                        <td><input type="number" name="gross_amount[]" class="form-control" readonly></td>
 
-                        <td><input type="number" name="discount_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
-                        <td><input type="number" name="additional_discount_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
-                        <td><input type="number" name="taxable_amount[]" class="form-control unit-price" value="${initialUnitPrice}" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="discount_amount[]" class="form-control" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="additional_discount_amount[]" class="form-control" placeholder="Discount Amount"></td>
+                        <td><input type="number" name="taxable_amount[]" class="form-control" readonly></td>
                         <td><input type="number" name="gst_percentage[]" class="form-control gst-percentage" placeholder="Enter GST percentage" required></td>
                         <td><input type="number" name="gst_amount[]" class="form-control gst-amount" readonly></td>
                         <td><input type="number" name="total_price[]" class="form-control total-price" readonly></td>
@@ -268,6 +279,8 @@
                 row.querySelector(".received-quantity").addEventListener("input", updateTotalPrice);
                 row.querySelector(".purchase-price").addEventListener("input", updateTotalPrice);
                 row.querySelector(".gst-percentage").addEventListener("input", updateTotalPrice);
+                row.querySelector('[name="discount_amount[]"]').addEventListener("input", updateTotalPrice);
+                row.querySelector('[name="additional_discount_amount[]"]').addEventListener("input", updateTotalPrice);
             }
 
             tableBody.querySelectorAll("tr").forEach((row) => attachEventListeners(row));
@@ -277,12 +290,21 @@
                 rows.forEach((row) => {
                     const receivedQuantity = parseFloat(row.querySelector(".received-quantity").value) || 0;
                     const purchasePrice = parseFloat(row.querySelector(".purchase-price").value) || 0;
+                    const discountAmount = parseFloat(row.querySelector('[name="discount_amount[]"]').value) || 0;
+                    const additionalDiscountAmount = parseFloat(row.querySelector(
+                        '[name="additional_discount_amount[]"]').value) || 0;
                     const gstPercentage = parseFloat(row.querySelector(".gst-percentage").value) || 0;
-                    const gstAmount = (receivedQuantity * purchasePrice * gstPercentage) / 100;
-                    const totalPrice = (receivedQuantity * purchasePrice) + gstAmount;
 
-                    row.querySelector(".gst-amount").value = gstAmount.toFixed(2);
-                    row.querySelector(".total-price").value = totalPrice.toFixed(2);
+                    const gross = receivedQuantity * purchasePrice;
+                    const taxable = gross - (discountAmount + additionalDiscountAmount);
+                    const gstAmount = taxable * gstPercentage / 100;
+                    const netAmount = taxable + gstAmount;
+
+                    // Update the calculated fields
+                    row.querySelector('[name="gross_amount[]"]').value = gross.toFixed(2);
+                    row.querySelector('[name="taxable_amount[]"]').value = taxable.toFixed(2);
+                    row.querySelector('.gst-amount').value = gstAmount.toFixed(2);
+                    row.querySelector('.total-price').value = netAmount.toFixed(2);
                 });
             }
         }

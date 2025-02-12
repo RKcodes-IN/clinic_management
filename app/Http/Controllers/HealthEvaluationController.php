@@ -137,9 +137,9 @@ class HealthEvaluationController extends Controller
             $evaluation->day_sleep_time_from = $request->input('sleep_daytime_time_from');
             $evaluation->day_sleep_time_to = $request->input('sleep_daytime_time_to');
             $evaluation->diff_in_initation = $request->input('sleep_difficulty_initiation');
-            $evaluation->feel_stress = $request->input('stress');
-            $evaluation->reason_for_stress = $request->input('stress_reason');
-            $evaluation->worry_most = $request->input('stress_worries');
+            $evaluation->feel_stress = $request->input('stress') ?? "na";
+            $evaluation->reason_for_stress = $request->input('stress_reason') ?? "na";
+            $evaluation->worry_most = $request->input('stress_worries') ?? "null";
 
             $evaluation->save();
 

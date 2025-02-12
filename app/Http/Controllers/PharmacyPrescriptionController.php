@@ -24,29 +24,19 @@ class PharmacyPrescriptionController extends Controller
      */
     public function create(Request $request)
     {
-        $appointmentId = $request->query('appointmentId');
-        $patientId = $request->query('patientId');
-        // Ensure $appointmentId is provided
-        if (empty($appointmentId)) {
-            abort(400, 'Appointment ID is required');
-        }
 
         // Fetch pharmacy items that have related stock entries
         $pharmacyItems = Item::where('item_type', Item::TYPE_PHARMACY)
-            ->whereHas('stock') // Check if stock exists using the relationship
+            ->whereHas(relation: 'stock') // Check if stock exists using the relationship
             ->get()
             ->map(function ($item) {
                 $item->total_stock = Stock::getTotalStockByItem($item->id); // Calculate total stock
                 return $item;
             });
 
-        // Fetch lab items that have related stock entries
-        $labItems = Item::where('item_type', Item::TYPE_LAB)
-            ->whereHas('stock') // Check if stock exists using the relationship
-            ->get();
 
-        // Pass data to the view
-        return view('pharmacy-prescription.create', compact('appointmentId', 'patientId', 'pharmacyItems', 'labItems'));
+
+        return view('pharmacy-prescription.create', compact('pharmacyItems'));
     }
 
 

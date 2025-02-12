@@ -134,10 +134,16 @@ class PurchaseOrderController extends Controller
             $requestData = $request->all();
             foreach ($requestData as $data) {
                 // Validate the data for each item
-                $validator = Validator::make($data, rules: [
+                $validator = Validator::make($data, [
                     'item_id' => 'required|integer',
-                    'received_quantity' => 'required|min:1',
+                    'received_quantity' => 'required|numeric|min:1',
                     'unit_price' => 'required|numeric|min:0',
+                    'purchase_price' => 'required|numeric|min:0',
+                    'discount_amount' => 'nullable|numeric|min:0',
+                    'additional_discount_amount' => 'nullable|numeric|min:0',
+                    'taxable_amount' => 'required|numeric|min:0',
+                    'gst_percentage' => 'required|numeric|min:0',
+                    'gst_amount' => 'required|numeric|min:0',
                     'total_price' => 'required|numeric|min:0',
                     'expiry_date' => 'required|date',
                     'received_date' => 'required|date'
@@ -162,23 +168,27 @@ class PurchaseOrderController extends Controller
                 // }
 
                 // Determine status of the current item
-                if ($purchaseOrderItem->quantity ==  ($purchaseOrderItem->received_quantity + $data["received_quantity"])) {
+                if ($purchaseOrderItem->quantity == ($purchaseOrderItem->received_quantity + $data["received_quantity"])) {
                     $status = PurchaseOrderItem::STATUS_RECIEVED;
                 } else {
                     $status = PurchaseOrderItem::STATUS_PARTIAL_RECIEVED;
                 }
 
                 // Update the item's details
-                $purchaseOrderItem->update(attributes: [
-                    'received_quantity' => $purchaseOrderItem->received_quantity + $data['received_quantity'],
-                    'item_price' => $data['unit_price'],
-                    'gst_percentage' => $data['gst_percentage'],
-                    'gst_amount' => $data['gst_amount'],
-                    'purchase_price' => $data['purchase_price'],
-                    'total_price' => $data['total_price'],
-                    'expiry_date' => $data['expiry_date'],
-                    'received_date' => $data['received_date'],
-                    'status' => $status
+                $purchaseOrderItem->update([
+                    'received_quantity'           => $purchaseOrderItem->received_quantity + $data['received_quantity'],
+                    'item_price'                  => $data['unit_price'],
+                    'gst_percentage'              => $data['gst_percentage'],
+                    'gst_amount'                  => $data['gst_amount'],
+                    'purchase_price'              => $data['purchase_price'],
+                    'item_price'                  => $data['unit_price'],
+                    'discount_amount'             => $data['discount_amount'] ?? 0,
+                    'additional_discount_amount'  => $data['additional_discount_amount'] ?? 0,
+                    'taxable_amount'              => $data['taxable_amount'],
+                    'total_price'                 => $data['total_price'],
+                    'expiry_date'                 => $data['expiry_date'],
+                    'received_date'               => $data['received_date'],
+                    'status'                      => $status
                 ]);
 
                 // Save stock data
@@ -234,6 +244,7 @@ class PurchaseOrderController extends Controller
             ], 400);
         }
     }
+
 
     public function importForm()
     {

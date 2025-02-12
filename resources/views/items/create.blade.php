@@ -1,6 +1,10 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
+    @php
+        $urlType = $type ?? '';
+
+    @endphp
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
@@ -11,7 +15,7 @@
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
-                        <form action="{{ route('items.store') }}" method="POST">
+                        <form action="{{ route('items.store') }}" method="POST" id="itemForm">
                             @csrf
                             <div class="form-group">
                                 <label for="item_code">Item Code</label>
@@ -28,20 +32,18 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
+
                             <div class="form-group">
                                 <label for="item_type">Item Type</label>
-                                <select name="item_type" id="item_type" class="form-control" required>
+                                <select name="item_type" id="item_type" class="form-control" disabled>
                                     @php
-                                        // Get the 'type' from the URL
-                                        $urlType = request('type');
-                                        // Determine the selected type based on the URL or default logic
-                                        if ($urlType == 'lab') {
-                                            $selectedType = \App\Models\Item::TYPE_LAB; // Select 'lab' if passed
-                                        } elseif ($urlType == 'miss') {
-                                            $selectedType = \App\Models\Item::MISCELLANEOUS; // Select 'MISCELLANEOUS' if passed
-                                        } else {
-                                            $selectedType = \App\Models\Item::TYPE_PHARMACY; // Default to 'Pharmacy' if no valid type is passed
-                                        }
+
+                                        $selectedType =
+                                            $urlType == 'lab'
+                                                ? \App\Models\Item::TYPE_LAB
+                                                : ($urlType == 'miss'
+                                                    ? \App\Models\Item::MISCELLANEOUS
+                                                    : \App\Models\Item::TYPE_PHARMACY);
                                     @endphp
                                     @foreach (\App\Models\Item::getItemTypes() as $key => $type)
                                         <option value="{{ $key }}" {{ $selectedType == $key ? 'selected' : '' }}>
@@ -49,88 +51,54 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <input type="hidden" name="item_type" value="{{ $selectedType }}">
                                 @error('item_type')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
 
-                            @php
-                                // Get the 'type' from the URL
-                                $urlType = request('type');
-                                // Determine the selected type based on the URL or default logic
-                            @endphp
-                            @if ($urlType == 'lab' || $urlType == 'miss')
+                            <div id="conditionalFields">
                                 <div class="form-group">
-                                    <label for="item_code">Re-Order Quantity</label>
-                                    <input type="text" name="reorder_quantity" id="reorder_quantity" class="form-control"
-                                        required>
-                                    @error('item_code')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
+                                    <label for="reorder_quantity">Re-Order Quantity</label>
+                                    <input type="text" name="reorder_quantity" id="reorder_quantity"
+                                        class="form-control">
                                 </div>
-                            @else
+
                                 <div class="form-group">
+                                    <label for="brand">Brand</label>
+                                    <select name="brand" id="brand" class="form-control">
+                                        @foreach ($brands as $brand)
+                                            <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="source_company">Source Company</label>
+                                    <select name="source_company" id="source_company" class="form-control">
+                                        @foreach ($companies as $company)
+                                            <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="alert_quantity">Alert Quantity</label>
+                                    <input type="text" name="alert_quantity" id="alert_quantity" class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ideal_quantity">Ideal Quantity</label>
+                                    <input type="text" name="ideal_quantity" id="ideal_quantity" class="form-control">
+                                </div>
+                                <div class="form-group" id="uomGroup">
                                     <label for="uom_type">UOM Type</label>
-                                    <select name="uom_type" id="uom_type" class="form-control" required>
+                                    <select name="uom_type" id="uom_type" class="form-control">
                                         @foreach ($uomTypes as $uom)
                                             <option value="{{ $uom->id }}">{{ $uom->name }}</option>
                                         @endforeach
                                     </select>
-                                    @error('uom_type')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
                                 </div>
-                            @endif
-                            <div class="form-group">
-                                <label for="brand">Brand</label>
-                                <select name="brand" id="brand" class="form-control" required>
-                                    @foreach ($brands as $brand)
-                                        <option value="{{ $brand->id }}">{{ $brand->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('brand')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="source_company">Category</label>
-                                <select name="category_id" id="category_id" class="form-control" required>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('source_company')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="source_company">Source Company</label>
-                                <select name="source_company" id="source_company" class="form-control" required>
-                                    @foreach ($companies as $company)
-                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('source_company')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="item_code">Alert Quantity</label>
-                                <input type="text" name="alert_quantity" id="alert_quantity" class="form-control"
-                                    required>
-                                @error('item_code')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="item_code">Ideal Quantity</label>
-                                <input type="text" name="ideal_quantity" id="ideal_quantity" class="form-control"
-                                    required>
-                                @error('item_code')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
                             </div>
 
 
@@ -142,4 +110,19 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const itemType = "{{ $urlType }}"; // Use the URL type from the controller
+            const conditionalFields = document.getElementById('conditionalFields');
+            const uomGroup = document.getElementById('uomGroup');
+
+            // Show or hide fields based on the item type
+            if (itemType === "lab" || itemType === "miss") {
+                conditionalFields.style.display = 'none';
+            } else {
+                conditionalFields.style.display = 'block';
+            }
+        });
+    </script>
 @endsection

@@ -40,14 +40,15 @@ class ItemController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
+        $type = $request->query('type');
         $uomTypes = UomType::all();
         $brands = Brand::all();
         $companies = SourceCompany::all();
         $categories = Category::all();
 
-        return view('items.create', compact('uomTypes', 'brands', 'companies', 'categories'));
+        return view('items.create', compact('type', 'uomTypes', 'brands', 'companies', 'categories'));
     }
 
     /**
@@ -70,7 +71,7 @@ class ItemController extends Controller
         // Create the item
         Item::create($data);
 
-        return redirect()->route('items.create')->with('success', 'Item created successfully.');
+        return redirect()->back()->with('success', 'Item created successfully.');
     }
 
 
