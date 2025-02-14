@@ -114,6 +114,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
 
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
+    Route::get('/non-users', [UsersController::class, 'indexNonUser'])->name('nonusers.index');
 
     Route::get('/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
     Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');

@@ -29,19 +29,19 @@ class LabPrescriptionDataTable extends DataTable
     {
         return $model->newQuery()
             ->join('patient_details', 'lab_prescriptions.patient_id', '=', 'patient_details.id')
-            ->selectRaw('
-                CONCAT(lab_prescriptions.patient_id, "-", lab_prescriptions.date) as id,
-                patient_details.name as patient_name,
-                lab_prescriptions.date,
-                GROUP_CONCAT(lab_prescriptions.item_id SEPARATOR ", ") as item_ids,
-                GROUP_CONCAT(lab_prescriptions.description SEPARATOR ", ") as descriptions,
-                GROUP_CONCAT(lab_prescriptions.sample_taken SEPARATOR ", ") as sample_taken_statuses,
-                GROUP_CONCAT(lab_prescriptions.report_available SEPARATOR ", ") as report_available_statuses,
-                GROUP_CONCAT(lab_prescriptions.report_url SEPARATOR ", ") as report_urls,
-                GROUP_CONCAT(lab_prescriptions.out_of_range SEPARATOR ", ") as out_of_range_statuses
-            ')
-            ->groupBy('lab_prescriptions.patient_id', 'lab_prescriptions.date', 'patient_details.name')
-            ->orderBy('lab_prescriptions.date','desc'); // Add this line to order by date
+            ->select([
+                'lab_prescriptions.id',  // actual lab prescription id
+                'patient_details.name as patient_name',
+                'lab_prescriptions.date',
+                \DB::raw('GROUP_CONCAT(lab_prescriptions.item_id SEPARATOR ", ") as item_ids'),
+                \DB::raw('GROUP_CONCAT(lab_prescriptions.description SEPARATOR ", ") as descriptions'),
+                \DB::raw('GROUP_CONCAT(lab_prescriptions.sample_taken SEPARATOR ", ") as sample_taken_statuses'),
+                \DB::raw('GROUP_CONCAT(lab_prescriptions.report_available SEPARATOR ", ") as report_available_statuses'),
+                \DB::raw('GROUP_CONCAT(lab_prescriptions.report_url SEPARATOR ", ") as report_urls'),
+                \DB::raw('GROUP_CONCAT(lab_prescriptions.out_of_range SEPARATOR ", ") as out_of_range_statuses'),
+            ])
+            ->groupBy('lab_prescriptions.id', 'patient_details.name', 'lab_prescriptions.date')
+            ->orderBy('lab_prescriptions.date', 'desc');
     }
     public function html(): HtmlBuilder
     {
@@ -69,6 +69,7 @@ class LabPrescriptionDataTable extends DataTable
                 ->printable(false)
                 ->width(60)
                 ->addClass('text-center'),
+            Column::make('id')->title('ID'),
             Column::make('patient_name')->title('Patient'),
             Column::make('date')
                 ->title('Date')

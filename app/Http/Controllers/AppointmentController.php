@@ -272,6 +272,7 @@ class AppointmentController extends Controller
             'is_previous_report_available' => $request->has('is_previous_report_available') ? 1 : 0,
             'main_complaint' => $request->main_complaint,
             'available_date' => $request->available_date,
+            'confirmation_date' => $request->available_date,
             'time_from' => $request->time_from,
             'time_to' => $request->time_to,
             'message' => $request->message,

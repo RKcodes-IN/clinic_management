@@ -298,28 +298,28 @@
             @endcan
             @can(['create doctordetail', 'read doctordetail'])
 
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                role="button" data-bs-toggle="dropdown" data-target="#doctordropdown" aria-expanded="false">
-                <div
-                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                    <i class="fa-solid fa-user-doctor"></i>
-                </div>
-                <span class="nav-link-text ms-1">Doctor</span>
-            </a>
-            <ul class="dropdown-menu" id="doctordropdown">
-                @can('create doctordetail')
-                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.create') }}">Create Doctor</a></li>
-                @endcan
-                @can('read doctordetail')
-                    <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li>
-                @endcan
-                <!-- Add more submenu items as needed -->
-            </ul>
-        </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                    role="button" data-bs-toggle="dropdown" data-target="#doctordropdown" aria-expanded="false">
+                    <div
+                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Doctor</span>
+                </a>
+                <ul class="dropdown-menu" id="doctordropdown">
+                    @can('create doctordetail')
+                        <li><a class="dropdown-item" href="{{ Route('doctorDetail.create') }}">Create Doctor</a></li>
+                    @endcan
+                    @can('read doctordetail')
+                        <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li>
+                    @endcan
+                    <!-- Add more submenu items as needed -->
+                </ul>
+            </li>
 
-        </li>
-@endcan
+            </li>
+        @endcan
         @can('read variables')
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"

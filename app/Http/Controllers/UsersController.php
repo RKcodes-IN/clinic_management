@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\NonUserDataTable;
 use App\DataTables\UsersDataTable;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,14 +18,13 @@ class UsersController extends Controller
      */
     public function index(UsersDataTable $dataTable)
     {
-        // $role = Role::create(['name' => 'admin']);
-        // $permission = Permission::create(['name' => 'edit users']);
-        // $role->givePermissionTo($permission);
-        // $permission->assignRole($role);
-        // dd(Auth::user()->getRoleNames());
+
         return $dataTable->render('users.index');
     }
-
+    public function indexNonUser(NonUserDataTable $dataTable)
+    {
+        return $dataTable->render('users.non_user_index');
+    }
     /**
      * Show the form for creating a new resource.
      */
