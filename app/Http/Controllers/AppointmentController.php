@@ -25,9 +25,17 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(AppointmentDataTable $dataTable)
+    public function index(AppointmentDataTable $dataTable, Request $request)
     {
         $items = Item::all();
+
+        // Get date filters from request if they exist
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        // Apply filters to the datatable
+        $dataTable->withFilters($fromDate, $toDate);
+
         return $dataTable->render('appointment.index', compact('items'));
     }
     public function AppointmentWa(AppointmentswaDataTable $dataTable)
@@ -216,6 +224,19 @@ class AppointmentController extends Controller
                     'doctor_name' => $appointment->doctor->name ?? ""
                 ];
                 $encodeData = json_encode($interaktData);
+                $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
+
+
+                $testinteraktData = [
+                    'appointment_id' => $appointment->id,
+                    'patient_id' => $patientId,
+                    'phone_number' => "+919700088555",
+                    'name' => $appointment->patient->name ?? "",
+                    'date' => Carbon::parse($request->input('available_date'))->format('d-m-Y'),
+                    'time' => $request->input('time_from'),
+                    'doctor_name' => $appointment->doctor->name ?? ""
+                ];
+                $encodeData = json_encode($testinteraktData);
                 $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
             } catch (\Exception $e) {
             }

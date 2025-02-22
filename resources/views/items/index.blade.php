@@ -29,6 +29,8 @@
                         <a href="{{ route('items.create') }}" class="btn btn-primary">Create Items</a>
                     @elseif($urlType == 2)
                         <a href="{{ Route('items.create', ['type' => 'miss']) }}" class="btn btn-primary">Create Items</a>
+                    @elseif($urlType == 4)
+                        <a href="{{ Route('items.create', ['type' => 'therapy']) }}" class="btn btn-primary">Create Items</a>
                     @else
                         <a href="{{ Route('items.create', ['type' => 'lab']) }}" class="btn btn-primary">Create Items</a>
                     @endif

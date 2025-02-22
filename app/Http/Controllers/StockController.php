@@ -79,6 +79,7 @@ class StockController extends Controller
         if (!empty($itemIds) && !in_array('all', $itemIds)) {
             $query->whereIn('item_id', $itemIds);
         }
+        $fromDate = "2020-01-01 00:00:00";
 
         if ($fromDate && $toDate) {
             $query->whereBetween('created_at', [$fromDate, $toDate]);
@@ -122,11 +123,11 @@ class StockController extends Controller
         }
 
         if ($fromDate && $toDate) {
-            $query->whereBetween('created_at', [$fromDate, $toDate]);
+            $query->whereBetween('stocks.created_at', [$fromDate, $toDate]);
         } elseif ($fromDate) {
-            $query->where('created_at', '>=', $fromDate);
+            $query->where('stocks.created_at', '>=', $fromDate);
         } elseif ($toDate) {
-            $query->where('created_at', '<=', $toDate);
+            $query->where('stocks.created_at', '<=', $toDate);
         }
 
         // Fetch filtered transactions with pharmacy items and order by item name
@@ -136,7 +137,7 @@ class StockController extends Controller
                 $q->where('item_type', Item::TYPE_PHARMACY);
             })
             ->join('items', 'stocks.item_id', '=', 'items.id') // Join for ordering
-            ->orderBy('items.name', 'asc') // Order by item name
+            ->orderByRaw("CASE WHEN items.rack = '' THEN 1 ELSE 0 END ASC, items.rack ASC") // Modified ordering
             ->select('stocks.*') // Avoid column conflicts
             ->with('item') // Eager load the relationship
             ->get();
@@ -166,13 +167,14 @@ class StockController extends Controller
             $query->whereIn('item_id', $itemIds);
         }
 
+        $fromDate = "2020-01-01 00:00:00"; // Hardcoded for now; consider removing if dynamic
         // Date filters
         if ($fromDate && $toDate) {
-            $query->whereBetween('created_at', [$fromDate, $toDate]);
+            $query->whereBetween('stocks.created_at', [$fromDate, $toDate]);
         } elseif ($fromDate) {
-            $query->where('created_at', '>=', $fromDate);
+            $query->where('stocks.created_at', '>=', $fromDate);
         } elseif ($toDate) {
-            $query->where('created_at', '<=', $toDate);
+            $query->where('stocks.created_at', '<=', $toDate);
         }
 
         // Filter transactions with pharmacy items and order by item name
@@ -182,7 +184,7 @@ class StockController extends Controller
                 $q->where('item_type', Item::TYPE_PHARMACY);
             })
             ->join('items', 'stocks.item_id', '=', 'items.id') // Join for ordering
-            ->orderBy('items.name', 'asc') // Order by item name
+            ->orderByRaw("CASE WHEN items.rack = '' THEN 1 ELSE 0 END ASC, items.rack ASC") // Modified ordering
             ->select('stocks.*') // Avoid column conflicts
             ->with('item') // Eager load the relationship
             ->get();
@@ -203,7 +205,6 @@ class StockController extends Controller
         // Download the PDF
         return $mpdf->Output('stock_report_export.pdf', 'D');
     }
-
     public function getAvailableStock($stockId)
     {
         $stock = Stock::find($stockId);

@@ -31,7 +31,9 @@ use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SourceCompanyController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SurgicalVariableController;
+use App\Http\Controllers\TherapyController;
 use App\Http\Controllers\UomTypeController;
+use App\Http\Controllers\UpdatedPatientDetailController;
 use App\Http\Controllers\UsersController;
 use App\Models\HealthEvaluation;
 use App\Models\InvestigationReportType;
@@ -283,6 +285,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('sample-types', SampleTypeController::class);
     Route::resource('surgical-variables', SurgicalVariableController::class);
     Route::resource('habit-variables', HabitVariableController::class);
+
+    Route::post('/update-form', [PatientDetailController::class, 'sendUpdateForm'])->name('updateform.send');
+    Route::get('/update-form/form', [PatientDetailController::class, 'updateForm'])->name('updateform');
+    Route::resource('therapy', TherapyController::class);
+
+    Route::get('/import-rack', [ItemController::class, 'importRackForm'])->name('import.rackform');
+    Route::post('/import-rack', [ItemController::class, 'importRack'])->name('import.rack');
 });
 
 
@@ -300,8 +309,10 @@ Route::group(['middleware' => 'guest'], function () {
 });
 
 Route::get('/test-invoice', [InvoiceController::class, 'invoiceToAppointments']);
-
-
+Route::get('public-patient-form/{patient_id?}', [UpdatedPatientDetailController::class, 'createPublicForm'])
+    ->name('public.patient.form');
+Route::post('public-patient-form', [UpdatedPatientDetailController::class, 'store'])
+    ->name('public.patient.store');
 
 Route::get('/login', function () {
     return view('session/login-session');

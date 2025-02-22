@@ -37,13 +37,14 @@
                                 <label for="item_type">Item Type</label>
                                 <select name="item_type" id="item_type" class="form-control" disabled>
                                     @php
-
                                         $selectedType =
                                             $urlType == 'lab'
                                                 ? \App\Models\Item::TYPE_LAB
                                                 : ($urlType == 'miss'
                                                     ? \App\Models\Item::MISCELLANEOUS
-                                                    : \App\Models\Item::TYPE_PHARMACY);
+                                                    : ($urlType == 'therapy'
+                                                        ? \App\Models\Item::TYPE_THERAPY
+                                                        : \App\Models\Item::TYPE_PHARMACY));
                                     @endphp
                                     @foreach (\App\Models\Item::getItemTypes() as $key => $type)
                                         <option value="{{ $key }}" {{ $selectedType == $key ? 'selected' : '' }}>
@@ -118,7 +119,7 @@
             const uomGroup = document.getElementById('uomGroup');
 
             // Show or hide fields based on the item type
-            if (itemType === "lab" || itemType === "miss") {
+            if (itemType === "lab" || itemType === "miss" || itemType === "therapy") {
                 conditionalFields.style.display = 'none';
             } else {
                 conditionalFields.style.display = 'block';

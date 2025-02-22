@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\PaitentDetailDataTable;
 use App\Imports\PatientsImport;
+use App\Imports\SendInteraktMessageImport;
 use App\Models\Appointment;
 use App\Models\HealthEvaluation;
 use App\Models\InvestigationReport;
@@ -114,6 +115,23 @@ class PatientDetailController extends Controller
         return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport', 'appontmentCount', 'pharmacyPrescriptions', 'labPrescriptions'));
     }
 
+    public function updateForm()
+    {
+        return view('paitentdetail.updateform');
+    }
+    public function sendUpdateForm(Request $request)
+    {
+
+        ini_set('max_execution_time', 800);
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls',
+        ]);
+
+        Excel::import(new SendInteraktMessageImport, $request->file('file'));
+
+        return back()->with('success', 'Message Send Successfully');
+    }
 
     /**
      * Show the form for editing the specified resource.

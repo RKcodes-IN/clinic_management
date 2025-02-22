@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\ItemDataTable;
 use App\DataTables\StockReportDataTable;
 use App\Imports\ItemsImport;
+use App\Imports\RackUpdatation;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Item;
@@ -74,6 +75,20 @@ class ItemController extends Controller
         return redirect()->back()->with('success', 'Item created successfully.');
     }
 
+
+    public function importRackForm(Request $request)
+    {
+        return view('items.rackimport');
+    }
+    public function importRack(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls'
+        ]);
+
+        Excel::import(new RackUpdatation, $request->file('file'));
+        return redirect()->back()->with('success', 'Rack information updated successfully');
+    }
 
     public function exportExcel(ItemDataTable $dataTable)
     {

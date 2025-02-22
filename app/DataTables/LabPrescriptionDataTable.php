@@ -31,7 +31,7 @@ class LabPrescriptionDataTable extends DataTable
             ->join('patient_details', 'lab_prescriptions.patient_id', '=', 'patient_details.id')
             ->select([
                 'lab_prescriptions.id',  // actual lab prescription id
-                'patient_details.name as patient_name',
+                'patient_details.name as name',
                 'lab_prescriptions.date',
                 \DB::raw('GROUP_CONCAT(lab_prescriptions.item_id SEPARATOR ", ") as item_ids'),
                 \DB::raw('GROUP_CONCAT(lab_prescriptions.description SEPARATOR ", ") as descriptions'),
@@ -70,7 +70,7 @@ class LabPrescriptionDataTable extends DataTable
                 ->width(60)
                 ->addClass('text-center'),
             Column::make('id')->title('ID'),
-            Column::make('patient_name')->title('Patient'),
+            Column::make('name')->title('Patient')->name('patient_details.name'),
             Column::make('date')
                 ->title('Date')
                 ->type('date'),

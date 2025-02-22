@@ -2,268 +2,253 @@
 <html>
 
 <head>
+    <meta charset="utf-8">
+    <title>Invoice</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 13px;
             margin: 0;
-            padding: 20px;
+            padding: 30px;
             background-color: #fff;
+            color: #333;
         }
 
-        /* Header Styles */
+        /* Header section */
         .header-table {
             width: 100%;
-            margin-bottom: 30px;
-            border: none;
-            background: linear-gradient(to right, #f8f9fa, #ffffff);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
         }
 
         .header-table td {
-            border: none;
             vertical-align: middle;
         }
 
-        .logo-cell {
-            width: 10%;
-            padding-right: 20px;
-        }
-
-        .logo-cell img {
-            max-height: 50px;
-            /* Limit the maximum height */
-            max-width: 120px;
-            /* Optionally limit the maximum width */
-            width: auto;
+        .logo img {
+            max-width: 100px;
             height: auto;
-            object-fit: contain;
-        }
-
-        .header-text-cell {
-            width: 90%;
-            text-align: left;
-            padding-left: 15px;
-            border-left: 2px solid #e0e0e0;
         }
 
         .institute-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            color: #2c3e50;
-            display: block;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: #1a365d;
+            margin-bottom: 4px;
         }
 
         .sub-text {
-            font-size: 11px;
-            line-height: 1.5;
-            color: #34495e;
+            font-size: 12px;
+            color: #4a5568;
+            line-height: 1.4;
         }
 
-        /* Enhanced Address Box */
-        .address {
-            margin: 20px 0;
-            padding: 12px 15px;
-            font-size: 11px;
-            background-color: #f8f9fa;
-            border-left: 4px solid #2c3e50;
-            border-radius: 0 4px 4px 0;
+        /* Address box */
+        .address-box {
+            margin: 10px 0;
+            padding: 18px;
+            background: #f8fafc;
+            border-left: 4px solid #1a365d;
+            border-radius: 4px;
+            font-size: 12px;
             line-height: 1.6;
         }
 
-        /* Enhanced Bill To Section */
-        .bill-to {
-            margin: 20px 0;
-            padding: 15px;
-            font-size: 12px;
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        /* Invoice info section */
+        .invoice-info {
+            width: 100%;
+            margin: 2px 0;
+            padding: 5px;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 13px;
         }
 
-        /* Tables */
-        .compact-summary {
+        .invoice-info td {
+            vertical-align: top;
+            padding: 5px;
+        }
+
+        /* Patient details */
+        .patient-details {
+            margin: 25px 0;
+        }
+
+        .patient-details table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            background: #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
         }
 
-        .compact-summary td {
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            font-size: 12px;
+        .patient-details td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
         }
 
-        .content-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .content-table th,
-        .content-table td {
-            border: 1px solid #e0e0e0;
-            padding: 12px;
-            text-align: left;
-        }
-
-        .table-heading {
-            background-color: #2c3e50;
-            color: white;
-            font-weight: normal;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Invoice Number Styling */
-        .invoice-number {
-            font-size: 14px;
-            color: #2c3e50;
-            margin: 15px 0;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            display: inline-block;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* Summary Section */
+        /* Summary section */
         .summary-section {
+            margin: 25px 0;
+        }
+
+        .summary-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .summary-section td {
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+        }
+
+        .total-amount {
+            background: #1a365d;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Items table */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
         }
 
-        .summary-section h5 {
-            color: #2c3e50;
-            border-bottom: 2px solid #2c3e50;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-            font-size: 14px;
+        .items-table th,
+        .items-table td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 12px;
         }
 
-        /* Row Colors */
-        .content-table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
+        .items-table th {
+            background: #1a365d;
+            color: #fff;
+            text-transform: uppercase;
         }
 
-        /* Total Amount */
-        .total-amount {
-            font-weight: bold;
-            color: #2c3e50;
-            background-color: #f8f9fa;
+        .text-right {
+            text-align: right;
         }
 
-        /* Currency and Numbers */
-        .currency {
-            font-family: monospace;
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #718096;
+            font-size: 12px;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
         }
     </style>
 </head>
 
 <body>
-    <!-- Header using table layout -->
-    <table class="header-table">
+    <!-- Header -->
+
+
+    <!-- Registered Address -->
+    <div class="address-box">
+        <strong>Registered Address:</strong> H.No. 10-2-172, St. John's Road,<br>
+        Opposite Keyes High School, Secunderabad - 500025<br>
+        <strong>Contact:</strong> +91 9848157629 | <strong>Email:</strong> contact@sivasinstitute.in
+    </div>
+
+    <!-- Invoice Information -->
+    <table class="invoice-info">
         <tr>
-            <td class="logo-cell">
-                <img src="https://ik.imagekit.io/phbranchi/logo-ct_dMECUkXSB.png?updatedAt=1734284741500"
-                    alt="Logo" />
+            <td>
+                <strong>Invoice #:</strong> {{ $invoice->invoice_number }}<br>
+                <strong>Issued:</strong> {{ $invoice->created_at->format('d M Y') }}
             </td>
-            <td class="header-text-cell">
-                <span class="institute-name">S.I.V.A.S Health & Research Institute</span>
-                <span class="sub-text">
-                    Center for Health by Integration of Modern Medicine, Ayurveda & Yoga<br />
-                    and<br />
-                    Center for Eye Diseases
-                </span>
+            <td>
+                <strong>Patient ID:</strong> {{ $invoice->patient->id ?? 'N/A' }}<br>
+                <strong>Service Date:</strong> {{ $invoice->created_at->format('d M Y') }}
             </td>
         </tr>
     </table>
 
-    <!-- Address -->
-    <div class="address">
-        <strong>Street Address:</strong> H.No. 10-2-172, St. John's Road,<br />
-        Opposite Keyes High School,<br />
-        Secunderabad Telangana 500025<br />
-        <strong>Phone:</strong> +91 9848157629
-    </div>
-
-    <!-- Invoice Number and Date -->
-    <div class="invoice-number">
-        <strong>Invoice:</strong> #{{ $invoice->invoice_number }}
-        <span style="float: right;"><strong>Date:</strong> {{ $invoice->created_at->format('d-M-Y H:i') }}</span>
-    </div>
-
-    <!-- Bill To -->
-    <div class="bill-to">
-        <strong>Bill To:</strong> {{ $invoice->patient->name ?? 'N/A' }}<br />
-        <strong>Age:</strong> {{ $invoice->patient->age ?? 'N/A' }} <strong>Gender:</strong>
-        {{ ucfirst($invoice->patient->gender ?? 'N/A') }}<br />
-        <strong>Address:</strong> {{ $invoice->patient->address ?? 'N/A' }}<br />
-        <strong>Phone:</strong> {{ $invoice->patient->phone ?? 'N/A' }}<br />
-        <strong>Email:</strong> {{ $invoice->patient->email ?? 'N/A' }}
-    </div>
-
-    <!-- Compact Invoice Summary -->
-    <div class="summary-section">
-        <h5>Invoice Summary</h5>
-        <table class="compact-summary">
+    <!-- Patient Details -->
+    <div class="patient-details">
+        <table>
             <tr>
-                <td><strong>Invoice Date:</strong> {{ $invoice->created_at->format('d-M-Y H:i') }}</td>
-                <td><strong>Patient Name:</strong> {{ $invoice->patient->name ?? 'N/A' }}</td>
-                <td><strong>Doctor Name:</strong> {{ $invoice->doctor->name ?? 'N/A' }}</td>
+                <td><strong>Patient Name:</strong></td>
+                <td>{{ $invoice->patient->name ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td><strong>Bill Type:</strong> {{ ucfirst($invoice->bill_type) }}</td>
-                <td><strong>Subtotal:</strong> <span
-                        class="currency">₹{{ number_format($invoice->sub_total, 2) }}</span></td>
-                <td><strong>Discount:</strong> {{ number_format($invoice->discount, 2) }}%</td>
+                <td><strong>Gender/Age:</strong></td>
+                <td>{{ ucfirst($invoice->patient->gender ?? 'N/A') }} / {{ $invoice->patient->age ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td><strong>GST:</strong> {{ number_format($invoice->gst, 2) }}%</td>
-                <td colspan="2" class="total-amount"><strong>Total Amount:</strong> <span
-                        class="currency">₹{{ number_format($invoice->total, 2) }}</span></td>
+                <td><strong>Contact:</strong></td>
+                <td>
+                    {{ $invoice->patient->phone ?? 'N/A' }}<br>
+                    {{ $invoice->patient->email ?? '' }}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Address:</strong></td>
+                <td>{{ $invoice->patient->address ?? 'N/A' }}</td>
             </tr>
         </table>
     </div>
 
-    <!-- Pharmacy Items -->
+    <!-- Summary Section -->
+
+
+    <!-- Pharmacy Items (if any) -->
     @if ($pharmacyItems->count())
-        <div class="summary-section">
-            <h5>Items</h5>
-            <table class="content-table">
-                <thead>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th class="text-right">Unit Price</th>
+                    <th class="text-right">Discount</th>
+                    <th class="text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($pharmacyItems as $item)
                     <tr>
-                        <th class="table-heading">Item Name</th>
-                        <th class="table-heading">Quantity</th>
-                        <th class="table-heading">Price</th>
-                        <th class="table-heading">Discount</th>
-                        <th class="table-heading">Total</th>
+                        <td>{{ $item->stock->item->name ?? $item->stock->item->item_code }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td class="text-right currency">₹{{ number_format($item->item_price, 2) }}</td>
+                        <td class="text-right currency">₹{{ number_format($item->add_dis_amount ?? 0, 2) }}</td>
+                        <td class="text-right currency">₹{{ number_format($item->total_amount, 2) }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach ($pharmacyItems as $item)
-                        <tr>
-                            <td>{{ $item->stock->item->name ?? $item->stock->item->item_code }}</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td class="currency">₹{{ number_format($item->item_price, 2) }}</td>
-                            <td class="currency">₹{{ number_format($item->add_dis_amount ?? 0, 2) }}</td>
-                            <td class="currency">₹{{ number_format($item->total_amount, 2) }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                @endforeach
+            </tbody>
+        </table>
     @endif
+    <div class="summary-section">
+        <table>
+            <tr>
+                <td>Subtotal</td>
+                <td class="text-right currency">₹{{ number_format($invoice->sub_total, 2) }}</td>
+            </tr>
+            <tr>
+                <td>Discount ({{ number_format($invoice->discount, 2) }}%)</td>
+                <td class="text-right currency">
+                    -₹{{ number_format(($invoice->sub_total * $invoice->discount) / 100, 2) }}</td>
+            </tr>
+            <tr>
+                <td>GST ({{ number_format($invoice->gst, 2) }}%)</td>
+                <td class="text-right currency">₹{{ number_format(($invoice->sub_total * $invoice->gst) / 100, 2) }}
+                </td>
+            </tr>
+            <tr class="total-amount">
+                <td>Total Amount Payable</td>
+                <td class="text-right currency">₹{{ number_format($invoice->total, 2) }}</td>
+            </tr>
+        </table>
+    </div>
+    <!-- Footer -->
+    <div class="footer">
+        This is a computer-generated invoice. No signature required.<br>
+        Thank you for choosing S.I.V.A.S Health &amp; Research Institute
+    </div>
 </body>
 
 </html>

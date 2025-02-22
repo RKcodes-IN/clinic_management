@@ -22,6 +22,10 @@ class Stock extends Model
         'status',
         'created_by',
         'updated_by',
+        'correct_exp',
+        'correct_price',
+        'correct_stock',
+        'delete_yn'
     ];
 
     const IN_STOCK = 1;

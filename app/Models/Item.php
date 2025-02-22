@@ -13,6 +13,7 @@ class Item extends Model
     const TYPE_LAB = 3;
 
     const MISCELLANEOUS = 2;
+    const TYPE_THERAPY = 4;
     protected $fillable = [
         'item_code',
         'name',
@@ -27,6 +28,7 @@ class Item extends Model
         'source_company',
         'alert_quantity',
         'status',
+        'rack'
     ];
     /**
      * Get item types as an array for dropdown selection.
@@ -38,7 +40,8 @@ class Item extends Model
         return [
             self::TYPE_PHARMACY => "Pharmacy",
             self::TYPE_LAB => "Laboratory",
-            self::MISCELLANEOUS => "Miscellaneous"
+            self::MISCELLANEOUS => "Miscellaneous",
+            self::TYPE_THERAPY => "Therapy"
         ];
     }
 
@@ -48,6 +51,7 @@ class Item extends Model
             self::TYPE_PHARMACY => 'Pharmacy',
             self::TYPE_LAB => 'Lab',
             self::MISCELLANEOUS => 'Miscellaneous',
+            self::TYPE_THERAPY => 'Therapy',
             default => 'Unknown',
         };
     }

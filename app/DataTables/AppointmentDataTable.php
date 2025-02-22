@@ -18,6 +18,17 @@ class AppointmentDataTable extends DataTable
      * @param QueryBuilder $query Results from the query() method.
      * @return EloquentDataTable
      */
+
+    protected $fromDate;
+    protected $toDate;
+
+
+    public function withFilters($fromDate = null, $toDate = null)
+    {
+        $this->fromDate = $fromDate;
+        $this->toDate = $toDate;
+        return $this;
+    }
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
@@ -52,18 +63,23 @@ class AppointmentDataTable extends DataTable
      */
     public function query(Appointment $model): QueryBuilder
     {
-        // Build the query with joins and alias the columns for sorting
         $query = $model->newQuery()
             ->select([
                 'appointments.*',
                 'patient_details.name as patient_name',
-                'doctor_details.name as doctor_name',
+                'doctor_details.name as doctor_details',
             ])
             ->leftJoin('patient_details', 'appointments.patient_id', '=', 'patient_details.id')
             ->leftJoin('doctor_details', 'appointments.doctor_id', '=', 'doctor_details.id');
 
-        // Do not add a default orderBy here;
-        // let DataTables apply the ordering from the request.
+        // Apply date filters if they exist
+        if ($this->fromDate) {
+            $query->whereDate('appointments.available_date', '>=', $this->fromDate);
+        }
+        if ($this->toDate) {
+            $query->whereDate('appointments.available_date', '<=', $this->toDate);
+        }
+
         return $query;
     }
 

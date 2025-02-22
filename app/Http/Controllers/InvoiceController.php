@@ -289,14 +289,33 @@ class InvoiceController extends Controller
         $html = view('invoice.pdf', compact('invoice', 'pharmacyItems'))->render();
 
         // Initialize mPDF
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf([
+            'margin_top' => 30,
+            'margin_header' => 10,
+        ]);
 
         // Ensure no header is set
-        $mpdf->SetHTMLHeader(''); // Clear any existing header settings
+        $mpdf->SetHTMLHeader('<table style="width:100%; border-collapse: collapse;">
+        <tr>
+            <!-- Logo on the left -->
+            <td style="width:120px; vertical-align: middle; padding-right: 15px;">
+                <img src="https://ik.imagekit.io/phbranchi/logo-ct_dMECUkXSB.png?updatedAt=1734284741500"
+                    alt="Institute Logo" style="max-width: 100%; max-height: 70px;">
+            </td>
+            <!-- Text on the right -->
+            <td style="vertical-align: middle;">
+                <div style="font-size:20px; font-weight:600; color:#1a365d; margin-bottom: 1px;">S.I.V.A.S Health &
+                    Research Institute</div>
+                <div style="font-size:12px; color:#4a5568; line-height:1.4;">
+                    Center for Health Integration of Modern Medicine, Ayurveda & Yoga<br>
+                    Center for Eye Diseases | Recognized by Government of Telangana
+                </div>
+            </td>
+        </tr>
+    </table>'); // Clear any existing header settings
 
         // Set footer
         $mpdf->SetHTMLFooter('<div style="text-align: center;">Page {PAGENO}</div>');
-
         // Write HTML to PDF
         $mpdf->WriteHTML($html);
 

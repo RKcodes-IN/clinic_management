@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\InteraktCallbackController;
+use App\Http\Controllers\UpdatedPatientDetailController;
+use App\Models\UpdatedPatientDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::post('/patient/store', [UpdatedPatientDetailController::class, 'updatePatientDetails']);
+Route::post('/interkt/callback', [InteraktCallbackController::class, 'store']);

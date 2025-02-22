@@ -253,7 +253,7 @@ if (!function_exists('invoiceCount')) {
                 "callbackData" => "some data",
                 "type" => "Template",
                 "template" => [
-                    "name" => "appointment_booked",
+                    "name" => "appointment_booking",
                     "languageCode" => "en",
                     "bodyValues" => [
                         $decodeData['name'] ?? "Patient",
@@ -286,6 +286,51 @@ if (!function_exists('invoiceCount')) {
 
             curl_close($curl);
             // dd($response);
+            return $response;
+        }
+    }
+
+
+    if (!function_exists('sendPatientUpdationForm')) {
+        function sendPatientUpdationForm($country_code, $name, $contact_number, $id = 0)
+        {
+            $curl = curl_init();
+
+            $data = [
+                "countryCode"   => $country_code,
+                "phoneNumber"   => $contact_number,
+                "fullPhoneNumber" => "", // kept empty as per instructions
+                "campaignId"    => "",
+                "callbackData"  => "Patient Updation Form",
+                "type"          => "Template",
+                "template"      => [
+                    "name"         => "patient_update",
+                    "languageCode" => "en",
+                    "bodyValues"   => [$name],
+                    "buttonValues" => [
+                        "1" => [(string)$id]
+                    ]
+                ]
+            ];
+
+            curl_setopt_array($curl, [
+                CURLOPT_URL            => 'https://api.interakt.ai/v1/public/message/',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING       => '',
+                CURLOPT_MAXREDIRS      => 10,
+                CURLOPT_TIMEOUT        => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST  => 'POST',
+                CURLOPT_POSTFIELDS     => json_encode($data),
+                CURLOPT_HTTPHEADER     => [
+                    'Authorization: Basic TE9UMkRnOF9SZjBCVVBVRHVyUFJFMEV3ZndqRWRwdHFxR0ZxWW0xTmxnRTo=',
+                    'Content-Type: application/json'
+                ],
+            ]);
+
+            $response = curl_exec($curl);
+            curl_close($curl);
             return $response;
         }
     }

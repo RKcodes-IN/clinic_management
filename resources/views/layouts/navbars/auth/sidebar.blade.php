@@ -56,16 +56,14 @@
 
             @php
                 $role = auth()->user();
-
             @endphp
-
 
             @can(['create appointment'])
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
                         role="button" data-bs-toggle="dropdown" data-target="#appointmentsMenu" aria-expanded="false">
                         <div
-                            class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-calendar-check"></i>
                         </div>
                         <span class="nav-link-text ms-1">Appointments</span>
@@ -77,9 +75,7 @@
                             <li><a class="dropdown-item" href="{{ route('appointments.wa') }}">Appointment (WA)</a></li>
                         @endcan
 
-
                         @can('read appointment')
-
                             <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Appointment List</a></li>
                             @if ($role->hasRole('doctor'))
                                 <li><a class="dropdown-item" href="{{ route('appointent.calander') }}">Calendar</a></li>
@@ -96,18 +92,16 @@
                     <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
                         role="button" data-bs-toggle="dropdown" data-target="#paitentdropdown" aria-expanded="false">
                         <div
-                            class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-square-plus"></i>
                         </div>
                         <span class="nav-link-text ms-1">Patients</span>
                     </a>
 
-
                     <ul class="dropdown-menu" id="paitentdropdown">
                         @can(['read paitent', 'edit paitent', 'create paitent'])
                             <li><a class="dropdown-item" href="{{ route('paitent.index') }}">Patient List</a></li>
                         @endcan
-
 
                         @can(['read healthevalution', 'create healthevalution', 'edit healthevalution'])
                             <li><a class="dropdown-item" href="{{ route('healthevalution.create') }}">Create Health Evaluation
@@ -123,24 +117,9 @@
                             <li><a class="dropdown-item" href="{{ route('investigationreport.create') }}">Upload Investigation
                                     Report</a></li>
                         @endcan
-
-                        {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add New Paitent</a>
-            </li> --}}
-                        {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add Case Notes</a></li> --}}
-                        {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add Investigations</a></li>
-            <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Investigations List</a></li>
-            <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Parameters To Review</a></li>
-            <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Add Prescriptions</a></li>
-            <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Prescription List</a></li> --}}
-                        {{-- <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Past Medication</a></li> --}}
-
-
-                        <!-- Add more submenu items as needed -->
                     </ul>
                 </li>
-
             @endcan
-
 
             @can(['create stock', 'edit stock', 'read stock'])
                 <li class="nav-item mt-2">
@@ -150,7 +129,7 @@
                     <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
                         role="button" data-bs-toggle="dropdown" data-target="#inventorydeopdown" aria-expanded="false">
                         <div
-                            class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-warehouse"></i>
                         </div>
                         <span class="nav-link-text ms-1">Pharmacy</span>
@@ -163,226 +142,231 @@
                             <li><a class="dropdown-item" href="{{ Route('purchaseorder.index') }}">Purchase Order</a></li>
                         @endcan
                         <li><a class="dropdown-item" href="{{ route('stock.index', ['item_type' => 1]) }}">Stock</a></li>
-                        <li><a class="dropdown-item" href="{{ Route('stock.filterview') }}">Pharmacy Transactions</a>
+                        <li><a class="dropdown-item" href="{{ Route('stock.filterview') }}">Pharmacy Transactions</a></li>
                         <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a>
                         </li>
-                        {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
-        </li> --}}
-                        <!-- Add more submenu items as needed -->
+                    </ul>
+                </li>
+            @endcan
+
+            @canany(['create labprescription', 'edit stock', 'read stock'])
+                <li class="nav-item mt-2">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Therapy</h6>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                        role="button" data-bs-toggle="dropdown" data-target="#lab" aria-expanded="false">
+                        <div
+                            class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-warehouse"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Therapy</span>
+                    </a>
+                    <ul class="dropdown-menu" id="lab">
+                        @can(['create stock', 'edit stock', 'read stock'])
+                            <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 4]) }}">Items List</a>
+                            </li>
+                            @can(['create stock', 'edit stock'])
+                                <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'therapy']) }}">Add Items</a>
+                                </li>
+                            @endcan
+                        @endcan
+
+                        @can('edit stock')
+                            <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'lab']) }}">Update
+                                    Pricing</a></li>
+                        @endcan
+                        @can(['create labprescription'])
+                            <li><a class="dropdown-item" href="{{ Route('labprescription.index') }}">Investigations</a></li>
+                        @endcan
+                        {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li> --}}
+                        {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
+                    </ul>
+                </li>
+            @endcan
+
+
+            @canany(['create labprescription', 'edit stock', 'read stock'])
+                <li class="nav-item mt-2">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Lab</h6>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                        role="button" data-bs-toggle="dropdown" data-target="#lab" aria-expanded="false">
+                        <div
+                            class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-warehouse"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Labs</span>
+                    </a>
+                    <ul class="dropdown-menu" id="lab">
+                        @can(['create stock', 'edit stock', 'read stock'])
+                            <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 3]) }}">Items List</a>
+                            </li>
+                            @can(['create stock', 'edit stock'])
+                                <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'lab']) }}">Add Items</a>
+                                </li>
+                            @endcan
+                        @endcan
+
+                        @can('edit stock')
+                            <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'lab']) }}">Update
+                                    Pricing</a></li>
+                        @endcan
+                        @can(['create labprescription'])
+                            <li><a class="dropdown-item" href="{{ Route('labprescription.index') }}">Investigations</a></li>
+                        @endcan
+                        {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li> --}}
+                        {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
+                    </ul>
+                </li>
+            @endcan
+
+
+
+            @can(['create stock', 'edit stock', 'read stock'])
+                <li class="nav-item mt-2">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Miscellaneous</h6>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                        role="button" data-bs-toggle="dropdown" data-target="#miscellaneous" aria-expanded="false">
+                        <div
+                            class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-warehouse"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Miscellaneous</span>
+                    </a>
+                    <ul class="dropdown-menu" id="miscellaneous">
+                        <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 2]) }}">Items List</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'miss']) }}">Add Items</a>
+                        </li>
+                        @can('edit stock')
+                            <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'mis']) }}">Update
+                                    Pricing</a></li>
+                        @endcan
+                    </ul>
+                </li>
+            @endcan
+            @can(['create invoice', 'read invoice', 'edit invoice'])
+                <li class="nav-item mt-2">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Invoice</h6>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
+                        <div
+                            class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Invoice</span>
+                    </a>
+                    <ul class="dropdown-menu" id="invoicedropdown">
+                        <li><a class="dropdown-item" href="{{ Route('invoice.create') }}">Create Invoice</a></li>
+                        <li><a class="dropdown-item" href="{{ Route('invoice.index') }}">Invoice List</a></li>
+                    </ul>
+                </li>
+            @endcan
+
+            @can(['create users', 'read users'])
+                <li class="nav-item mt-2">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin Settings</h6>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                        role="button" data-bs-toggle="dropdown" data-target="#adminsettingdropdown"
+                        aria-expanded="false">
+                        <div
+                            class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-gear"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Admin Settings</span>
+                    </a>
+                    <ul class="dropdown-menu" id="adminsettingdropdown">
+                        @can('create users')
+                            <li><a class="dropdown-item" href="{{ Route('users.create') }}">Users Create</a></li>
+                        @endcan
+                        @can('read users')
+                            <li><a class="dropdown-item" href="{{ Route('users.index') }}">Users List</a></li>
+                        @endcan
+                        @can('read roles')
+                            <li><a class="dropdown-item" href="{{ Route('roles.index') }}">Roles</a></li>
+                        @endcan
+                    </ul>
+                </li>
+            @endcan
+            @can(['create doctordetail', 'read doctordetail'])
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                        role="button" data-bs-toggle="dropdown" data-target="#doctordropdown" aria-expanded="false">
+                        <div
+                            class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Doctor</span>
+                    </a>
+                    <ul class="dropdown-menu" id="doctordropdown">
+                        @can('create doctordetail')
+                            <li><a class="dropdown-item" href="{{ Route('doctorDetail.create') }}">Create Doctor</a></li>
+                        @endcan
+                        @can('read doctordetail')
+                            <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li>
+                        @endcan
+                    </ul>
+                </li>
+            @endcan
+            @can('read variables')
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
+                        role="button" data-bs-toggle="dropdown" data-target="#variabledropdown" aria-expanded="false">
+                        <div
+                            class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Variables Settings</span>
+                    </a>
+                    <ul class="dropdown-menu" id="variabledropdown">
+                        <li><a class="dropdown-item" href="{{ Route('source-company.index') }}">Source Company</a></li>
+                        <li><a class="dropdown-item" href="{{ Route('category.index') }}">Category</a></li>
+                        <li><a class="dropdown-item" href="{{ Route('brand.index') }}">Brand</a></li>
+                        <li><a class="dropdown-item" href="{{ Route('uomtype.index') }}">UOM Type</a></li>
+                        <li><a class="dropdown-item" href="{{ Route('investigationreporttype.index') }}">Investigation
+                                Report Type</a></li>
+                        <li><a class="dropdown-item" href="{{ Route('sample-types.index') }}">Sample Type</a></li>
+                        <li><a class="dropdown-item" href="{{ Route('surgical-variables.index') }}">Surgical</a></li>
+                        <li><a class="dropdown-item" href="{{ Route('habit-variables.index') }}">Addictions</a></li>
                     </ul>
                 </li>
             @endcan
             <li class="nav-item mt-2">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Lab</h6>
+                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dummy 1</h6>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" data-target="#lab" aria-expanded="false">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-warehouse"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Labs</span>
-                </a>
-                <ul class="dropdown-menu" id="lab">
-
-                    @can(['create stock', 'edit stock', 'read stock'])
-                        <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 3]) }}">Items List</a>
-                        </li>
-                        @can(['create stock', 'edit stock'])
-                            <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'lab']) }}">Add Items</a>
-                            </li>
-                        @endcan
-                    @endcan
-
-                    @can('edit stock')
-                        <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'lab']) }}">Update
-                                Pricing</a></li>
-                    @endcan
-                    @can(['create labprescription'])
-                        <li><a class="dropdown-item" href="{{ Route('labprescription.index') }}">Investigations</a>
-                        </li>
-                    @endcan
-                    {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li> --}}
-                    {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}
-            </li>
-            {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
-        </li> --}}
-            <!-- Add more submenu items as needed -->
-        </ul>
-        </li>
-        @can(['create stock', 'edit stock', 'read stock'])
-
-            <li class="nav-item mt-2">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Miscellaneous</h6>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" data-target="#miscellaneous" aria-expanded="false">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-warehouse"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Miscellaneous</span>
-                </a>
-                <ul class="dropdown-menu" id="miscellaneous">
-                    <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 2]) }}">Items List</a>
-                    </li>
-                    <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'miss']) }}">Add Items</a>
-                    </li>
-                    {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 2]) }}">Stock</a></li> --}}
-                    @can('edit stock')
-                        <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'mis']) }}">Update
-                                Pricing</a></li>
-                    @endcan
-                    {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
-        </li> --}}
-                    <!-- Add more submenu items as needed -->
-                </ul>
-            </li>
-        @endcan
-        @can(['create invoice', 'read invoice', 'edit invoice'])
-            <li class="nav-item mt-2">create invoice
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Invoice</h6>
-            </li>
-
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
                     role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
                     <div
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-file-invoice"></i>
+                        <i class="fas fa-unlock-alt"></i>
                     </div>
-                    <span class="nav-link-text ms-1">Invoice</span>
+                    <span class="nav-link-text ms-1">Dummy</span>
                 </a>
-                <ul class="dropdown-menu" id="invoicedropdown">
-                    <li><a class="dropdown-item" href="{{ Route('invoice.create') }}">Create Invoice</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('invoice.index') }}">Invoice List</a></li>
-
-                    {{-- <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a>
-        </li> --}}
-                    <!-- Add more submenu items as needed -->
-                </ul>
             </li>
-        @endcan
-
-        @can(['create users', 'read users'])
 
             <li class="nav-item mt-2">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin Settings</h6>
+                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dummy 2</h6>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" data-target="#adminsettingdropdown" aria-expanded="false">
+                    role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
                     <div
                         class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-gear"></i>
+                        <i class="fas fa-unlock-alt"></i>
                     </div>
-                    <span class="nav-link-text ms-1">Admin Settings</span>
+                    <span class="nav-link-text ms-1">Dummy</span>
                 </a>
-                <ul class="dropdown-menu" id="adminsettingdropdown">
-                    @can('create users')
-                        <li><a class="dropdown-item" href="{{ Route('users.create') }}">Users Create</a></li>
-                    @endcan
-                    @can('read users')
-                        <li><a class="dropdown-item" href="{{ Route('users.index') }}">Users List</a></li>
-                    @endcan
-
-                    @can('read roles')
-                        <li><a class="dropdown-item" href="{{ Route('roles.index') }}">Roles</a></li>
-                    @endcan
-
-
-                </ul>
-
-            @endcan
-            @can(['create doctordetail', 'read doctordetail'])
-
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" data-target="#doctordropdown" aria-expanded="false">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-user-doctor"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Doctor</span>
-                </a>
-                <ul class="dropdown-menu" id="doctordropdown">
-                    @can('create doctordetail')
-                        <li><a class="dropdown-item" href="{{ Route('doctorDetail.create') }}">Create Doctor</a></li>
-                    @endcan
-                    @can('read doctordetail')
-                        <li><a class="dropdown-item" href="{{ Route('doctorDetail.index') }}">Doctor's List</a></li>
-                    @endcan
-                    <!-- Add more submenu items as needed -->
-                </ul>
             </li>
-
-            </li>
-        @endcan
-        @can('read variables')
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                    role="button" data-bs-toggle="dropdown" data-target="#variabledropdown" aria-expanded="false">
-                    <div
-                        class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-list-check"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Variables Settings</span>
-                </a>
-                <ul class="dropdown-menu" id="variabledropdown">
-                    <li><a class="dropdown-item" href="{{ Route('source-company.index') }}">Source Company</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('category.index') }}">Category</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('brand.index') }}">Brand</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('uomtype.index') }}">UOM Type</a></li>
-                    <li><a class="dropdown-item" href="{{ Route('investigationreporttype.index') }}">Investigation
-                            Report Type</a>
-                    </li>
-
-                    <li><a class="dropdown-item" href="{{ Route('sample-types.index') }}">Sample Type</a>
-                    </li>
-                    <li><a class="dropdown-item" href="{{ Route('surgical-variables.index') }}">Surgical</a>
-                    </li>
-
-                    <li><a class="dropdown-item" href="{{ Route('habit-variables.index') }}">Habits</a>
-                    </li>
-
-                    <!-- Add more submenu items as needed -->
-                </ul>
-            </li>
-        @endcan
-        <li class="nav-item mt-2">
-            <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dummy 1</h6>
-        </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
-                <div
-                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                    <i class="fas fa-unlock-alt"></i>
-                </div>
-                <span class="nav-link-text ms-1">Dummy</span>
-            </a>
-
-
-        </li>
-
-        <li class="nav-item mt-2">
-            <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Dummy 2</h6>
-        </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle {{ Request::is('settings/*') ? 'active' : '' }}" href="#"
-                role="button" data-bs-toggle="dropdown" aria-expanded="false" data-target="#invoicedropdown">
-                <div
-                    class="icon icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                    <i class="fas fa-unlock-alt"></i>
-                </div>
-                <span class="nav-link-text ms-1">Dummy</span>
-            </a>
-
-
-        </li>
-
         </ul>
     </div>
 </aside>

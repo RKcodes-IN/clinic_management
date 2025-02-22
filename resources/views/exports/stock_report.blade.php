@@ -10,6 +10,18 @@
             <th>Price</th>
 
             <th>Bal. Stock</th>
+            <th>rack</th>
+            <th>correct_exp
+            </th>
+            <th>correct_price
+            </th>
+            <th>correct_stock
+
+            </th>
+            <th>delete_yn
+
+            </th>
+
             <th>Remarks</th>s
         </tr>
     </thead>
@@ -38,6 +50,12 @@
 
 
                 <td><b>{{ \App\Models\Stock::getTotalStock($transaction->id) }}</b></td>
+                <td>{{ $transaction->item->rack ?? '' }}</td>
+                <td>{{ $transaction->correct_exp ?? '' }}</td>
+                <td>{{ $transaction->correct_price ?? '' }}</td>
+                <td>{{ $transaction->correct_stock ?? '' }}</td>
+                <td>{{ $transaction->delete_yn ?? '' }}</td>
+
                 <td>&nbsp;</td>
             </tr>
         @endforeach

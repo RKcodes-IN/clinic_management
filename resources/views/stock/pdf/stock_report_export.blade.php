@@ -60,6 +60,10 @@
         }
 
         th:nth-child(8) {
+            width: 8%;
+        }
+
+        th:nth-child(9) {
             width: 19%;
         }
 
@@ -92,6 +96,7 @@
                 <th>Price</th>
 
                 <th>Bal. Stock</th>
+                <th>Rack</th>
                 <th>Remarks</th>
             </tr>
         </thead>
@@ -103,6 +108,7 @@
 
                     @php
                         $brand = \App\Models\Brand::where('id', $transaction->item->brand_id)->first();
+
                     @endphp
                     <td>{{ Str::limit($brand->name ?? 'N/A', 5, '') }}</td>
 
@@ -118,6 +124,8 @@
 
 
                     <td><b>{{ \App\Models\Stock::getTotalStock($transaction->id) }}</b></td>
+                    <td>{{ $transaction->item->rack ?? '' }}</td>
+
                     <td>&nbsp;</td>
                 </tr>
             @endforeach
