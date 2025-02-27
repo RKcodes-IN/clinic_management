@@ -11,6 +11,7 @@ use App\Models\SourceCompany;
 use App\Models\Stock;
 use App\Models\StockTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
@@ -45,7 +46,11 @@ class PurchaseOrderController extends Controller
     {
         $sourceCompanies = SourceCompany::all(); // Fetch all source companies
 
-        $items = Item::where('source_company', $request->source_company_id)->get(); // Fetch items for selected source company
+        $items = DB::table('items')
+            ->where('source_company', $request->source_company_id)
+            ->where('item_type', Item::TYPE_PHARMACY)
+            ->orderBy('name', 'asc')
+            ->get();
         return view('purchase_order.create', compact('items', 'sourceCompanies'));
     }
 
@@ -190,7 +195,6 @@ class PurchaseOrderController extends Controller
                     'received_date'               => $data['received_date'],
                     'status'                      => $status
                 ]);
-
                 // Save stock data
                 $stock = new Stock();
                 $stock->purchase_order_id = $purchaseOrderItem->purchase_order_id;
@@ -198,6 +202,7 @@ class PurchaseOrderController extends Controller
                 $stock->item_id = $data['item_id'];
                 $stock->order_quantity = $data['received_quantity'];
                 $stock->item_price = $data['unit_price'];
+                $stock->batch_no = $data['batch'];
                 $stock->total_price = $purchaseOrderItem->total_price;
                 $stock->order_date = $purchaseOrderItem->created_on;
                 $stock->received_date = $purchaseOrderItem->received_date;

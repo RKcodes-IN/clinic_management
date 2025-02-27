@@ -6,6 +6,7 @@ use App\DataTables\AppointmentDataTable;
 use App\DataTables\AppointmentswaDataTable;
 use App\DataTables\DoctorDetailDataTable;
 use App\Imports\AppointmentImport;
+use App\Imports\MainComplaintImport;
 use App\Models\Appointment;
 use App\Models\DoctorDetail;
 use App\Models\HealthEvaluation;
@@ -212,34 +213,39 @@ class AppointmentController extends Controller
             $appointment->save();
 
             // sendding interakt messages
-
-            try {
-                $interaktData = [
-                    'appointment_id' => $appointment->id,
-                    'patient_id' => $patientId,
-                    'phone_number' => $appointment->phone_number,
-                    'name' => $appointment->patient->name ?? "",
-                    'date' => Carbon::parse($request->input('available_date'))->format('d-m-Y'),
-                    'time' => $request->input('time_from'),
-                    'doctor_name' => $appointment->doctor->name ?? ""
-                ];
-                $encodeData = json_encode($interaktData);
-                $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
+            if ($appointment->status == Appointment::STATUS_CONFIRMED) {
 
 
-                $testinteraktData = [
-                    'appointment_id' => $appointment->id,
-                    'patient_id' => $patientId,
-                    'phone_number' => "+919700088555",
-                    'name' => $appointment->patient->name ?? "",
-                    'date' => Carbon::parse($request->input('available_date'))->format('d-m-Y'),
-                    'time' => $request->input('time_from'),
-                    'doctor_name' => $appointment->doctor->name ?? ""
-                ];
-                $encodeData = json_encode($testinteraktData);
-                $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
-            } catch (\Exception $e) {
+                try {
+                    $interaktData = [
+                        'appointment_id' => $appointment->id,
+                        'patient_id' => $patientId,
+                        'phone_number' => $appointment->phone_number,
+                        'name' => $appointment->patient->name ?? "",
+                        'date' => Carbon::parse($request->input('available_date'))->format('d-m-Y'),
+                        'time' => $request->input('time_from'),
+                        'doctor_name' => $appointment->doctor->name ?? ""
+                    ];
+                    $encodeData = json_encode($interaktData);
+
+                    $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
+
+
+                    $testinteraktData = [
+                        'appointment_id' => $appointment->id,
+                        'patient_id' => $patientId,
+                        'phone_number' => "+919700088555",
+                        'name' => $appointment->patient->name ?? "",
+                        'date' => Carbon::parse($request->input('available_date'))->format('d-m-Y'),
+                        'time' => $request->input('time_from'),
+                        'doctor_name' => $appointment->doctor->name ?? ""
+                    ];
+                    $encodeData = json_encode($testinteraktData);
+                    $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
+                } catch (\Exception $e) {
+                }
             }
+
             DB::commit();
 
             return redirect()->route('appointments.index')
@@ -299,6 +305,39 @@ class AppointmentController extends Controller
             'message' => $request->message,
             'status' => $request->status,
         ]);
+
+        if ($appointment->status == Appointment::STATUS_CONFIRMED) {
+
+
+            try {
+                $interaktData = [
+                    'appointment_id' => $appointment->id,
+                    'patient_id' => $appointment->patient_id,
+                    'phone_number' => $appointment->phone_number,
+                    'name' => $appointment->patient->name ?? "",
+                    'date' => Carbon::parse($request->input('available_date'))->format('d-m-Y'),
+                    'time' => $request->input('time_from'),
+                    'doctor_name' => $appointment->doctor->name ?? ""
+                ];
+                $encodeData = json_encode($interaktData);
+
+                $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
+
+
+                $testinteraktData = [
+                    'appointment_id' => $appointment->id,
+                    'patient_id' => $appointment->patient_id,
+                    'phone_number' => "+919700088555",
+                    'name' => $appointment->patient->name ?? "",
+                    'date' => Carbon::parse($request->input('available_date'))->format('d-m-Y'),
+                    'time' => $request->input('time_from'),
+                    'doctor_name' => $appointment->doctor->name ?? ""
+                ];
+                $encodeData = json_encode($testinteraktData);
+                $sendWhatappMessage = sendInteraktMessageUsingTemplates($encodeData);
+            } catch (\Exception $e) {
+            }
+        }
 
         return redirect()->route('appointments.index')->with('success', 'Appointment updated successfully.');
     }
@@ -417,6 +456,26 @@ class AppointmentController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Appointment rejected successfully']);
     }
+
+    public function importMainComplaintForm(Request $request)
+    {
+        return view('appointment.import-main-complaint');
+    }
+
+    public function importMainComplaint(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv', // Validate file type
+        ]);
+
+        // Import the Excel file
+        Excel::import(new MainComplaintImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Import Form');
+    }
+
+
+
 
     public function importForm(Request $request)
     {

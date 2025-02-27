@@ -59,7 +59,7 @@
                         <!-- Duration Unit as checkboxes in the main item -->
                         <div class="col-md-3">
                             <label>Duration Unit</label>
-                            <input type="number" class="form-control dose-count" name="items[0][duration]" min="0"
+                            <input type="number" class="form-control duration_unit" name="items[0][duration]" min="0"
                                 value="0">
                             <div>
                                 <label><input type="checkbox" name="items[0][duration_unit][]" value="D"> Days</label>

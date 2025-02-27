@@ -108,7 +108,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" name="batch[]" class="form-control" placeholder="Enter batch" required></td>
+                        <td><input type="text" name="batch[]" class="form-control batch" placeholder="Enter batch" required></td>
                         <td><input type="date" name="expiry_date[]" class="form-control" required></td>
 
                         <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
@@ -145,6 +145,7 @@
                         const receivedQuantity = parseFloat(row.querySelector(".received-quantity")
                             .value);
                         const purchasePrice = parseFloat(row.querySelector(".purchase-price").value);
+                        const batch = row.querySelector(".batch").value;
                         const unitPrice = parseFloat(row.querySelector(".unit-price").value);
                         const discountAmount = parseFloat(row.querySelector(
                             '[name="discount_amount[]"]').value) || 0;
@@ -210,6 +211,7 @@
                             gst_amount: gstAmount,
                             total_price: netAmount,
                             expiry_date: expiryDate,
+                            batch: batch,
                             received_date: receivedDate
                         });
                     });
@@ -252,7 +254,7 @@
             document.getElementById("addRow").addEventListener("click", () => {
                 const newRow = document.createElement("tr");
                 newRow.innerHTML = `
-         <td><input type="text" name="batch[]" class="form-control" placeholder="Enter batch" required></td>
+         <td><input type="text" name="batch[]" class="form-control batch" placeholder="Enter batch" required></td>
                         <td><input type="date" name="expiry_date[]" class="form-control" required></td>
 
                         <td><input type="number" name="received_quantity[]" class="form-control received-quantity" max="${maxQuantity}" placeholder="Enter quantity" required></td>
@@ -291,6 +293,8 @@
                     const receivedQuantity = parseFloat(row.querySelector(".received-quantity").value) || 0;
                     const purchasePrice = parseFloat(row.querySelector(".purchase-price").value) || 0;
                     const discountAmount = parseFloat(row.querySelector('[name="discount_amount[]"]').value) || 0;
+                    const batch = row.querySelector(".batch").value;
+
                     const additionalDiscountAmount = parseFloat(row.querySelector(
                         '[name="additional_discount_amount[]"]').value) || 0;
                     const gstPercentage = parseFloat(row.querySelector(".gst-percentage").value) || 0;

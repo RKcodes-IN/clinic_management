@@ -38,8 +38,8 @@
                                     <td>{{ $orderItem->item->pouom->name ?? 0 }}</td>
                                     <td>{{ $orderItem->item->unit_conversion_ratio ?? '' }}</td>
                                     <td>
-                                        <input type="number" name="items[{{ $orderItem->item->id }}]" value="{{ $orderItem->quantity ?? 0 }}"
-                                            class="form-control table-input" min="1">
+                                        <input type="text" name="items[{{ $orderItem->item->id }}]" value="{{ $orderItem->quantity ?? 0 }}"
+                                            class="form-control table-input">
                                     </td>
                                 </tr>
                             @endforeach

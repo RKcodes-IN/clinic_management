@@ -15,11 +15,11 @@ if (!function_exists('appointmentCounts')) {
         $today = Carbon::today();
 
         // Helper function to get appointment counts based on filters
-        $getAppointmentCount = function ($status = null, $dateFilter = null) use ($currentMonth, $currentYear, $today) {
+        $getAppointmentCount = function ($type = null, $dateFilter = null) use ($currentMonth, $currentYear, $today) {
             $query = Appointment::query();
 
-            if ($status !== null) {
-                $query->where('status', $status);
+            if ($type !== null) {
+                $query->where('type', $type);
             }
 
             if ($dateFilter === 'today') {
@@ -42,35 +42,21 @@ if (!function_exists('appointmentCounts')) {
         $todayAppointments = $getAppointmentCount(null, 'today');
 
         // Not confirmed appointments
-        $totalAppointmentsNew = $getAppointmentCount(Appointment::STATUS_NOT_CONFIRMED);
-        $thisMonthAppointmentsNew = $getAppointmentCount(Appointment::STATUS_NOT_CONFIRMED, 'this_month');
-        $todayAppointmentsNew = $getAppointmentCount(Appointment::STATUS_NOT_CONFIRMED, 'today');
+        $totalAppointmentsNew = $getAppointmentCount(Appointment::NEW);
+        $thisMonthAppointmentsNew = $getAppointmentCount(Appointment::NEW, 'this_month');
+        $todayAppointmentsNew = $getAppointmentCount(Appointment::NEW, 'today');
 
         // Confirmed appointments
-        $totalAppointmentsReview = $getAppointmentCount(Appointment::STATUS_CONFIRMED);
-        $thisMonthAppointmentsReview = $getAppointmentCount(Appointment::STATUS_CONFIRMED, 'this_month');
-        $todayAppointmentsReview = $getAppointmentCount(Appointment::STATUS_CONFIRMED, 'today');
+        $totalAppointmentsReview = $getAppointmentCount(Appointment::REVIEW);
+        $thisMonthAppointmentsReview = $getAppointmentCount(Appointment::REVIEW, 'this_month');
+        $todayAppointmentsReview = $getAppointmentCount(Appointment::REVIEW, 'today');
 
         // Helper function to count patients with two or more appointments
-        $getPatientsWithTwoOrMore = function ($dateFilter = null) use ($currentMonth, $currentYear, $today) {
-            $query = Appointment::select('patient_id')
-                ->groupBy('patient_id')
-                ->havingRaw('COUNT(*) >= 2');
-
-            if ($dateFilter === 'today') {
-                $query->whereDate('created_at', $today);
-            } elseif ($dateFilter === 'this_month') {
-                $query->whereMonth('created_at', $currentMonth)
-                    ->whereYear('created_at', $currentYear);
-            }
-
-            return $query->count();
-        };
 
         // Patients with two or more appointments
-        $patientsWithTwoOrMoreToday = $getPatientsWithTwoOrMore('today');
-        $patientsWithTwoOrMoreThisMonth = $getPatientsWithTwoOrMore('this_month');
-        $patientsWithTwoOrMoreTotal = $getPatientsWithTwoOrMore();
+        $patientsWithTwoOrMoreToday = $getAppointmentCount(Appointment::REVISIT, 'today');
+        $patientsWithTwoOrMoreThisMonth = $getAppointmentCount(Appointment::REVISIT, 'this_month');
+        $patientsWithTwoOrMoreTotal = $getAppointmentCount(Appointment::REVISIT);
 
         // Prepare the data array
         $data = [
@@ -176,12 +162,12 @@ if (!function_exists('invoiceCount')) {
         $currentYear = Carbon::now()->year;
         $today = Carbon::today();
 
-        // Helper function to get patient counts based on filters
-        $getPatientCount = function ($gender = null, $dateFilter = null) use ($currentMonth, $currentYear, $today) {
+        // Helper function to get invoice counts based on payment status and date filters
+        $getInvoiceCount = function ($status = null, $dateFilter = null) use ($currentMonth, $currentYear, $today) {
             $query = Invoice::query();
 
-            if ($gender !== null) {
-                $query->where('gender', $gender);
+            if ($status !== null) {
+                $query->where('payment_status', $status);
             }
 
             if ($dateFilter === 'today') {
@@ -194,144 +180,256 @@ if (!function_exists('invoiceCount')) {
             return $query->count();
         };
 
-        // Total patients (regardless of gender)
-        $totalPatients = $getPatientCount();
-        $thisMonthPatients = $getPatientCount(null, 'this_month');
-        $todayPatients = $getPatientCount(null, 'today');
+        // Total invoices
+        $totalInvoice = $getInvoiceCount();
+        $totalPaidInvoice = $getInvoiceCount(Invoice::PAYMENT_STATUS_PAID);
+        $totalPendingInvoice = $getInvoiceCount(Invoice::PAYMENT_STATUS_PENGING);
+        $totalPartialInvoice = $getInvoiceCount(Invoice::PAYMENT_PARTIAL_PAYMENT);
 
-        // Male patients
-        $totalMalePatients = $getPatientCount('Male');
-        $thisMonthMalePatients = $getPatientCount('Male', 'this_month');
-        $todayMalePatients = $getPatientCount('Male', 'today');
+        // This month invoices
+        $thisMonthInvoice = $getInvoiceCount(null, 'this_month');
+        $thisMonthPaidInvoice = $getInvoiceCount(Invoice::PAYMENT_STATUS_PAID, 'this_month');
+        $thisMonthPendingInvoice = $getInvoiceCount(Invoice::PAYMENT_STATUS_PENGING, 'this_month');
+        $thisMonthPartialInvoice = $getInvoiceCount(Invoice::PAYMENT_PARTIAL_PAYMENT, 'this_month');
 
-        // Female patients
-        $totalFemalePatients = $getPatientCount('Female');
-        $thisMonthFemalePatients = $getPatientCount('Female', 'this_month');
-        $todayFemalePatients = $getPatientCount('Female', 'today');
-
-        // Calculate percentages
-        $calculatePercentage = function ($part, $total) {
-            return $total > 0 ? round(($part / $total) * 100, 2) : 0;
-        };
+        // Today invoices
+        $todayInvoice = $getInvoiceCount(null, 'today');
+        $todayPaidInvoice = $getInvoiceCount(Invoice::PAYMENT_STATUS_PAID, 'today');
+        $todayPendingInvoice = $getInvoiceCount(Invoice::PAYMENT_STATUS_PENGING, 'today');
+        $todayPartialInvoice = $getInvoiceCount(Invoice::PAYMENT_PARTIAL_PAYMENT, 'today');
 
         // Prepare the data array
         $data = [
             'total' => [
-                'all' => $totalPatients,
-                'male' => $totalMalePatients,
-                'female' => $totalFemalePatients,
-
+                'all' => $totalInvoice,
+                'paid' => $totalPaidInvoice,
+                'pending' => $totalPendingInvoice,
+                'partial' => $totalPartialInvoice,
             ],
             'thisMonth' => [
-                'all' => $thisMonthPatients,
-                'male' => $thisMonthMalePatients,
-                'female' => $thisMonthFemalePatients,
-
+                'all' => $thisMonthInvoice,
+                'paid' => $thisMonthPaidInvoice,
+                'pending' => $thisMonthPendingInvoice,
+                'partial' => $thisMonthPartialInvoice,
             ],
             'today' => [
-                'all' => $todayPatients,
-                'male' => $todayMalePatients,
-                'female' => $todayFemalePatients,
-
-            ]
+                'all' => $todayInvoice,
+                'paid' => $todayPaidInvoice,
+                'pending' => $todayPendingInvoice,
+                'partial' => $todayPartialInvoice,
+            ],
         ];
 
         return $data;
     }
+}
 
-    if (!function_exists('sendInteraktMessageUsingTemplates')) {
-        function sendInteraktMessageUsingTemplates($data)
-        {
-            $decodeData = json_decode($data, true);
 
-            // Prepare payload dynamically
-            $payload = [
-                "countryCode" => "+91",
-                "phoneNumber" => "",
-                "fullPhoneNumber" => $decodeData['phone_number'] ?? "",
-                "campaignId" => "",
-                "callbackData" => "some data",
-                "type" => "Template",
-                "template" => [
-                    "name" => "appointment_booking",
-                    "languageCode" => "en",
-                    "bodyValues" => [
-                        $decodeData['name'] ?? "Patient",
-                        $decodeData['doctor_name'] ?? "Doctor",
-                        $decodeData['date'] ?? "Date",
-                        $decodeData['time'] ?? "Time"
-                    ]
-                ]
-            ];
+if (!function_exists('invoiceAmount')) {
+    function invoiceAmount()
+    {
+        $today = Carbon::today();
 
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://api.interakt.ai/v1/public/message/',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => json_encode($payload),
-                CURLOPT_HTTPHEADER => array(
-                    'Authorization: Basic ' . env('INTERAKT_API_KEY'),
-                    'Content-Type: application/json'
-                ),
-            ));
-
-            $response = curl_exec($curl);
-
-            curl_close($curl);
-            // dd($response);
-            return $response;
+        // Determine the financial year start and end dates (1st April to 31st March)
+        if ($today->month >= 4) {
+            $financialYearStart = Carbon::createFromDate($today->year, 4, 1);
+            $financialYearEnd   = Carbon::createFromDate($today->year + 1, 3, 31);
+        } else {
+            $financialYearStart = Carbon::createFromDate($today->year - 1, 4, 1);
+            $financialYearEnd   = Carbon::createFromDate($today->year, 3, 31);
         }
+
+        // Current month and year (for "thisMonth" and "today" calculations)
+        $currentMonth = $today->month;
+        $currentYear  = $today->year;
+
+        // Helper closure for summing a column with optional date filtering
+        $getSum = function ($status, $column, $dateFilter = null) use ($currentMonth, $currentYear, $today) {
+            $query = Invoice::query()->where('payment_status', $status);
+
+            if ($dateFilter === 'today') {
+                $query->whereDate('created_at', $today);
+            } elseif ($dateFilter === 'this_month') {
+                $query->whereMonth('created_at', $currentMonth)
+                      ->whereYear('created_at', $currentYear);
+            }
+
+            return $query->sum($column);
+        };
+
+        /**
+         * Overall sums for the financial year (1st April - 31st March)
+         * Exclude invoices with PAYMENT_STATUS_FAILED.
+         */
+        $totalInvoiceAmount = Invoice::whereBetween('date', [$financialYearStart, $financialYearEnd])
+            ->where('payment_status', '!=', Invoice::PAYMENT_STATUS_FAILED)
+            ->sum('total');
+
+        $totalPaidInvoiceAmount = Invoice::whereBetween('date', [$financialYearStart, $financialYearEnd])
+            ->where('payment_status', Invoice::PAYMENT_STATUS_PAID)
+            ->sum('total');
+
+        $totalPendingInvoiceAmount = Invoice::whereBetween('date', [$financialYearStart, $financialYearEnd])
+            ->where('payment_status', Invoice::PAYMENT_STATUS_PENGING)
+            ->sum('total')
+            + Invoice::whereBetween('date', [$financialYearStart, $financialYearEnd])
+            ->where('payment_status', Invoice::PAYMENT_PARTIAL_PAYMENT)
+            ->sum('pending_amount');
+
+        /**
+         * This Month sums
+         */
+        $thisMonthInvoiceAmount = Invoice::whereMonth('date', $currentMonth)
+            ->whereYear('date', $currentYear)
+            ->sum('total');
+
+        $thisMonthPaidInvoiceAmount = Invoice::where('payment_status', Invoice::PAYMENT_STATUS_PAID)
+            ->whereMonth('date', $currentMonth)
+            ->whereYear('date', $currentYear)
+            ->sum('total');
+
+        $thisMonthPendingInvoiceAmount = Invoice::where('payment_status', Invoice::PAYMENT_STATUS_PENGING)
+            ->whereMonth('date', $currentMonth)
+            ->whereYear('date', $currentYear)
+            ->sum('total')
+            + Invoice::where('payment_status', Invoice::PAYMENT_PARTIAL_PAYMENT)
+            ->whereMonth('date', $currentMonth)
+            ->whereYear('date', $currentYear)
+            ->sum('pending_amount');
+
+        /**
+         * Today sums
+         */
+        $todayInvoiceAmount = Invoice::whereDate('date', $today)
+            ->sum('total');
+
+        $todayPaidInvoiceAmount = Invoice::where('payment_status', Invoice::PAYMENT_STATUS_PAID)
+            ->whereDate('date', $today)
+            ->sum('total');
+
+        $todayPendingInvoiceAmount = Invoice::where('payment_status', Invoice::PAYMENT_STATUS_PENGING)
+            ->whereDate('date', $today)
+            ->sum('total')
+            + Invoice::where('payment_status', Invoice::PAYMENT_PARTIAL_PAYMENT)
+            ->whereDate('date', $today)
+            ->sum('pending_amount');
+
+        // Prepare the data array with sums for each category
+        $data = [
+            'total' => [
+                'all'     => round($totalInvoiceAmount, 2),
+                'paid'    => round($totalPaidInvoiceAmount, 2),
+                'pending' => round($totalPendingInvoiceAmount, 2),
+            ],
+            'thisMonth' => [
+                'all'     => $thisMonthInvoiceAmount,
+                'paid'    => $thisMonthPaidInvoiceAmount,
+                'pending' => $thisMonthPendingInvoiceAmount,
+            ],
+            'today' => [
+                'all'     => $todayInvoiceAmount,
+                'paid'    => $todayPaidInvoiceAmount,
+                'pending' => $todayPendingInvoiceAmount,
+            ],
+        ];
+
+        return $data;
     }
+}
 
 
-    if (!function_exists('sendPatientUpdationForm')) {
-        function sendPatientUpdationForm($country_code, $name, $contact_number, $id = 0)
-        {
-            $curl = curl_init();
+if (!function_exists('sendInteraktMessageUsingTemplates')) {
+    function sendInteraktMessageUsingTemplates($data)
+    {
+        $decodeData = json_decode($data, true);
 
-            $data = [
-                "countryCode"   => $country_code,
-                "phoneNumber"   => $contact_number,
-                "fullPhoneNumber" => "", // kept empty as per instructions
-                "campaignId"    => "",
-                "callbackData"  => "Patient Updation Form",
-                "type"          => "Template",
-                "template"      => [
-                    "name"         => "patient_update",
-                    "languageCode" => "en",
-                    "bodyValues"   => [$name],
-                    "buttonValues" => [
-                        "1" => [(string)$id]
-                    ]
+        // Prepare payload dynamically
+        $payload = [
+            "countryCode" => "+91",
+            "phoneNumber" => "",
+            "fullPhoneNumber" => $decodeData['phone_number'] ?? "",
+            "campaignId" => "",
+            "callbackData" => "some data",
+            "type" => "Template",
+            "template" => [
+                "name" => "appointment_booking",
+                "languageCode" => "en",
+                "bodyValues" => [
+                    $decodeData['name'] ?? "Patient",
+                    $decodeData['doctor_name'] ?? "Doctor",
+                    $decodeData['date'] ?? "Date",
+                    $decodeData['time'] ?? "Time"
                 ]
-            ];
+            ]
+        ];
 
-            curl_setopt_array($curl, [
-                CURLOPT_URL            => 'https://api.interakt.ai/v1/public/message/',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING       => '',
-                CURLOPT_MAXREDIRS      => 10,
-                CURLOPT_TIMEOUT        => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST  => 'POST',
-                CURLOPT_POSTFIELDS     => json_encode($data),
-                CURLOPT_HTTPHEADER     => [
-                    'Authorization: Basic TE9UMkRnOF9SZjBCVVBVRHVyUFJFMEV3ZndqRWRwdHFxR0ZxWW0xTmxnRTo=',
-                    'Content-Type: application/json'
-                ],
-            ]);
+        $curl = curl_init();
 
-            $response = curl_exec($curl);
-            curl_close($curl);
-            return $response;
-        }
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.interakt.ai/v1/public/message/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Basic ' . env('INTERAKT_API_KEY'),
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        // dd($response);
+        return $response;
+    }
+}
+
+
+if (!function_exists('sendPatientUpdationForm')) {
+    function sendPatientUpdationForm($country_code, $name, $contact_number, $id = 0)
+    {
+        $curl = curl_init();
+
+        $data = [
+            "countryCode"   => $country_code,
+            "phoneNumber"   => $contact_number,
+            "fullPhoneNumber" => "", // kept empty as per instructions
+            "campaignId"    => "",
+            "callbackData"  => "Patient Updation Form",
+            "type"          => "Template",
+            "template"      => [
+                "name"         => "patient_update",
+                "languageCode" => "en",
+                "bodyValues"   => [$name],
+                "buttonValues" => [
+                    "1" => [(string)$id]
+                ]
+            ]
+        ];
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL            => 'https://api.interakt.ai/v1/public/message/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'POST',
+            CURLOPT_POSTFIELDS     => json_encode($data),
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Basic TE9UMkRnOF9SZjBCVVBVRHVyUFJFMEV3ZndqRWRwdHFxR0ZxWW0xTmxnRTo=',
+                'Content-Type: application/json'
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        return $response;
     }
 }

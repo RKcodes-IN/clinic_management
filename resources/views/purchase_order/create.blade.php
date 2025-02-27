@@ -67,14 +67,14 @@
                                                             class="form form-check-input item-checkbox border-2 bg-light"
                                                             name="items[]" value="{{ $item->id }}">
                                                     </td>
-                                                    @if ($item->getTotalStockByItem($item->id) <= $item->alert_quantity)
+                                                    @if ( App\models\Item::getTotalStockByItem($item->id) <= $item->alert_quantity)
                                                         <td style="text-wrap: auto !important; color: red;">
                                                             {{ $item->name }}</td>
                                                     @else
                                                         <td style="text-wrap: auto !important;">{{ $item->name }}</td>
                                                     @endif
                                                     <td>{{ $item->ideal_quantity }}</td>
-                                                    <td>{{ $item->getTotalStockByItem($item->id) }}</td>
+                                                    <td>{{ App\models\Item::getTotalStockByItem($item->id) }}</td>
                                                     <td>{{ $item->alert_quantity }}</td>
 
                                                     <td>{{ $item->reorder_quantity }}</td>
