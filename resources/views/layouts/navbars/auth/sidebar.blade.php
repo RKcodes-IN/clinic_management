@@ -167,7 +167,8 @@
                             <li><a class="dropdown-item" href="{{ Route('items.index', ['item_type' => 4]) }}">Items List</a>
                             </li>
                             @can(['create stock', 'edit stock'])
-                                <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'therapy']) }}">Add Items</a>
+                                <li><a class="dropdown-item" href="{{ Route('items.create', ['type' => 'therapy']) }}">Add
+                                        Items</a>
                                 </li>
                             @endcan
                         @endcan
@@ -269,7 +270,15 @@
                     </ul>
                 </li>
             @endcan
-
+            <li class="nav-item">
+                <a class="nav-link " href="{{ Route('expenses.index') }}">
+                    <div
+                        class="icon icon-shape icon-sm border-radius-md bg-white text-center d-flex align-items-center justify-content-center">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Expenses</span>
+                </a>
+            </li>
             @can(['create users', 'read users'])
                 <li class="nav-item mt-2">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin Settings</h6>

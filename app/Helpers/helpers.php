@@ -251,7 +251,7 @@ if (!function_exists('invoiceAmount')) {
                 $query->whereDate('created_at', $today);
             } elseif ($dateFilter === 'this_month') {
                 $query->whereMonth('created_at', $currentMonth)
-                      ->whereYear('created_at', $currentYear);
+                    ->whereYear('created_at', $currentYear);
             }
 
             return $query->sum($column);
@@ -355,7 +355,7 @@ if (!function_exists('sendInteraktMessageUsingTemplates')) {
                 "name" => "appointment_booking",
                 "languageCode" => "en",
                 "bodyValues" => [
-                    $decodeData['name'] ?? "Patient",
+                    strtoupper($decodeData['name'] ?? "Patient"),
                     $decodeData['doctor_name'] ?? "Doctor",
                     $decodeData['date'] ?? "Date",
                     $decodeData['time'] ?? "Time"

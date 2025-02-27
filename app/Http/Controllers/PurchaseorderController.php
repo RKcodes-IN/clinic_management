@@ -60,6 +60,7 @@ class PurchaseOrderController extends Controller
         if (empty($request->items)) {
             return redirect()->back()->with('error', 'Please select at least 1 item');
         }
+        // dd($request);
 
         $purchaseorder = new Purchaseorder();
         $purchaseorder->source_company_id = $request->source_company_id;
@@ -67,7 +68,7 @@ class PurchaseOrderController extends Controller
         $purchaseorder->total_quantity = 0;
         $purchaseorder->price = 0;
         $purchaseorder->status =  PurchaseOrderItem::STATUS_PENDING;
-        $purchaseorder->creation_date = date('Y-m-d');
+        $purchaseorder->creation_date = $request->date;
 
         if ($purchaseorder->save()) {
             foreach ($request->items as $itemId) {

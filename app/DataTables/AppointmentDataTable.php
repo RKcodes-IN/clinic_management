@@ -69,9 +69,9 @@ class AppointmentDataTable extends DataTable
                 'patient_details.name as patient_name',
                 'doctor_details.name as doctor_details',
             ])
+
             ->leftJoin('patient_details', 'appointments.patient_id', '=', 'patient_details.id')
             ->leftJoin('doctor_details', 'appointments.doctor_id', '=', 'doctor_details.id');
-
         // Apply date filters if they exist
         if ($this->fromDate) {
             $query->whereDate('appointments.available_date', '>=', $this->fromDate);
@@ -79,6 +79,7 @@ class AppointmentDataTable extends DataTable
         if ($this->toDate) {
             $query->whereDate('appointments.available_date', '<=', $this->toDate);
         }
+        $query->orderby('appointments.confirmation_date', 'desc');
 
         return $query;
     }

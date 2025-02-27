@@ -67,7 +67,7 @@
                                                             class="form form-check-input item-checkbox border-2 bg-light"
                                                             name="items[]" value="{{ $item->id }}">
                                                     </td>
-                                                    @if ( App\models\Item::getTotalStockByItem($item->id) <= $item->alert_quantity)
+                                                    @if (App\models\Item::getTotalStockByItem($item->id) <= $item->alert_quantity)
                                                         <td style="text-wrap: auto !important; color: red;">
                                                             {{ $item->name }}</td>
                                                     @else
@@ -83,7 +83,17 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <button type="submit" class="btn btn-success ">Next</button>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <input type="date" class="form-control" name="date" id="date"
+                                            value="{{ date('Y-m-d') }}" required>
+                                    </div>
+                                    <div class="col-6">
+
+
+                                        <button type="submit" class="btn btn-success ">Next</button>
+                                    </div>
+                                </div>
                             </form>
                         @else
                             <p>No items found for the selected company.</p>

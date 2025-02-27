@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorDetailController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HabitVariableController;
 use App\Http\Controllers\HealthEvaluationController;
 use App\Http\Controllers\HomeController;
@@ -296,6 +297,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/import-rack', [ItemController::class, 'importRackForm'])->name('import.rackform');
     Route::post('/import-rack', [ItemController::class, 'importRack'])->name('import.rack');
+
+    Route::resource('expenses', ExpenseController::class);
 });
 
 

@@ -108,11 +108,26 @@ class PatientDetailController extends Controller
             ->where('patient_id', $id)
             ->get();
 
+            $casesheets = InvestigationReport::with([
+                'reportTypeValues' => function ($query) {
+                    $query->where('investigation_report_type_id', 2)->with('reportType');
+                }
+            ])
+            ->where('patient_id', $id)
+            ->whereHas('reportTypeValues', function ($query) {
+                $query->where('investigation_report_type_id', 2);
+            })
+            ->get();
+
+        // $caseSheetsCount = InvestigationReport::with(['reportTypeValues.reportType'])
+        //     ->where('patient_id', $id)
+        //     ->where('reportTypeValues.reportTypeValues', 2)
+        //     ->count();
         $appontmentCount = Appointment::where('patient_id', $id)->count();
         $pharmacyPrescriptions = PharmacyPrescription::where('patient_id', $id)->get();
         $labPrescriptions = LabPrescription::where('patient_id', $id)->get();
 
-        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport', 'appontmentCount', 'pharmacyPrescriptions', 'labPrescriptions'));
+        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport', 'appontmentCount', 'pharmacyPrescriptions', 'labPrescriptions', 'casesheets', ));
     }
 
     public function updateForm()
