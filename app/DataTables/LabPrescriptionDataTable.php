@@ -16,23 +16,28 @@ class LabPrescriptionDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function ($row) {
-                return view('lab-prescription.action', ['id' => $row->id])->render();
+                return view('lab-prescription.action', [
+                    'id' => $row->prescription_id,
+                    'patient_id' => $row->patient_id,
+                    'date' => $row->date
+                ])->render();
             })
             ->addColumn('report_available', function ($row) {
-                return $row->report_available_statuses ? implode(', ', array_map('ucfirst', explode(',', $row->report_available_statuses))) : 'No';
+                $statuses = explode(',', $row->report_available_statuses);
+                return in_array('yes', array_map('strtolower', $statuses)) ? 'Yes' : 'No';
             })
             ->rawColumns(['report_urls', 'action'])
-            ->setRowId('id');
+            ->setRowId('patient_id');
     }
-
     public function query(LabPrescription $model): QueryBuilder
     {
         return $model->newQuery()
             ->join('patient_details', 'lab_prescriptions.patient_id', '=', 'patient_details.id')
             ->select([
-                'lab_prescriptions.id',  // actual lab prescription id
+                'patient_details.id as patient_id',
                 'patient_details.name as name',
                 'lab_prescriptions.date',
+                \DB::raw('MIN(lab_prescriptions.id) as prescription_id'),
                 \DB::raw('GROUP_CONCAT(lab_prescriptions.item_id SEPARATOR ", ") as item_ids'),
                 \DB::raw('GROUP_CONCAT(lab_prescriptions.description SEPARATOR ", ") as descriptions'),
                 \DB::raw('GROUP_CONCAT(lab_prescriptions.sample_taken SEPARATOR ", ") as sample_taken_statuses'),
@@ -40,7 +45,7 @@ class LabPrescriptionDataTable extends DataTable
                 \DB::raw('GROUP_CONCAT(lab_prescriptions.report_url SEPARATOR ", ") as report_urls'),
                 \DB::raw('GROUP_CONCAT(lab_prescriptions.out_of_range SEPARATOR ", ") as out_of_range_statuses'),
             ])
-            ->groupBy('lab_prescriptions.id', 'patient_details.name', 'lab_prescriptions.date')
+            ->groupBy('patient_details.id', 'patient_details.name', 'lab_prescriptions.date')
             ->orderBy('lab_prescriptions.date', 'desc');
     }
     public function html(): HtmlBuilder
@@ -69,12 +74,10 @@ class LabPrescriptionDataTable extends DataTable
                 ->printable(false)
                 ->width(60)
                 ->addClass('text-center'),
-            Column::make('id')->title('ID'),
-            Column::make('name')->title('Patient')->name('patient_details.name'),
+            Column::make('name')->title('Patient'),
             Column::make('date')
                 ->title('Date')
                 ->type('date'),
-
         ];
     }
 

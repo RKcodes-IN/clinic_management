@@ -174,11 +174,11 @@
                         @endcan
 
                         @can('edit stock')
-                            <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'lab']) }}">Update
+                            <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'therapy']) }}">Update
                                     Pricing</a></li>
                         @endcan
                         @can(['create labprescription'])
-                            <li><a class="dropdown-item" href="{{ Route('labprescription.index') }}">Investigations</a></li>
+                            <li><a class="dropdown-item" href="{{ Route('therapy.index') }}">Therapy List</a></li>
                         @endcan
                         {{-- <li><a class="dropdown-item" href="{{ Route('stock.index', ['item_type' => 3]) }}">Stock</a></li> --}}
                         {{-- <li><a class="dropdown-item" href="{{ Route('stock.filte.report') }}">Pharmacy Stock Report</a> --}}

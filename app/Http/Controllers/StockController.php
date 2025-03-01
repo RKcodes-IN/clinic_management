@@ -466,6 +466,8 @@ class StockController extends Controller
     {
         if ($type === "mis") {
             $items = Item::where('item_type', Item::MISCELLANEOUS)->get();
+        } else if ($type === "therapy") {
+            $items = Item::where('item_type', Item::TYPE_THERAPY)->get();
         } else {
             $items = Item::where('item_type', Item::TYPE_LAB)->get();
         }
@@ -509,8 +511,11 @@ class StockController extends Controller
             $addNewStock->status = Stock::IN_STOCK;
             $addNewStock->created_by = $userId;
             $addNewStock->save();
-            $stock->status = Stock::EXPIRED;
-            $stock->save();
+            if ($stock) {
+                $stock->status = Stock::EXPIRED;
+                $stock->save();
+            }
+
             return redirect()->back()->with('success', 'Price Updated Successfully.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->back()->withErrors(['error' => 'Stock not found for the specified item.']);

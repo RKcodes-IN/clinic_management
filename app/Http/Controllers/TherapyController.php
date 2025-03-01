@@ -2,13 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\TherapyDataTable;
 use App\Models\Item;
 use App\Models\PatientDetail;
 use App\Models\Therapy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TherapyController extends Controller
 {
+    public function index(TherapyDataTable $dataTable)
+    {
+        $status = request()->get('status');
+        return $dataTable->render('therapy.index');
+    }
     public function create(Request $request)
     {
         // Get appointment and patient IDs from the query parameters
@@ -58,5 +65,39 @@ class TherapyController extends Controller
 
         // Redirect back with success message
         return redirect()->back()->with('success', 'Therapies saved successfully.');
+    }
+
+    public function edit(Therapy $therapy)
+    {
+        $therapies= Therapy::where('created_at', $therapy->created_at)
+            ->where('patient_id', $therapy->patient_id)
+            ->with('item', 'patient') // Ensure patient relationship is loaded
+            ->get();
+
+        return view('therapy.update', compact('therapies', 'therapy'));
+    }
+
+    public function update(Request $request)
+    {
+        $therapiesData = $request->input('therapies');
+
+        foreach ($therapiesData as $id => $data) {
+            $therapy = Therapy::findOrFail($id);
+            $therapy->update([
+                'material' => $data['material'],
+                'application_area' => $data['application_area'],
+                'time_from' => $data['time_from'],
+                'time_to' => $data['time_to'],
+                'status' => isset($data['completed']) ? true : false,
+            ]);
+        }
+
+        return redirect()->route('therapy.index')->with('success', 'Therapies updated successfully.');
+    }
+
+
+    public function show(Therapy $Therapy)
+    {
+        return view('therapy.show', compact('surgicalVariable'));
     }
 }

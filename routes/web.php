@@ -22,6 +22,7 @@ use App\Http\Controllers\LabPrescriptionController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PharmacyPrescriptionController;
+use App\Http\Controllers\PreviousMedicationController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\RegisterController;
@@ -293,12 +294,19 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('/update-form', [PatientDetailController::class, 'sendUpdateForm'])->name('updateform.send');
     Route::get('/update-form/form', [PatientDetailController::class, 'updateForm'])->name('updateform');
-    Route::resource('therapy', TherapyController::class);
+    Route::put('therapy/update', [TherapyController::class, 'update'])->name('therapy.update');
+    Route::resource('therapy', TherapyController::class)->except(['update']);
 
     Route::get('/import-rack', [ItemController::class, 'importRackForm'])->name('import.rackform');
     Route::post('/import-rack', [ItemController::class, 'importRack'])->name('import.rack');
 
     Route::resource('expenses', ExpenseController::class);
+
+    Route::get('/patients/{patient_id}/appointments/{appointment_id}/previous-medications/create', [PreviousMedicationController::class, 'create'])->name('previous_medications.create');
+    Route::post('/patients/{patient_id}/appointments/{appointment_id}/previous-medications', [PreviousMedicationController::class, 'store'])->name('previous_medications.store');
+    Route::get('/chemicals/search', [PreviousMedicationController::class, 'searchChemicals'])->name('chemicals.search');
+
+
 });
 
 
