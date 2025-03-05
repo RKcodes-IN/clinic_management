@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use App\DataTables\StockDataTable;
 use App\Exports\StockExport;
 use App\Exports\StockTransactionsExport;
+use App\Mail\MyTestEmail;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\GstType;
 use App\Models\Item;
+use App\Models\Notification;
 use App\Models\SourceCompany;
 use App\Models\Stock;
 use App\Models\StockTransaction;
 use App\Models\UomType;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
 
@@ -217,6 +221,47 @@ class StockController extends Controller
 
         return response()->json(['available_stock' => $availableStock]);
     }
+
+
+    public function sendAlert()
+    {
+        $stockAlertMessages = []; // Store all alerts in an array
+
+        $stocks = Stock::with('item')->whereHas('item', function ($query) {
+            $query->where('item_type', Item::TYPE_PHARMACY);
+        })->get();
+
+        foreach ($stocks as $stock) {
+            $availableStock = $stock->getTotalStockByItem($stock->item_id);
+
+            // Check if the stock is below the alert threshold
+            if ($availableStock < $stock->item->alert_quantity) {
+                $stockAlertMessages[] = [
+                    'name'            => $stock->item->name ?? "",
+                    'item_code'       => $stock->item->item_code ?? "",
+                    'alert_quantity'  => $stock->item->alert_quantity ?? "",
+                    'available_stock' => $availableStock ?? ""
+                ];
+            }
+        }
+
+        // If there are stock alerts, send a single notification to each doctor
+        if (!empty($stockAlertMessages)) {
+            $title = "Stock Alert";
+            $message = json_encode(['stock_alerts' => $stockAlertMessages]); // Send all alerts in one message
+
+            $doctors = User::role('doctor')->get();
+
+            foreach ($doctors as $doctor) {
+                saveNotification($doctor->id, $title, $message, Notification::TYPE_STOCK_ALERT, 1, "");
+            }
+        }
+        Mail::to('rohit1811vik@gmail.com')->send(new MyTestEmail('Laravel User'));
+
+        return "done";
+    }
+
+
 
     public function getDisount($itemId)
     {

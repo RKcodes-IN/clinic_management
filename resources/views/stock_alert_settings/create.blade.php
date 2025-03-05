@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h4>Create Stock Alert Notification Setting</h4>
+        <h1>Create Stock Alert Notification Setting</h1>
         <form method="POST" action="{{ route('stock_alert_settings.store') }}">
             @csrf
             <div class="form-group">

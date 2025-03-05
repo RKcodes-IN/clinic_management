@@ -13,7 +13,7 @@ class TherapyController extends Controller
 {
     public function index(TherapyDataTable $dataTable)
     {
-        $status = request()->get('status');
+        // $status = request()->get('status');
         return $dataTable->render('therapy.index');
     }
     public function create(Request $request)
@@ -69,7 +69,7 @@ class TherapyController extends Controller
 
     public function edit(Therapy $therapy)
     {
-        $therapies= Therapy::where('created_at', $therapy->created_at)
+        $therapies = Therapy::where('created_at', $therapy->created_at)
             ->where('patient_id', $therapy->patient_id)
             ->with('item', 'patient') // Ensure patient relationship is loaded
             ->get();

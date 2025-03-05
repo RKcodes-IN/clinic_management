@@ -3,6 +3,7 @@
 
 use App\Models\Appointment;
 use App\Models\Invoice;
+use App\Models\Notification;
 use App\Models\PatientDetail;
 use Carbon\Carbon;
 
@@ -431,5 +432,23 @@ if (!function_exists('sendPatientUpdationForm')) {
         $response = curl_exec($curl);
         curl_close($curl);
         return $response;
+    }
+}
+
+if (!function_exists('saveNotification')) {
+    function saveNotification($user_id, $title = "", $message = "", $notification_type = "", $status, $redirect_url = "")
+    {
+        $notification =  new Notification();
+        $notification->title = $title;
+        $notification->message = $message;
+        $notification->redirect_url = $redirect_url;
+        $notification->notification_type = $notification_type;
+        $notification->user_id = $user_id;
+        $notification->status = $status;
+        if ($notification->save()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

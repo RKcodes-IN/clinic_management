@@ -19,6 +19,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LabPrescriptionController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientDetailController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PharmacyPrescriptionController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SampleTypeController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SourceCompanyController;
+use App\Http\Controllers\StockAlertNotificationSettingController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SurgicalVariableController;
 use App\Http\Controllers\TherapyController;
@@ -305,8 +307,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/patients/{patient_id}/appointments/{appointment_id}/previous-medications/create', [PreviousMedicationController::class, 'create'])->name('previous_medications.create');
     Route::post('/patients/{patient_id}/appointments/{appointment_id}/previous-medications', [PreviousMedicationController::class, 'store'])->name('previous_medications.store');
     Route::get('/chemicals/search', [PreviousMedicationController::class, 'searchChemicals'])->name('chemicals.search');
+    Route::resource('stock_alert_settings', StockAlertNotificationSettingController::class);
 
-
+    Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+    Route::get('/notification/details/{id}', [NotificationController::class, 'notificationDetails']);
 });
 
 

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\InteraktCallbackController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\UpdatedPatientDetailController;
 use App\Models\UpdatedPatientDetail;
 use Illuminate\Http\Request;
@@ -24,3 +26,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/patient/store', [UpdatedPatientDetailController::class, 'updatePatientDetails']);
 Route::post('/interkt/callback', [InteraktCallbackController::class, 'store']);
+Route::get('/send/stock/alert', [StockController::class, 'sendAlert']);
