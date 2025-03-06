@@ -8,50 +8,35 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Address;
 
 class MyTestEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
+    public $stockAlerts;
+
+    public function __construct($stockAlerts)
     {
-        //
+        $this->stockAlerts = $stockAlerts;
     }
 
-    public function build()
-    {
-        return $this->from('user1@billseva.in', 'Your Application Name')
-            ->subject('Test Email')
-            ->view('emails.test')
-        ;
-    }
-
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Test Email from Laravel'
+            from: new Address('user1@billseva.in', 'SIVAS'),
+            subject: 'Stock Alert',
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.test',
-            with: ['name' => "Rohit"]
+            view: 'emails.stock-alert',
+            with: ['stockAlerts' => $this->stockAlerts]
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];

@@ -1,95 +1,119 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-<div class="container my-4">
-    <h1>{{ $notification->title }}</h1>
+    <div class="container my-4">
+        <h1>Stock Alerts</h1>
 
-    <div class="mt-4">
-        @php
-            $rawMessage = $notification->message;
-            $jsonData = json_decode($rawMessage, true);
-            $isValidJson = json_last_error() === JSON_ERROR_NONE;
+        <div class="mt-4">
+            @php
+                $rawMessage = $notification->message ?? '';
+                $jsonData = json_decode($rawMessage, true);
+                $isValidJson = json_last_error() === JSON_ERROR_NONE;
 
-            // Try to extract JSON from message if initial parse fails
-            if (!$isValidJson) {
-                preg_match('/(\{.*\})|(\[.*\])/s', $rawMessage, $matches);
-                if (!empty($matches)) {
-                    $jsonData = json_decode($matches[0], true);
-                    $isValidJson = json_last_error() === JSON_ERROR_NONE;
-                }
-            }
-
-            $dataArray = null;
-            $headers = [];
-
-            if ($isValidJson && is_array($jsonData)) {
-                // Check if JSON is an associative array
-                $isAssociative = (array_keys($jsonData)) !== range(0, count($jsonData) - 1);
-
-                if ($isAssociative) {
-                    // Look for nested array in values
-                    foreach ($jsonData as $value) {
-                        if (is_array($value)) {
-                            $dataArray = $value;
-                            break;
-                        }
+                if (!$isValidJson) {
+                    preg_match('/(\{.*\})|(\[.*\])/s', $rawMessage, $matches);
+                    if (!empty($matches)) {
+                        $jsonData = json_decode($matches[0], true);
+                        $isValidJson = json_last_error() === JSON_ERROR_NONE;
                     }
-                    // Fallback to treating the entire array as data
-                    if (!$dataArray) $dataArray = [$jsonData];
-                } else {
-                    // Handle list arrays
-                    $dataArray = $jsonData;
                 }
+            @endphp
 
-                // Determine headers
-                if (!empty($dataArray)) {
-                    $firstItem = reset($dataArray);
-                    $headers = is_array($firstItem) ? array_keys($firstItem) : array_keys($dataArray);
-                }
-            }
-        @endphp
+            @if ($isValidJson && isset($jsonData['stock_alerts']))
+                @foreach ($jsonData['stock_alerts'] as $companyName => $companyData)
+                    <div class="company-section mb-5">
+                        <h3 class="mb-3">{{ $companyName }}</h3>
 
-        @if($isValidJson && !empty($headers))
-            <table id="notificationTable" class="table table-bordered">
-                <thead>
-                    <tr>
-                        @foreach($headers as $header)
-                            <th>{{ ucfirst(str_replace('_', ' ', $header)) }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(is_array(reset($dataArray)))
-                        @foreach($dataArray as $row)
-                            <tr>
-                                @foreach($headers as $key)
-                                    <td>{{ isset($row[$key]) ? (is_array($row[$key]) ? json_encode($row[$key]) : $row[$key]) : '' }}</td>
-                                @endforeach
-                            </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            @foreach($dataArray as $value)
-                                <td>{{ is_array($value) ? json_encode($value) : $value }}</td>
-                            @endforeach
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
-        @else
-            <p>{{ $notification->message }}</p>
-        @endif
+                        @if (!empty($companyData) && is_array($companyData))
+                            @php
+                                $headers = array_keys($companyData[0] ?? []);
+                            @endphp
+
+                            <table id="table_{{ Str::slug($companyName) }}"
+                                   class="table table-bordered table-striped stock-table">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        @foreach ($headers as $header)
+                                            <th>{{ ucwords(str_replace('_', ' ', $header)) }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($companyData as $item)
+                                        <tr @if(($item['available_stock'] ?? 0) < 0) class="" @endif>
+                                            @foreach ($headers as $header)
+                                                <td>
+                                                    @if(is_array($item[$header] ?? null))
+                                                        {{ json_encode($item[$header]) }}
+                                                    @else
+                                                        {{ $item[$header] ?? 'N/A' }}
+                                                    @endif
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="alert alert-warning">
+                                No stock alerts available for this company
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            @elseif($isValidJson)
+                <div class="alert alert-danger">
+                    Invalid stock alert format - missing 'stock_alerts' key
+                </div>
+            @else
+                <div class="alert alert-info">
+                    {{ $rawMessage }}
+                </div>
+            @endif
+        </div>
     </div>
-</div>
 @endsection
 
 @section('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+
     <script>
-        $(document).ready(function(){
-            $('#notificationTable').DataTable();
+        $(document).ready(function() {
+            $('.stock-table').each(function() {
+                $(this).DataTable({
+                    "pageLength": 10,
+                    "order": [],
+                    "columnDefs": [
+                        { "targets": -1, "searchable": false } // Disable search on last column
+                    ],
+                    "language": {
+                        "search": "Filter:"
+                    }
+                });
+            });
         });
     </script>
+
+    <style>
+        .dataTables_wrapper .dataTables_filter input {
+            margin-left: 0.5em;
+            border: 1px solid #dee2e6;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .stock-table th {
+            background: #f8f9fa;
+            white-space: nowrap;
+        }
+
+        .company-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+    </style>
 @endsection

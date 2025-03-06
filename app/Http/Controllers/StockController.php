@@ -225,18 +225,22 @@ class StockController extends Controller
 
     public function sendAlert()
     {
-        $stockAlertMessages = []; // Store all alerts in an array
+        $stockAlertMessages = [];
 
-        $stocks = Stock::with('item')->whereHas('item', function ($query) {
+        // Eager load 'item.company' to access the source company for each item.
+        $stocks = Stock::with('item.company')->whereHas('item', function ($query) {
             $query->where('item_type', Item::TYPE_PHARMACY);
         })->get();
 
         foreach ($stocks as $stock) {
             $availableStock = $stock->getTotalStockByItem($stock->item_id);
 
-            // Check if the stock is below the alert threshold
             if ($availableStock < $stock->item->alert_quantity) {
-                $stockAlertMessages[] = [
+                // Retrieve the company name from the item; provide a fallback if not set.
+                $companyName = $stock->item->company->name ?? 'Unknown Company';
+
+                // Group by company name.
+                $stockAlertMessages[$companyName][] = [
                     'name'            => $stock->item->name ?? "",
                     'item_code'       => $stock->item->item_code ?? "",
                     'alert_quantity'  => $stock->item->alert_quantity ?? "",
@@ -245,18 +249,18 @@ class StockController extends Controller
             }
         }
 
-        // If there are stock alerts, send a single notification to each doctor
         if (!empty($stockAlertMessages)) {
+            // Example: Notify doctors and send email, etc.
             $title = "Stock Alert";
-            $message = json_encode(['stock_alerts' => $stockAlertMessages]); // Send all alerts in one message
+            $message = json_encode(['stock_alerts' => $stockAlertMessages]);
 
             $doctors = User::role('doctor')->get();
-
             foreach ($doctors as $doctor) {
                 saveNotification($doctor->id, $title, $message, Notification::TYPE_STOCK_ALERT, 1, "");
             }
+
+            Mail::to('rohit1811vik@gmail.com')->send(new MyTestEmail($stockAlertMessages));
         }
-        Mail::to('rohit1811vik@gmail.com')->send(new MyTestEmail('Laravel User'));
 
         return "done";
     }
