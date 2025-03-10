@@ -131,7 +131,7 @@ class InvoiceController extends Controller
         // Fetch patients based on the patient_id query string
         $patients = !empty($patient_id)
             ? PatientDetail::find($patient_id) // Fetch single patient if ID is provided
-            : PatientDetail::all();          // Fetch all patients if no ID is provided
+            : PatientDetail::orderBy('name', 'asc')->get();          // Fetch all patients if no ID is provided
 
         // Fetch all doctors
         $doctors = DoctorDetail::all();
@@ -282,47 +282,55 @@ class InvoiceController extends Controller
     public function downloadInvoice($id)
     {
         $invoice = Invoice::with(['patient', 'doctor', 'details.stock.item'])->findOrFail($id);
-
         $pharmacyItems = $invoice->details;
 
-        // Load view as HTML content
-        $html = view('invoice.pdf', compact('invoice', 'pharmacyItems'))->render();
+        // Fetch invoice transactions for payment breakdown
+        $invoiceTransactions = \App\Models\InvoiceTransaction::where('invoice_id', $invoice->id)->get();
+
+        // Load view as HTML content and pass the transactions along with other data
+        $html = view('invoice.pdf', compact('invoice', 'pharmacyItems', 'invoiceTransactions'))->render();
 
         // Initialize mPDF
         $mpdf = new \Mpdf\Mpdf([
-            'margin_top' => 30,
+            'margin_top' => 40,
+            'margin_bottom' => 20,
+            'margin_left' => 15,
+            'margin_right' => 15,
             'margin_header' => 10,
+            'margin_footer' => 10,
         ]);
-
-        // Ensure no header is set
+        // Set header with registered address beside the institute name
         $mpdf->SetHTMLHeader('<table style="width:100%; border-collapse: collapse;">
         <tr>
-            <!-- Logo on the left -->
             <td style="width:120px; vertical-align: middle; padding-right: 15px;">
                 <img src="https://ik.imagekit.io/phbranchi/logo-ct_dMECUkXSB.png?updatedAt=1734284741500"
                     alt="Institute Logo" style="max-width: 100%; max-height: 70px;">
             </td>
-            <!-- Text on the right -->
             <td style="vertical-align: middle;">
-                <div style="font-size:20px; font-weight:600; color:#1a365d; margin-bottom: 1px;">S.I.V.A.S Health &
-                    Research Institute</div>
+                <div style="font-size:18px; font-weight:600; color:#1a365d; margin-bottom: 1px;">S.I.V.A.S Health & Research Institute</div>
                 <div style="font-size:12px; color:#4a5568; line-height:1.4;">
                     Center for Health Integration of Modern Medicine, Ayurveda & Yoga<br>
                     Center for Eye Diseases | Recognized by Government of Telangana
                 </div>
             </td>
+
+            <td style="vertical-align: middle; text-align: right; font-size:12px; color:#4a5568; line-height:1.4;">
+                <strong>Reg. Address:</strong> H.No. 10-2-172,<br> St. John\'s Road,
+                Opposite <br> Keyes  High School, <br>Secunderabad - 500025<br>
+                <strong>Contact:</strong> +91 9848157629 <br> <strong>Email:</strong> contact@sivasinstitute.in
+            </td>
         </tr>
-    </table>'); // Clear any existing header settings
+    </table>');
 
         // Set footer
         $mpdf->SetHTMLFooter('<div style="text-align: center;">Page {PAGENO}</div>');
+
         // Write HTML to PDF
         $mpdf->WriteHTML($html);
 
         // Output PDF
         return $mpdf->Output('invoice_' . $invoice->invoice_number . '.pdf', 'D');
     }
-
 
     /**
      * Display the specified resource.
@@ -367,6 +375,9 @@ class InvoiceController extends Controller
 
         // Fetch pharmacy items (if applicable)
         $pharmacyItems = $invoice->pharmacyItems ?? collect();
+        $saveInvoice = saveInvoicePayment($invoice->paitent_id, $invoice->id, $request->payment_amount, Invoice::PAYMENT_STATUS_PAID, $request->payment_mode, $request->payment_date);
+
+
 
         // Redirect back to the invoice page with success message
         return redirect()->route('invoice.show', $id)

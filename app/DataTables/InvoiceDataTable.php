@@ -40,17 +40,43 @@ class InvoiceDataTable extends DataTable
      */
     public function query(Invoice $model): QueryBuilder
     {
-        return $model->newQuery()
+        $query = $model->newQuery()
             ->select([
                 'invoices.id',
                 'invoices.invoice_number',
                 'invoices.created_at',
                 'invoices.total',
-                'invoices.payment_status', // Total amount from invoices table
-                'patient_details.name as patient_name', // Proper aliasing for the joined table
+                'invoices.payment_status',
+                'patient_details.name as patient_name',
+                // Assuming mobile exists on the patient_details table:
+                'patient_details.phone_number as patient_mobile',
             ])
-            ->join('patient_details', 'patient_details.id', '=', 'invoices.paitent_id')->orderBy('created_at', 'desc'); // Fix typo `paitent_id` to `patient_id`
+            ->join('patient_details', 'patient_details.id', '=', 'invoices.paitent_id')
+            ->orderBy('created_at', 'desc');
+
+        // Apply filters if provided in the request.
+        if ($dateFrom = request()->get('dateFrom')) {
+            $query->whereDate('invoices.created_at', '>=', $dateFrom);
+        }
+        if ($dateTo = request()->get('dateTo')) {
+            $query->whereDate('invoices.created_at', '<=', $dateTo);
+        }
+        if ($name = request()->get('name')) {
+            $query->where('patient_details.name', 'like', '%' . $name . '%');
+        }
+        if ($mobile = request()->get('phone_number')) {
+            $query->where('patient_details.phone_number', 'like', '%' . $mobile . '%');
+        }
+        if ($invoiceNumber = request()->get('invoiceNumber')) {
+            $query->where('invoices.invoice_number', 'like', '%' . $invoiceNumber . '%');
+        }
+        if (($paymentStatus = request()->get('paymentStatus')) !== null && $paymentStatus !== '') {
+            $query->where('invoices.payment_status', $paymentStatus);
+        }
+
+        return $query;
     }
+
     /**
      * Optional method if you want to use the html builder.
      */

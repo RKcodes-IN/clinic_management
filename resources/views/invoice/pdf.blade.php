@@ -18,7 +18,7 @@
         .header-table {
             width: 100%;
             border-bottom: 2px solid #f0f0f0;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             padding-bottom: 15px;
         }
 
@@ -47,7 +47,7 @@
         /* Address box */
         .address-box {
             margin: 10px 0;
-            padding: 18px;
+            padding: 5px;
             background: #f8fafc;
             border-left: 4px solid #1a365d;
             border-radius: 4px;
@@ -58,11 +58,11 @@
         /* Invoice info section */
         .invoice-info {
             width: 100%;
-            margin: 2px 0;
+            margin: 20px 0 2px 0 !important;
             padding: 5px;
             background: #f8fafc;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 10px;
         }
 
         .invoice-info td {
@@ -97,13 +97,13 @@
         }
 
         .summary-section td {
-            padding: 15px;
+            padding: 5px;
             border: 1px solid #e2e8f0;
             background: #fff;
         }
 
         .total-amount {
-            background: #1a365d;
+            background: #d2d2d2;
             color: #fff;
             font-weight: bold;
         }
@@ -117,14 +117,14 @@
 
         .items-table th,
         .items-table td {
-            padding: 10px;
+            padding: 5px;
             border: 1px solid #e2e8f0;
             font-size: 12px;
         }
 
         .items-table th {
-            background: #1a365d;
-            color: #fff;
+            background: #f3f3f3;
+            color: #000;
             text-transform: uppercase;
         }
 
@@ -139,7 +139,7 @@
             font-size: 12px;
             margin-top: 40px;
             border-top: 1px solid #e2e8f0;
-            padding-top: 15px;
+            padding-top: 5px;
         }
     </style>
 </head>
@@ -148,35 +148,50 @@
     <!-- Header -->
 
 
-    <!-- Registered Address -->
-    <div class="address-box">
-        <strong>Registered Address:</strong> H.No. 10-2-172, St. John's Road,<br>
-        Opposite Keyes High School, Secunderabad - 500025<br>
-        <strong>Contact:</strong> +91 9848157629 | <strong>Email:</strong> contact@sivasinstitute.in
-    </div>
+
 
     <!-- Invoice Information -->
-    <table class="invoice-info">
+    <table class="invoice-info" style="width: 100%; border-collapse: collapse;">
         <tr>
-            <td>
-                <strong>Invoice #:</strong> {{ $invoice->invoice_number }}<br>
-                <strong>Issued:</strong> {{ $invoice->created_at->format('d M Y') }}
+            <td style="width: 50%; vertical-align: top; padding: 5px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 120px;"><strong>Invoice #:</strong></td>
+                        <td>{{ $invoice->invoice_number }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 120px;"><strong>Issued:</strong></td>
+                        <td>{{ $invoice->created_at->format('d M Y') }}</td>
+                    </tr>
+                </table>
             </td>
-            <td>
-                <strong>Patient ID:</strong> {{ $invoice->patient->id ?? 'N/A' }}<br>
-                <strong>Service Date:</strong> {{ $invoice->created_at->format('d M Y') }}
+            <td style="width: 50%; vertical-align: top; padding: 5px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 120px;"><strong>Patient ID:</strong></td>
+                        <td>{{ $invoice->patient->id ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 120px;"><strong>Service Date:</strong></td>
+                        <td>{{ $invoice->created_at->format('d M Y') }}</td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
 
     <!-- Patient Details -->
     <div class="patient-details">
-        <table>
+        <table style="width:100%; border-collapse: collapse;">
+            <colgroup>
+                <col style="width:15%">
+                <col style="width:35%">
+                <col style="width:15%">
+                <col style="width:35%">
+            </colgroup>
             <tr>
                 <td><strong>Patient Name:</strong></td>
                 <td>{{ $invoice->patient->name ?? 'N/A' }}</td>
-            </tr>
-            <tr>
                 <td><strong>Gender/Age:</strong></td>
                 <td>{{ ucfirst($invoice->patient->gender ?? 'N/A') }} / {{ $invoice->patient->age ?? 'N/A' }}</td>
             </tr>
@@ -186,8 +201,6 @@
                     {{ $invoice->patient->phone ?? 'N/A' }}<br>
                     {{ $invoice->patient->email ?? '' }}
                 </td>
-            </tr>
-            <tr>
                 <td><strong>Address:</strong></td>
                 <td>{{ $invoice->patient->address ?? 'N/A' }}</td>
             </tr>
@@ -222,6 +235,7 @@
             </tbody>
         </table>
     @endif
+
     <div class="summary-section">
         <table>
             <tr>
@@ -239,11 +253,32 @@
                 </td>
             </tr>
             <tr class="total-amount">
-                <td>Total Amount Payable</td>
-                <td class="text-right currency">₹{{ number_format($invoice->total, 2) }}</td>
+                <td><strong>Total Amount Payable</strong></td>
+                <td class="text-right currency"><strong> ₹{{ number_format($invoice->total, 2) }}</strong></td>
             </tr>
+            @if (isset($invoiceTransactions) && $invoiceTransactions->count())
+                @foreach ($invoiceTransactions as $transaction)
+                    <tr>
+                        <td style="padding-left: 20px;">
+                            Payment on {{ \Carbon\Carbon::parse($transaction->payment_date)->format('d M Y') }} via
+                            {{ ucfirst($transaction->payment_mode) }}
+                        </td>
+                        <td class="text-right currency">₹{{ number_format($transaction->amount, 2) }}</td>
+                    </tr>
+                @endforeach
+            @endif
+            @if (isset($invoice->pending_amount) && $invoice->pending_amount > 0)
+                <tr class="total-amount">
+                    <td><strong>Pending Payment</strong></td>
+                    <td class="text-right currency"><strong>₹{{ number_format($invoice->pending_amount, 2) }}</strong>
+                    </td>
+                </tr>
+            @endif
         </table>
     </div>
+
+
+
     <!-- Footer -->
     <div class="footer">
         This is a computer-generated invoice. No signature required.<br>

@@ -3,6 +3,7 @@
 
 use App\Models\Appointment;
 use App\Models\Invoice;
+use App\Models\InvoiceTransaction;
 use App\Models\Notification;
 use App\Models\PatientDetail;
 use Carbon\Carbon;
@@ -450,5 +451,18 @@ if (!function_exists('saveNotification')) {
         } else {
             return false;
         }
+    }
+}
+if (!function_exists('saveInvoicePayment')) {
+    function saveInvoicePayment($patient_id = "", $invoice_id = "", $amount = "", $status = "", $payment_mode="",$payment_date="")
+    {
+        $payment =  new InvoiceTransaction();
+        $payment->invoice_id = $invoice_id;
+        $payment->patient_id = $patient_id;
+        $payment->amount     = $amount;
+        $payment->status     = $status;
+        $payment->payment_mode     = $payment_mode;
+        $payment->payment_date     = $payment_date;
+        $payment->save();
     }
 }

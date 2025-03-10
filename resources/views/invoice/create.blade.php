@@ -3,13 +3,13 @@
 @section('content')
 
     <style>
-.select2{
-    width: 200.5px !important;
-}
+        .select2 {
+            width: 200.5px !important;
+        }
     </style>
     <div class="row justify-content-center">
         @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="alert alert-success">{{ session(key: 'success') }}</div>
         @endif
         <form action="{{ route('invoice.store') }}" method="POST">
 
@@ -34,8 +34,8 @@
                                         class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="patient_id">Patient Name</label>
-                                    <select name="patient_id" id="patient_id" class="form-control" required>
+                                    <label for="patient_id">Patient Name</label> <br>
+                                    <select name="patient_id" id="patient_id" class="form-control patient-select" required>
                                         <option value="">Select Patient</option>
                                         @if ($patients instanceof \Illuminate\Database\Eloquent\Collection)
                                             <!-- If $patients is a collection, iterate over it -->
@@ -84,21 +84,21 @@
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="subtotal">Subtotal</label>
-                                    <input type="number" step="0.01" name="subtotal" id="subtotal" class="form-control"
+                                    <input type="number"  name="subtotal" id="subtotal" class="form-control"
                                         readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="discount">Total Discount Amount</label>
-                                    <input type="number" step="0.01" name="discount" id="discount"
+                                    <input type="number"name="discount" id="discount"
                                         class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="gst">GST (%)</label>
-                                    <input type="number" step="0.01" name="gst" id="gst" class="form-control">
+                                    <input type="number" name="gst" id="gst" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="total">Total</label>
-                                    <input type="number" step="0.01" name="total" id="total" class="form-control"
+                                    <input type="number"  name="total" id="total" class="form-control"
                                         readonly>
                                 </div>
                                 <div class="form-group">
@@ -274,7 +274,7 @@
                                             </td>
                                             <td><input type="number" step="0.01" name="misc[0][price]"
                                                     class="form-control" required></td>
-                                            <td><input type="number"  name="misc[0][add_dis_percent]"
+                                            <td><input type="number" name="misc[0][add_dis_percent]"
                                                     class="form-control">
                                                 <span class="text-danger" id="diserr_0"></span>
                                             </td>
@@ -314,7 +314,10 @@
         $(document).ready(function() {
             // Initialize Select2 for searchable dropdowns
             initializeSelect2();
-
+            $('.patient-select').select2({
+                placeholder: "Search and Select Patient",
+                allowClear: false
+            });
             // Populate pharmacy stock data for price and expiry date
             const pharmacyStocksData = {
                 @foreach ($pharmacyStocks as $stock)
@@ -381,7 +384,7 @@
                 let subtotal = 0;
                 $('input[name$="[price]"]').each(function() {
                     let price = parseFloat($(this).val()) || 0;
-                    let quantity = parseInt($(this).closest('tr').find('input[name$="[quantity]"]')
+                    let quantity = parseFloat($(this).closest('tr').find('input[name$="[quantity]"]')
                         .val()) || 0; // Assuming the quantity input is in the same row
                     subtotal += price * quantity;
                 });
@@ -537,7 +540,9 @@
 
             $(document).on('input', 'input[name$="[quantity]"], input[name$="[price]"]', function() {
                 const $row = $(this).closest('tr');
+
                 validateQuantity($row);
+
                 calculateRowTotal($row);
                 calculateTotalDisAmount() // Recalculate row total
 
@@ -673,8 +678,8 @@
         });
 
         function validateQuantity($row) {
-            const availableQty = parseInt($row.find('.available-quantity').text()) || 0;
-            const enteredQty = parseInt($row.find('input[name$="[quantity]"]').val()) || 0;
+            const availableQty = parseFloat($row.find('.available-quantity').text()) || 0;
+            const enteredQty = parseFloat($row.find('input[name$="[quantity]"]').val()) || 0;
 
             if (enteredQty > availableQty) {
                 $row.find('.quantity-error').text('Entered quantity exceeds available stock.');
