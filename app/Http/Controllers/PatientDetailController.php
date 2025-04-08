@@ -49,7 +49,8 @@ class PatientDetailController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20|unique:users,phone',
+            'username' => 'required|string',
+            'phone_number' => 'required|string|max:20',
             'date_of_birth' => 'required|date',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'address' => 'required|string|max:1000',
@@ -63,6 +64,7 @@ class PatientDetailController extends Controller
         $user = new User();
         $user->name = $request->input('name');
         $user->email = $request->input('phone_number') . '@example.com'; // Placeholder email using phone number
+        $user->username = $request->input('username'); // Placeholder email using phone number
         $user->password = Hash::make($request->input('phone_number')); // Password set as phone number
         $user->phone = $request->input('phone_number');
         $user->user_role = $role->id;
@@ -108,11 +110,11 @@ class PatientDetailController extends Controller
             ->where('patient_id', $id)
             ->get();
 
-            $casesheets = InvestigationReport::with([
-                'reportTypeValues' => function ($query) {
-                    $query->where('investigation_report_type_id', 2)->with('reportType');
-                }
-            ])
+        $casesheets = InvestigationReport::with([
+            'reportTypeValues' => function ($query) {
+                $query->where('investigation_report_type_id', 2)->with('reportType');
+            }
+        ])
             ->where('patient_id', $id)
             ->whereHas('reportTypeValues', function ($query) {
                 $query->where('investigation_report_type_id', 2);
@@ -127,7 +129,7 @@ class PatientDetailController extends Controller
         $pharmacyPrescriptions = PharmacyPrescription::where('patient_id', $id)->get();
         $labPrescriptions = LabPrescription::where('patient_id', $id)->get();
 
-        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport', 'appontmentCount', 'pharmacyPrescriptions', 'labPrescriptions', 'casesheets', ));
+        return view('paitentdetail.show', compact('paitent', 'healthEvalutions', 'appontments', 'investigationReport', 'appontmentCount', 'pharmacyPrescriptions', 'labPrescriptions', 'casesheets',));
     }
 
     public function updateForm()

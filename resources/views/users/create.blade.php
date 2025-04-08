@@ -23,7 +23,13 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
-
+                            <div class="form-group">
+                                <label for="name">Username</label>
+                                <input type="text" name="username" id="username" class="form-control" required>
+                                @error('username')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <input type="email" name="email" id="email" class="form-control" required>

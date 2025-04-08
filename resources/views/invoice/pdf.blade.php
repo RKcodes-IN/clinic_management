@@ -88,7 +88,7 @@
 
         /* Summary section */
         .summary-section {
-            margin: 25px 0;
+            margin: 25px 0 0px 0;
         }
 
         .summary-section table {
@@ -191,7 +191,7 @@
             </colgroup>
             <tr>
                 <td><strong>Patient Name:</strong></td>
-                <td>{{ $invoice->patient->name ?? 'N/A' }}</td>
+                <td><strong>{{ $invoice->patient->name ?? 'N/A' }}</strong></td>
                 <td><strong>Gender/Age:</strong></td>
                 <td>{{ ucfirst($invoice->patient->gender ?? 'N/A') }} / {{ $invoice->patient->age ?? 'N/A' }}</td>
             </tr>
@@ -203,6 +203,11 @@
                 </td>
                 <td><strong>Address:</strong></td>
                 <td>{{ $invoice->patient->address ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+
+                <td><strong>Doctor Name:</strong></td>
+                <td>{{ $invoice->doctor->name ?? 'N/A' }}</td>
             </tr>
         </table>
     </div>
@@ -243,9 +248,9 @@
                 <td class="text-right currency">₹{{ number_format($invoice->sub_total, 2) }}</td>
             </tr>
             <tr>
-                <td>Discount ({{ number_format($invoice->discount, 2) }}%)</td>
+                <td>Discount</td>
                 <td class="text-right currency">
-                    -₹{{ number_format(($invoice->sub_total * $invoice->discount) / 100, 2) }}</td>
+                    -₹{{ number_format($invoice->discount, 2) }}</td>
             </tr>
             <tr>
                 <td>GST ({{ number_format($invoice->gst, 2) }}%)</td>
@@ -267,17 +272,33 @@
                     </tr>
                 @endforeach
             @endif
-            @if (isset($invoice->pending_amount) && $invoice->pending_amount > 0)
-                <tr class="total-amount">
+            <tr class="total-amount">
+
+                @if (isset($invoice->pending_amount) && $invoice->pending_amount > 0)
                     <td><strong>Pending Payment</strong></td>
                     <td class="text-right currency"><strong>₹{{ number_format($invoice->pending_amount, 2) }}</strong>
                     </td>
-                </tr>
-            @endif
+                @endif
+
+
+                <td colspan="2" style="text-align: center; font-size: 12px; color: #333;">
+                    <strong>In Words:
+                        @if ($invoice->pending_amount > 0)
+                    </strong>{{ convertToIndianRupees($invoice->pending_amount) }}
+                @else
+                    </strong>{{ convertToIndianRupees($invoice->total) }}
+                    @endif
+                </td>
+            </tr>
+
         </table>
     </div>
 
-
+    <div style="margin-top: -10px; text-align: right;">
+        <p><strong>Signature</strong></p>
+        <p>______________________</p>
+        <p>{{ $invoice->createdby->name ?? '' }}</p>
+    </div>
 
     <!-- Footer -->
     <div class="footer">

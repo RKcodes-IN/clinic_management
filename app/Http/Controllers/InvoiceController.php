@@ -14,6 +14,7 @@ use App\Models\Stock;
 use App\Models\StockTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -189,6 +190,7 @@ class InvoiceController extends Controller
         $invoice->invoice_number = $invoiceNumber;
         $invoice->paitent_id = $request->patient_id;
         $invoice->payment_status = $request->payment_status;
+        $invoice->created_by = Auth::user()->id;
         $invoice->save();
 
         // Process invoice items
@@ -247,8 +249,8 @@ class InvoiceController extends Controller
                     'item_type' => $itemType,
                     'item_id' => $stock->item_id,
                     'quantity' => $item["quantity"],
-                    'add_dis_percent' => $item["add_dis_percent"],
-                    'add_dis_amount' => $item["discount_amount"],
+                    'add_dis_percent' => isset($item['add_dis_percent']) ? $item['add_dis_percent'] : 0,
+                    'add_dis_amount' => isset($item['discount_amount']) ? $item['discount_amount'] : 0,
                     'item_price' => $item['price'],
                     'total_amount' => $item['total'],
                     'description' => $item['description'] ?? null,
@@ -317,7 +319,7 @@ class InvoiceController extends Controller
             <td style="vertical-align: middle; text-align: right; font-size:12px; color:#4a5568; line-height:1.4;">
                 <strong>Reg. Address:</strong> H.No. 10-2-172,<br> St. John\'s Road,
                 Opposite <br> Keyes  High School, <br>Secunderabad - 500025<br>
-                <strong>Contact:</strong> +91 9848157629 <br> <strong>Email:</strong> contact@sivasinstitute.in
+                <strong>Contact:</strong> +91 9848157629 <br> <strong>Email:</strong> sivashri.in@gmail.com
             </td>
         </tr>
     </table>');
@@ -375,6 +377,7 @@ class InvoiceController extends Controller
 
         // Fetch pharmacy items (if applicable)
         $pharmacyItems = $invoice->pharmacyItems ?? collect();
+
         $saveInvoice = saveInvoicePayment($invoice->paitent_id, $invoice->id, $request->payment_amount, Invoice::PAYMENT_STATUS_PAID, $request->payment_mode, $request->payment_date);
 
 

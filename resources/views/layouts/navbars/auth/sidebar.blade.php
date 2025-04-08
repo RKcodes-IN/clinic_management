@@ -50,7 +50,7 @@
                         class="icon icon-shape icon-sm border-radius-md bg-white text-center d-flex align-items-center justify-content-center">
                         <i class="fas fa-tachometer-alt"></i>
                     </div>
-                    <span class="nav-link-text ms-1">Dashboard</span>
+                    <span class="nav-link-text ms-1">{{ __('admin.dashboard') }}</span>
                 </a>
             </li>
 
@@ -66,17 +66,20 @@
                             class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-calendar-check"></i>
                         </div>
-                        <span class="nav-link-text ms-1">Appointments</span>
+                        <span class="nav-link-text ms-1">{{ __('admin.appointments') }}</span>
                     </a>
                     <ul class="collapse dropdown-menu" id="appointmentsMenu">
 
                         @can(['create appointment', 'edit appointment'])
-                            <li><a class="dropdown-item" href="{{ route('appointments.create') }}">New Appointment</a></li>
-                            <li><a class="dropdown-item" href="{{ route('appointments.wa') }}">Appointment (WA)</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('appointments.create') }}">{{ __('admin.new_appointments') }}</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('appointments.wa') }}">{{ __('admin.appointment_wa') }}</a></li>
                         @endcan
 
                         @can('read appointment')
-                            <li><a class="dropdown-item" href="{{ route('appointments.index') }}">Appointment List</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('appointments.index') }}">{{ __('admin.appointments') }} List</a></li>
                             @if ($role->hasRole('doctor'))
                                 <li><a class="dropdown-item" href="{{ route('appointent.calander') }}">Calendar</a></li>
                             @endif
@@ -104,11 +107,10 @@
                         @endcan
 
                         @can(['read healthevalution', 'create healthevalution', 'edit healthevalution'])
-                            <li><a class="dropdown-item" href="{{ route('healthevalution.create') }}">Create Health Evaluation
-                                    Sheet</a>
+                            <li><a class="dropdown-item" href="{{ route('healthevalution.create') }}">Create Health Evaluation Sheet</a>
                             </li>
                         @endcan
-                        @can('read healthevalution')
+                        @can('read healthevaluti on')
                             <li><a class="dropdown-item" href="{{ route('healthevalution.index') }}">Patient Health Evaluations
                                 </a>
                             </li>
@@ -174,7 +176,8 @@
                         @endcan
 
                         @can('edit stock')
-                            <li><a class="dropdown-item" href="{{ route('stock.updatepricing', ['type' => 'therapy']) }}">Update
+                            <li><a class="dropdown-item"
+                                    href="{{ route('stock.updatepricing', ['type' => 'therapy']) }}">Update
                                     Pricing</a></li>
                         @endcan
                         @can(['create labprescription'])

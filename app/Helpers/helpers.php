@@ -454,7 +454,7 @@ if (!function_exists('saveNotification')) {
     }
 }
 if (!function_exists('saveInvoicePayment')) {
-    function saveInvoicePayment($patient_id = "", $invoice_id = "", $amount = "", $status = "", $payment_mode="",$payment_date="")
+    function saveInvoicePayment($patient_id = "", $invoice_id = "", $amount = "", $status = "", $payment_mode = "", $payment_date = "")
     {
         $payment =  new InvoiceTransaction();
         $payment->invoice_id = $invoice_id;
@@ -464,5 +464,61 @@ if (!function_exists('saveInvoicePayment')) {
         $payment->payment_mode     = $payment_mode;
         $payment->payment_date     = $payment_date;
         $payment->save();
+    }
+}
+
+
+if (!function_exists('convertToIndianRupees')) {
+    function convertToIndianRupees($number) {
+        $no = floor($number);
+        $point = round($number - $no, 2) * 100;
+        $digits = ['', 'hundred', 'thousand', 'lakh', 'crore'];
+        $words = [
+            0 => '', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five',
+            6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine', 10 => 'ten',
+            11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen',
+            15 => 'fifteen', 16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen',
+            19 => 'nineteen', 20 => 'twenty', 30 => 'thirty', 40 => 'forty',
+            50 => 'fifty', 60 => 'sixty', 70 => 'seventy', 80 => 'eighty', 90 => 'ninety'
+        ];
+
+        // Helper function to convert numbers 0-99
+        $convertTwoDigits = function ($num) use ($words) {
+            $num = (int)$num;
+            if ($num == 0) return '';
+            if ($num < 20) return $words[$num];
+            return $words[$num - ($num % 10)] . ($num % 10 ? ' ' . $words[$num % 10] : '');
+        };
+
+        // Handle rupees
+        $numStr = (string)$no;
+        $hundredsPart = $numStr <= 999 ? $numStr : substr($numStr, -3);
+        $thousandsPart = $numStr > 999 ? substr($numStr, 0, -3) : '';
+        $str = [];
+
+        // Process last three digits (units, tens, hundreds)
+        $hundredsNum = (int)$hundredsPart;
+        if ($hundredsNum > 0) {
+            $hundreds = $hundredsNum >= 100 ? $words[floor($hundredsNum / 100)] . ' hundred' : '';
+            $tensUnits = $hundredsNum % 100;
+            $tensWords = $tensUnits > 0 ? $convertTwoDigits($tensUnits) : '';
+            $str[] = trim($hundreds . ($hundreds && $tensWords ? ' ' : '') . $tensWords);
+        }
+
+        // Process remaining digits in two-digit chunks
+        if ($thousandsPart) {
+            $chunks = str_split(strrev($thousandsPart), 2);
+            foreach ($chunks as $i => $chunk) {
+                $num = (int)strrev($chunk);
+                if ($num > 0) {
+                    $str[] = $convertTwoDigits($num) . ' ' . $digits[$i + 2];
+                }
+            }
+        }
+
+        $rupees = implode(' ', array_reverse($str));
+        $paise = $point > 0 ? ' and ' . $convertTwoDigits($point) . ' paise' : '';
+
+        return ucwords(trim($rupees . ' rupees' . $paise . ' only'));
     }
 }

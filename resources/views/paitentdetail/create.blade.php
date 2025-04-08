@@ -25,6 +25,14 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="name">Username</label>
+                                <input type="text" name="username" id="username" class="form-control" required>
+                                @error('username')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
                                 <label for="phone_number">Phone Number</label>
                                 <input type="text" name="phone_number" id="phone_number" class="form-control" required>
                                 @error('phone_number')

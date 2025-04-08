@@ -84,22 +84,19 @@
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="subtotal">Subtotal</label>
-                                    <input type="number"  name="subtotal" id="subtotal" class="form-control"
-                                        readonly>
+                                    <input type="text" name="subtotal" id="subtotal" class="form-control" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="discount">Total Discount Amount</label>
-                                    <input type="number"name="discount" id="discount"
-                                        class="form-control">
+                                    <input type="text"name="discount" id="discount" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="gst">GST (%)</label>
-                                    <input type="number" name="gst" id="gst" class="form-control">
+                                    <input type="text" name="gst" id="gst" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="total">Total</label>
-                                    <input type="number"  name="total" id="total" class="form-control"
-                                        readonly>
+                                    <input type="text" name="total" id="total" class="form-control" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="payment_status">Payment Status</label>
@@ -157,25 +154,25 @@
                                                 </select>
                                             </td>
                                             <td class="available-quantity">-</td>
-                                            <td><input type="number" name="pharmacy[0][quantity]" class="form-control"
+                                            <td><input type="text" name="pharmacy[0][quantity]" class="form-control"
                                                     required>
                                                 <span class="quantity-error"></span>
                                             </td>
 
-                                            <td><input type="text" name="pharmacy[0][batch_number]"
-                                                    class="form-control" required></td>
-                                            <td><input type="date" name="pharmacy[0][expiry_date]"
-                                                    class="form-control" required></td>
-                                            <td><input type="number" step="0.01" name="pharmacy[0][price]"
-                                                    class="form-control" required></td>
-                                            <td><input type="number" name="pharmacy[0][add_dis_percent]"
+                                            <td><input type="text" name="pharmacy[0][batch_number]" class="form-control"
+                                                    required></td>
+                                            <td><input type="date" name="pharmacy[0][expiry_date]" class="form-control"
+                                                    required></td>
+                                            <td><input type="text" name="pharmacy[0][price]" class="form-control"
+                                                    required></td>
+                                            <td><input type="text" name="pharmacy[0][add_dis_percent]"
                                                     class="form-control">
                                                 <span class="text-danger" id="diserr_0"></span>
                                             </td>
-                                            <td><input type="number" step="1" name="pharmacy[0][discount_amount]"
+                                            <td><input type="text" name="pharmacy[0][discount_amount]"
                                                     class="form-control"></td>
-                                            <td><input type="number" step="0.01" name="pharmacy[0][total]"
-                                                    class="form-control" readonly></td>
+                                            <td><input type="text" name="pharmacy[0][total]" class="form-control"
+                                                    readonly></td>
                                             <td><input type="text" name="pharmacy[0][description]"
                                                     class="form-control">
                                             </td>
@@ -217,18 +214,18 @@
                                                     @endforeach
                                                 </select>
                                             </td>
-                                            <td><input type="number" name="labtests[0][quantity]" class="form-control"
+                                            <td><input type="text" name="labtests[0][quantity]" class="form-control"
                                                     required></td>
-                                            <td><input type="number" step="0.01" name="labtests[0][price]"
-                                                    class="form-control" required></td>
-                                            <td><input type="number" name="labtests[0][add_dis_percent]"
+                                            <td><input type="text" name="labtests[0][price]" class="form-control"
+                                                    required></td>
+                                            <td><input type="text" name="labtests[0][add_dis_percent]"
                                                     class="form-control">
                                                 <span class="text-danger" id="diserr_0"></span>
                                             </td>
-                                            <td><input type="number" step="1" name="labtests[0][discount_amount]"
+                                            <td><input type="text" name="labtests[0][discount_amount]"
                                                     class="form-control"></td>
-                                            <td><input type="number" step="0.01" name="labtests[0][total]"
-                                                    class="form-control" readonly></td>
+                                            <td><input type="text" name="labtests[0][total]" class="form-control"
+                                                    readonly></td>
                                             <td><input type="text" name="labtests[0][description]"
                                                     class="form-control">
                                             </td>
@@ -269,19 +266,19 @@
                                                     @endforeach
                                                 </select>
                                             </td>
-                                            <td><input type="number" name="misc[0][quantity]" class="form-control"
+                                            <td><input type="text" name="misc[0][quantity]" class="form-control"
                                                     required>
                                             </td>
-                                            <td><input type="number" step="0.01" name="misc[0][price]"
-                                                    class="form-control" required></td>
-                                            <td><input type="number" name="misc[0][add_dis_percent]"
+                                            <td><input type="text" name="misc[0][price]" class="form-control"
+                                                    required></td>
+                                            <td><input type="text" name="misc[0][add_dis_percent]"
                                                     class="form-control">
                                                 <span class="text-danger" id="diserr_0"></span>
                                             </td>
-                                            <td><input type="number" step="1" name="misc[0][discount_amount]"
+                                            <td><input type="text" name="misc[0][discount_amount]"
                                                     class="form-control"></td>
-                                            <td><input type="number" step="0.01" name="misc[0][total]"
-                                                    class="form-control" readonly></td>
+                                            <td><input type="text" name="misc[0][total]" class="form-control"
+                                                    readonly></td>
                                             <td><input type="text" name="misc[0][description]" class="form-control">
                                             </td>
                                             <td><button type="button" class="btn btn-danger remove-row">Remove</button>
@@ -574,19 +571,19 @@
                     </td>
                                             <td class="available-quantity">-</td>
 
-                    <td><input type="number" name="pharmacy[${pharmacyIndex}][quantity]" class="form-control" required>
+                    <td><input type="text" name="pharmacy[${pharmacyIndex}][quantity]" class="form-control" required>
                                                 <span class="quantity-error"></span>
 
                         </td>
                     <td><input type="text" name="pharmacy[${pharmacyIndex}][batch_number]" class="form-control" required></td>
                     <td><input type="date" name="pharmacy[${pharmacyIndex}][expiry_date]" class="form-control" required></td>
-                    <td><input type="number" step="0.01" name="pharmacy[${pharmacyIndex}][price]" class="form-control" required></td>
-                    <td><input type="number" name="pharmacy[${pharmacyIndex}][add_dis_percent]" class="form-control" >
+                    <td><input type="text" name="pharmacy[${pharmacyIndex}][price]" class="form-control" required></td>
+                    <td><input type="text" name="pharmacy[${pharmacyIndex}][add_dis_percent]" class="form-control" >
                     <span class="text-danger" id="diserr_${pharmacyIndex}"></span>
 
                         </td>
-                    <td><input type="number" step="0.01" name="pharmacy[${pharmacyIndex}][discount_amount]" class="form-control" readonly></td>
-                    <td><input type="number" step="0.01" name="pharmacy[${pharmacyIndex}][total]" class="form-control" readonly></td>
+                    <td><input type="text"  name="pharmacy[${pharmacyIndex}][discount_amount]" class="form-control" readonly></td>
+                    <td><input type="text" name="pharmacy[${pharmacyIndex}][total]" class="form-control" readonly></td>
                     <td><input type="text" name="pharmacy[${pharmacyIndex}][description]" class="form-control"></td>
                     <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
                 </tr>
@@ -612,14 +609,14 @@
                             @endforeach
                         </select>
                     </td>
-                    <td><input type="number" name="labtests[${labTestIndex}][quantity]" class="form-control" required></td>
-                    <td><input type="number" step="0.01" name="labtests[${labTestIndex}][price]" class="form-control" required></td>
-                     <td><input type="number" name="labtests[${pharmacyIndex}][add_dis_percent]" class="form-control" >
+                    <td><input type="text" name="labtests[${labTestIndex}][quantity]" class="form-control" required></td>
+                    <td><input type="text" name="labtests[${labTestIndex}][price]" class="form-control" required></td>
+                     <td><input type="text" name="labtests[${pharmacyIndex}][add_dis_percent]" class="form-control" >
                     <span class="text-danger" id="diserr_${pharmacyIndex}"></span>
 
                         </td>
-                    <td><input type="number" step="0.01" name="labtests[${pharmacyIndex}][discount_amount]" class="form-control" readonly></td>
-                    <td><input type="number" step="0.01" name="labtests[${labTestIndex}][total]" class="form-control" readonly></td>
+                    <td><input type="text" name="labtests[${pharmacyIndex}][discount_amount]" class="form-control" readonly></td>
+                    <td><input type="text" name="labtests[${labTestIndex}][total]" class="form-control" readonly></td>
                     <td><input type="text" name="labtests[${labTestIndex}][description]" class="form-control"></td>
                     <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
                 </tr>
@@ -645,14 +642,14 @@
                             @endforeach
                         </select>
                     </td>
-                    <td><input type="number" name="misc[${miscIndex}][quantity]" class="form-control" required></td>
-                    <td><input type="number" step="0.01" name="misc[${miscIndex}][price]" class="form-control" required></td>
- <td><input type="number"  name="misc[${pharmacyIndex}][add_dis_percent]" class="form-control" >
+                    <td><input type="text" name="misc[${miscIndex}][quantity]" class="form-control" required></td>
+                    <td><input type="text"  name="misc[${miscIndex}][price]" class="form-control" required></td>
+ <td><input type="text"  name="misc[${pharmacyIndex}][add_dis_percent]" class="form-control" >
                     <span class="text-danger" id="diserr_${pharmacyIndex}"></span>
 
                         </td>
-                    <td><input type="number" step="0.01" name="misc[${pharmacyIndex}][discount_amount]" class="form-control" readonly></td>
-                    <td><input type="number" step="0.01" name="misc[${miscIndex}][total]" class="form-control" readonly></td>
+                    <td><input type="text"  name="misc[${pharmacyIndex}][discount_amount]" class="form-control" readonly></td>
+                    <td><input type="text"  name="misc[${miscIndex}][total]" class="form-control" readonly></td>
                     <td><input type="text" name="misc[${miscIndex}][description]" class="form-control"></td>
                     <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
                 </tr>

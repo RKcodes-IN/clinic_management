@@ -43,8 +43,10 @@ use App\Models\HealthEvaluation;
 use App\Models\InvestigationReportType;
 use App\Models\PharmacyPrescription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 
 /*
@@ -337,3 +339,10 @@ Route::get('/login', function () {
     return view('session/login-session');
 })->name('login');
 Route::get('/patients/search', [AppointmentController::class, 'search'])->name('patients.search');
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'te'])) { // Add more languages as needed
+        Session::put('locale', $locale);
+        App::setLocale($locale);
+    }
+    return redirect()->back();
+});
