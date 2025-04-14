@@ -227,23 +227,31 @@ class StockController extends Controller
     {
         $stockAlertMessages = [];
 
-        // Eager load 'item.company' to access the source company for each item.
-        $stocks = Stock::with('item.company')->whereHas('item', function ($query) {
-            $query->where('item_type', Item::TYPE_PHARMACY);
-        })->get();
+        // Eager load 'item.company' and order by item name
+        $stocks = Stock::with('item.company')
+            ->whereHas('item', function ($query) {
+                $query->where('item_type', Item::TYPE_PHARMACY);
+            })
+            ->join('items', 'stocks.item_id', '=', 'items.id')
+            ->orderBy('items.name')
+            ->select('stocks.*')
+            ->get()
+            ->groupBy('item_id');
 
-        foreach ($stocks as $stock) {
-            $availableStock = $stock->getTotalStockByItem($stock->item_id);
+        foreach ($stocks as $itemId => $itemStocks) {
+            // Get first stock record for this item to access item details
+            $firstStock = $itemStocks->first();
+            $availableStock = $firstStock->getTotalStockByItem($itemId);
 
-            if ($availableStock < $stock->item->alert_quantity) {
-                // Retrieve the company name from the item; provide a fallback if not set.
-                $companyName = $stock->item->company->name ?? 'Unknown Company';
+            if ($availableStock < $firstStock->item->alert_quantity) {
+                // Retrieve the company name from the item; provide a fallback if not set
+                $companyName = $firstStock->item->company->name ?? 'Unknown Company';
 
-                // Group by company name.
+                // Group by company name
                 $stockAlertMessages[$companyName][] = [
-                    'name'            => $stock->item->name ?? "",
-                    'item_code'       => $stock->item->item_code ?? "",
-                    'alert_quantity'  => $stock->item->alert_quantity ?? "",
+                    'name'            => $firstStock->item->name ?? "",
+                    'item_code'       => $firstStock->item->item_code ?? "",
+                    'alert_quantity'  => $firstStock->item->alert_quantity ?? "",
                     'available_stock' => $availableStock ?? ""
                 ];
             }
@@ -259,12 +267,11 @@ class StockController extends Controller
                 saveNotification($doctor->id, $title, $message, Notification::TYPE_STOCK_ALERT, 1, "");
             }
 
-            Mail::to('rohit1811vik@gmail.com')->send(new MyTestEmail($stockAlertMessages));
+            Mail::to(['aushankarp1411@gmail.com', 'lalitaworks2020@gmail.com'])->send(new MyTestEmail($stockAlertMessages));
         }
 
         return "done";
     }
-
 
 
     public function getDisount($itemId)

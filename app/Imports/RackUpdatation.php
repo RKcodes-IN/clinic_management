@@ -50,8 +50,8 @@ class RackUpdatation implements ToModel, WithHeadingRow
             }
 
             // Update stock
-            $stock->correct_exp = $correctExp; // Will be null or valid date
-            $stock->correct_price = $row['correct_price'];
+            $stock->expiry_date = $correctExp; // Will be null or valid date
+            $stock->item_price = $row['correct_price'];
             $stock->correct_stock = $row['correct_stock'];
             $stock->delete_yn = $row['delete_yn'];
             $stock->save();
@@ -86,5 +86,4 @@ class RackUpdatation implements ToModel, WithHeadingRow
      *
      * @return array
      */
-
 }

@@ -24,7 +24,7 @@ class MyTestEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('user1@billseva.in', 'SIVAS'),
+            from: new Address('sivasemail@isevabiz.com', 'SIVAS'),
             subject: 'Stock Alert',
         );
     }

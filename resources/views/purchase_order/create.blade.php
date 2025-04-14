@@ -85,8 +85,14 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-3">
+                                        <label for="date">Date</label>
                                         <input type="date" class="form-control" name="date" id="date"
                                             value="{{ date('Y-m-d') }}" required>
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="invoice_number">Invoice Number</label>
+                                        <input type="text" class="form-control" name="invoice_number" id="invoice_number"
+                                            placeholder="Invoice Number" required>
                                     </div>
                                     <div class="col-6">
 

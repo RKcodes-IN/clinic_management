@@ -33,9 +33,19 @@ class InvoiceDetail extends Model
     }
 
 
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
     // Relationship with Stock
     public function stock()
     {
         return $this->belongsTo(Stock::class, 'stock_id');
+    }
+
+    public function stockTransactions()
+    {
+        return $this->hasMany(StockTransaction::class, 'stock_id', 'stock_id');
     }
 }

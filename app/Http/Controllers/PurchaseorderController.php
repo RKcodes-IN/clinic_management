@@ -67,6 +67,7 @@ class PurchaseOrderController extends Controller
         $purchaseorder->total_item = count($request->items);
         $purchaseorder->total_quantity = 0;
         $purchaseorder->price = 0;
+        $purchaseorder->invoice_number = $request->invoice_number;
         $purchaseorder->status =  PurchaseOrderItem::STATUS_PENDING;
         $purchaseorder->creation_date = $request->date;
 

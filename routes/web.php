@@ -28,6 +28,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetController;
+use App\Http\Controllers\ReturnRequestController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SampleTypeController;
 use App\Http\Controllers\SessionsController;
@@ -313,6 +314,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/notifications', [NotificationController::class, 'getNotifications']);
     Route::get('/notification/details/{id}', [NotificationController::class, 'notificationDetails']);
+    Route::get('/return-request/search', [ReturnRequestController::class, 'search'])->name('return-request.search');
+    Route::get('/return-request/items', [ReturnRequestController::class, 'items'])->name('return-request.items');
+    Route::resource('return-request', ReturnRequestController::class);
 });
 
 
