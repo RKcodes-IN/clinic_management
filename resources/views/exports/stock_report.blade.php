@@ -29,7 +29,7 @@
         @foreach ($transactions as $index => $transaction)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $transaction->id }}</td>
+                {{-- <td>{{ $transaction->id }}</td> --}}
 
                 <td>{{ $transaction->item->name }}</td>
 

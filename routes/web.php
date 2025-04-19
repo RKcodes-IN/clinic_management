@@ -319,7 +319,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('return-request', ReturnRequestController::class);
 });
 
-
+Route::get('/stock/import', [StockController::class, 'showImportForm'])->name('stock.import.form');
+Route::post('/stock/import', [StockController::class, 'importStock'])->name('stock.import');
 Route::post('/stock/export', [StockController::class, 'export'])->name('stock.export');
 
 Route::group(['middleware' => 'guest'], function () {

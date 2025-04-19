@@ -59,12 +59,12 @@ class Stock extends Model
         $incomingStock = StockTransaction::where('status', StockTransaction::STATUS_INCOMING_STOCK)
             ->where('item_id', $itemId)
             ->sum('quantity');
-
         // Calculate outgoing stock
         $outgoingStock = StockTransaction::where('status', StockTransaction::STATUS_OUTGOING_STOCK)
             ->where('item_id', $itemId)
             ->sum('quantity');
-        return $incomingStock - $outgoingStock;
+
+        return round($incomingStock - $outgoingStock, 2);
     }
 
     public function transactions()

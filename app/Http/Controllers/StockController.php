@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\StockDataTable;
 use App\Exports\StockExport;
 use App\Exports\StockTransactionsExport;
+use App\Imports\StockUpdate;
 use App\Mail\MyTestEmail;
 use App\Models\Brand;
 use App\Models\Category;
@@ -115,36 +116,32 @@ class StockController extends Controller
             $itemIds = [];
         }
 
-        $fromDate = $request->input('from_date');
+        $fromDate = "2020-01-01 00:00:00";
         $toDate = $request->input('to_date');
 
-        // Build the query
-        $query = Stock::query();
+        // Get all pharmacy items
+        $query = Item::where('item_type', Item::TYPE_PHARMACY);
 
-        // Apply item and date filters
+        // Apply item filter if specific items selected
         if (!empty($itemIds) && !in_array('all', $itemIds)) {
-            $query->whereIn('item_id', $itemIds);
+            $query->whereIn('id', $itemIds);
         }
 
-        if ($fromDate && $toDate) {
-            $query->whereBetween('stocks.created_at', [$fromDate, $toDate]);
-        } elseif ($fromDate) {
-            $query->where('stocks.created_at', '>=', $fromDate);
-        } elseif ($toDate) {
-            $query->where('stocks.created_at', '<=', $toDate);
-        }
-
-        // Fetch filtered transactions with pharmacy items and order by item name
-        $transactions = $query
-            ->whereHas('item', function ($q) {
-                // Constrain to pharmacy items
-                $q->where('item_type', Item::TYPE_PHARMACY);
-            })
-            ->join('items', 'stocks.item_id', '=', 'items.id') // Join for ordering
-            ->orderByRaw("CASE WHEN items.rack = '' THEN 1 ELSE 0 END ASC, items.rack ASC") // Modified ordering
-            ->select('stocks.*') // Avoid column conflicts
-            ->with('item') // Eager load the relationship
+        // Get items ordered by rack
+        $items = $query->orderByRaw("CASE WHEN rack = '' THEN 1 ELSE 0 END ASC, rack ASC")
             ->get();
+
+        // Calculate stock for each item
+        $transactions = $items->map(function ($item) {
+            $totalStock = Stock::getTotalStockByItem($item->id);
+
+            return [
+                'item' => $item,
+                'total_stock' => $totalStock
+            ];
+        });
+
+        // dd($transactions);
 
         // Use Maatwebsite Excel to create and download the export
         return Excel::download(new StockExport($transactions), 'stock_transactions.xlsx');
@@ -586,5 +583,19 @@ class StockController extends Controller
     public function destroy(Stock $stock)
     {
         //
+    }
+
+    public function showImportForm()
+    {
+        return view('stock.stockupdate');
+    }
+    public function importStock(Request $request)
+    {
+
+
+        Excel::import(new StockUpdate, $request->file('excel_file'));
+
+
+        return back()->with('success', 'Stock updated successfully.');
     }
 }
